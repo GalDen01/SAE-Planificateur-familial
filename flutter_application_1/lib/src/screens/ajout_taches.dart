@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import '../models/produit.dart';
+import '../models/tache.dart';
 
-class AjoutProduit extends StatefulWidget {
+class AjoutTache extends StatefulWidget {
   @override
-  _AjoutProduitState createState() => _AjoutProduitState();
+  _AjoutTacheState createState() => _AjoutTacheState();
 }
 
-class _AjoutProduitState extends State<AjoutProduit> {
+class _AjoutTacheState extends State<AjoutTache> {
   final _formKey = GlobalKey<FormState>();
-  String nomProduit = '';
+  String titreTache = '';
 
-  void _sauvegarderProduit() {
+  void _sauvegarderTache() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      Navigator.pop(context, Produit(nom: nomProduit));
+      Navigator.pop(context, Tache(titre: titreTache));
     }
   }
 
@@ -21,7 +21,7 @@ class _AjoutProduitState extends State<AjoutProduit> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ajouter un Produit'),
+        title: Text('Ajouter une Tâche'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -30,20 +30,20 @@ class _AjoutProduitState extends State<AjoutProduit> {
           child: Column(
             children: [
               TextFormField(
-                decoration: InputDecoration(labelText: 'Nom du produit'),
+                decoration: InputDecoration(labelText: 'Titre de la tâche'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Veuillez entrer un nom de produit';
+                    return 'Veuillez entrer un titre de tâche';
                   }
                   return null;
                 },
                 onSaved: (value) {
-                  nomProduit = value!;
+                  titreTache = value!;
                 },
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _sauvegarderProduit,
+                onPressed: _sauvegarderTache,
                 child: Text('Ajouter'),
               ),
             ],

@@ -1,4 +1,3 @@
-// lib/screens/liste_courses.dart
 import 'package:flutter/material.dart';
 import '../models/produit.dart';
 import 'ajout_produit.dart';

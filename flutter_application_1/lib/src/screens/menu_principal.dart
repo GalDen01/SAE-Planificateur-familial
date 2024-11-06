@@ -1,6 +1,6 @@
-// lib/screens/menu_principal.dart
 import 'package:flutter/material.dart';
 import 'liste_courses.dart';
+import 'liste_taches.dart';
 
 class MenuPrincipal extends StatelessWidget {
   @override
@@ -24,9 +24,18 @@ class MenuPrincipal extends StatelessWidget {
             ),
             SizedBox(height: 20),
             ElevatedButton(
+              child: Text('To-Do Liste'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ListeTaches()),
+                );
+              },
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
               child: Text('Autre Fonctionnalité (À venir)'),
               onPressed: () {
-                // Ici, vous pourrez ajouter la navigation vers une nouvelle fonctionnalité
               },
             ),
           ],
