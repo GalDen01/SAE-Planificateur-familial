@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
-import 'src/screens/menu_principal.dart';
+import 'src/screens/menu_screen.dart';
+
 void main() {
-  runApp(PlanificateurFamilialApp());
+  runApp(const PlanningApp());
 }
 
-class PlanificateurFamilialApp extends StatelessWidget {
+class PlanningApp extends StatelessWidget {
+  const PlanningApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Planificateur Familial',
-      home: MenuPrincipal(),
+      theme: ThemeData(
+        primarySwatch: Colors.pink,
+      ),
+      home: const MenuScreen(),
     );
   }
 }
-
