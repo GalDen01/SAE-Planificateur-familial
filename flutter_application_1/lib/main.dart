@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
-import 'src/screens/menu_principal.dart';
+import 'src/screens/home_screen.dart';
+
 void main() {
-  runApp(PlanificateurFamilialApp());
+  runApp(const MyApp());
 }
 
-class PlanificateurFamilialApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Planificateur Familial',
-      home: MenuPrincipal(),
+      title: 'Plannificateur Familial',
+      theme: ThemeData(
+        fontFamily: 'Roboto', // Par exemple, si tu as une police spécifique
+      ),
+      home: const HomeScreen(),
     );
   }
 }
-
