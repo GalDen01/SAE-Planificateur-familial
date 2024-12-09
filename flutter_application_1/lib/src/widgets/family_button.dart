@@ -4,42 +4,46 @@ class FamilyButton extends StatelessWidget {
   final String label;
   final Color backgroundColor;
   final Color textColor;
-  final VoidCallback onPressed;
-  final bool fullWidth;
+  final VoidCallback? onPressed;
+  final Widget? targetPage; // Nouvelle page à naviguer
 
   const FamilyButton({
     super.key,
     required this.label,
     required this.backgroundColor,
     required this.textColor,
-    required this.onPressed,
-    this.fullWidth = false,
+    this.onPressed,
+    this.targetPage, // Ajout du paramètre pour navigation
   });
 
   @override
   Widget build(BuildContext context) {
-    Widget button = ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-        elevation: 3,
-      ),
-      onPressed: onPressed,
-      child: Text(
-        label,
-        style: TextStyle(
-          color: textColor, 
-          fontSize: 16, 
-          fontWeight: FontWeight.bold
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          elevation: 3,
+        ),
+        onPressed: () {
+          if (targetPage != null) {
+            // Naviguer vers la page spécifiée
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => targetPage!),
+            );
+          } else if (onPressed != null) {
+            // Action par défaut
+            onPressed!();
+          }
+        },
+        child: Text(
+          label,
+          style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
     );
-
-    if (fullWidth) {
-      return SizedBox(width: double.infinity, child: button);
-    } else {
-      return button;
-    }
   }
 }
