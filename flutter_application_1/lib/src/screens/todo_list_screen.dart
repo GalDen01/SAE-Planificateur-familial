@@ -5,7 +5,7 @@ class ToDoList extends StatefulWidget {
   final String familyName; // Paramètre pour le nom de la famille
 
   // Le constructeur attend un nom de famille en paramètre
-  const ToDoList({Key? key, required this.familyName}) : super(key: key);
+  const ToDoList({super.key, required this.familyName});
 
   @override
   _ToDoListState createState() => _ToDoListState();

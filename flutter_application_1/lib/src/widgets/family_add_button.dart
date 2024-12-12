@@ -21,7 +21,7 @@ class FamilyAddButton extends StatelessWidget {
           builder: (context) {
             final TextEditingController controller = TextEditingController();
             return AlertDialog(
-              title: const Text('Ajouter une famille'),
+              title: const Text('Créer une famille'),
               content: TextField(
                 controller: controller,
                 decoration: const InputDecoration(

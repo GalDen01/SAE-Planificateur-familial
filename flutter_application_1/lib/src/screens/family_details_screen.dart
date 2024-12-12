@@ -13,7 +13,6 @@ class FamilyDetailsScreen extends StatelessWidget {
     const Color backgroundColor = Color(0xFF6D6D6D);
     const Color cardColor = Color(0xFFF2C3C3);
     const Color textGrayColor = Color(0xFF6D6D6D);
-    const Color brightCardColor = Color(0xFFF0E5D6);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -40,7 +39,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: Text(
+                        child: const Text(
                           "Retour",
                           style: TextStyle(
                             color: textGrayColor,
@@ -58,7 +57,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                   Text(
                     familyName,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: cardColor,
@@ -82,7 +81,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 40),
 
                   // Liste des options
-                  FamilyButton(
+                  const FamilyButton(
                     label: "Liste de courses",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
@@ -90,7 +89,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  FamilyButton(
+                  const FamilyButton(
                     label: "Calendrier",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
@@ -98,7 +97,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  FamilyButton(
+                  const FamilyButton(
                     label: "Localisation",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
@@ -106,7 +105,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  FamilyButton(
+                  const FamilyButton(
                     label: "Messagerie",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
@@ -122,7 +121,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   // Bouton "Gérer famille" un peu différent (par exemple plus clair)
-                  FamilyButton(
+                  const FamilyButton(
                     label: "Gérer famille",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
@@ -130,7 +129,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   // Bouton "Quitter la famille"
-                  FamilyButton(
+                  const FamilyButton(
                     label: "Quitter la famille",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
