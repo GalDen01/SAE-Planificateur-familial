@@ -21,7 +21,7 @@ class FamilyAddButton extends StatelessWidget {
         backgroundColor: backgroundColor, // Couleur du bouton
         foregroundColor: textColor, // Couleur du texte du bouton
       ),
-      child: Text('Ajouter une famille'),
+      child: const Text('Ajouter une famille'),
     );
   }
 }

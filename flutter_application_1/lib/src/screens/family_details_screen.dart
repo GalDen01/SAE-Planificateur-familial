@@ -10,10 +10,10 @@ class FamilyDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Les mêmes couleurs que dans le menu principal
-    final Color backgroundColor = const Color(0xFF6D6D6D);
-    final Color cardColor = const Color(0xFFF2C3C3);
-    final Color textGrayColor = const Color(0xFF6D6D6D);
-    final Color brightCardColor = const Color(0xFFF0E5D6);
+    const Color backgroundColor = Color(0xFF6D6D6D);
+    const Color cardColor = Color(0xFFF2C3C3);
+    const Color textGrayColor = Color(0xFF6D6D6D);
+    const Color brightCardColor = Color(0xFFF0E5D6);
 
     return Scaffold(
       backgroundColor: backgroundColor,

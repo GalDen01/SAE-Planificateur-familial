@@ -48,11 +48,11 @@ class WeatherCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black26,
             blurRadius: 4,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),

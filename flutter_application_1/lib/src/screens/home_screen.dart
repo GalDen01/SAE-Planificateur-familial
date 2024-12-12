@@ -10,11 +10,11 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color backgroundColor = const Color.fromARGB(255, 104, 104, 104); // Gris foncé
-    final Color cardColor = const Color(0xFFF5D5CD);       // Rose saumon pâle
-    final Color textGrayColor = const Color(0xFF6D6D6D);   // Gris pour le texte
-    final Color brightCardColor = const Color(0xFFF0E5D6);  
-    final Color blackColor = const Color.fromARGB(255, 49, 49, 49);
+    const Color backgroundColor = Color.fromARGB(255, 104, 104, 104); // Gris foncé
+    const Color cardColor = Color(0xFFF5D5CD);       // Rose saumon pâle
+    const Color textGrayColor = Color(0xFF6D6D6D);   // Gris pour le texte
+    const Color brightCardColor = Color(0xFFF0E5D6);  
+    const Color blackColor = Color.fromARGB(255, 49, 49, 49);
     final Color salmonPink = cardColor;
 
     return Scaffold(
