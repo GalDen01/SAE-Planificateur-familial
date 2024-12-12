@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/family_provider.dart';
 import '../widgets/header_menu.dart';
-import '../screens/family_details_screen.dart';
 import '../widgets/weather_card.dart';
 import '../widgets/family_button.dart';
 import '../widgets/family_add_button.dart';
+import '../screens/family_details_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -13,9 +15,10 @@ class HomeScreen extends StatelessWidget {
     const Color backgroundColor = Color.fromARGB(255, 104, 104, 104); // Gris foncé
     const Color cardColor = Color(0xFFF5D5CD);       // Rose saumon pâle
     const Color textGrayColor = Color(0xFF6D6D6D);   // Gris pour le texte
-    const Color brightCardColor = Color(0xFFF0E5D6);  
+    const Color brightCardColor = Color(0xFFF0E5D6);
     const Color blackColor = Color.fromARGB(255, 49, 49, 49);
-    final Color salmonPink = cardColor;
+
+    final families = context.watch<FamilyProvider>().families;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -25,16 +28,16 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Titre "Menu principal" plus grand et légèrement remonté
-              HeaderMenu(
+              // Titre "Menu principal"
+              const HeaderMenu(
                 title: "Menu principal",
                 textColor: brightCardColor,
-                fontSize: 32, // Taille du texte
+                fontSize: 32,
               ),
-              const SizedBox(height: 30), // Espacement après le titre
+              const SizedBox(height: 30),
 
-              // WeatherCard affichée en colonne
-              WeatherCard(
+              // WeatherCard
+              const WeatherCard(
                 backgroundColor: cardColor,
                 cityName: "Limoges",
                 temperature: "12°C",
@@ -45,24 +48,24 @@ class HomeScreen extends StatelessWidget {
                 textColor: blackColor,
               ),
 
-              const SizedBox(height: 50), // Espacement après la WeatherCard
+              const SizedBox(height: 50),
 
-              // Boutons familles
-              FamilyButton(
-            label: "Famille #3",
-            backgroundColor: cardColor,
-            textColor: textGrayColor,
-            targetPage: const FamilyDetailsScreen(familyName: "Famille #3"),
-          ),
+              // Liste des boutons familles avec espacement
+              ...families
+                  .map((family) => Column(
+                        children: [
+                          FamilyButton(
+                            label: family.name,
+                            backgroundColor: cardColor,
+                            textColor: textGrayColor,
+                            targetPage: FamilyDetailsScreen(familyName: family.name),
+                          ),
+                          const SizedBox(height: 20), // Espacement entre chaque famille
+                        ],
+                      ))
+                  .toList(),
 
-              const SizedBox(height: 20), // Espacement entre les boutons
-              FamilyButton(
-              label: "Famille #4",
-              backgroundColor: cardColor,
-              textColor: textGrayColor,
-              targetPage: const FamilyDetailsScreen(familyName: "Famille #4"),
-            ),
-              const SizedBox(height: 20),
+              // Bouton pour ajouter une famille
               FamilyAddButton(
                 backgroundColor: cardColor,
                 textColor: textGrayColor,
@@ -71,18 +74,16 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      // Icône de profil (en haut à droite)
-      
+      // Icône de profil en haut à droite
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-      
       floatingActionButton: Padding(
-      padding: const EdgeInsets.only(top: 10.0), // Ajout du décalage
-      child: FloatingActionButton(
-        backgroundColor: brightCardColor,
-        onPressed: () {
-          // Action du bouton profil
-        },
-        child: const Icon(Icons.account_circle, color: Colors.black87),
+        padding: const EdgeInsets.only(top: 10.0),
+        child: FloatingActionButton(
+          backgroundColor: brightCardColor,
+          onPressed: () {
+            // Action du bouton profil
+          },
+          child: const Icon(Icons.account_circle, color: Colors.black87),
         ),
       ),
     );
