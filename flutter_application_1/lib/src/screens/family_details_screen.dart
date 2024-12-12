@@ -1,3 +1,5 @@
+import 'package:Planificateur_Familial/src/screens/todo_list_screen.dart';
+import 'package:Planificateur_Familial/src/widgets/family_button.dart';
 import 'package:flutter/material.dart';
 
 class FamilyDetailsScreen extends StatelessWidget {
@@ -11,6 +13,7 @@ class FamilyDetailsScreen extends StatelessWidget {
     final Color backgroundColor = const Color(0xFF6D6D6D);
     final Color cardColor = const Color(0xFFF2C3C3);
     final Color textGrayColor = const Color(0xFF6D6D6D);
+    final Color brightCardColor = const Color(0xFFF0E5D6);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -79,24 +82,60 @@ class FamilyDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 40),
 
                   // Liste des options
-                  _buildFamilyOptionButton("Listes de courses", cardColor, textGrayColor),
-                  const SizedBox(height: 20),
-                  _buildFamilyOptionButton("Calendrier", cardColor, textGrayColor),
-                  const SizedBox(height: 20),
-                  _buildFamilyOptionButton("Localisation", cardColor, textGrayColor),
-                  const SizedBox(height: 20),
-                  _buildFamilyOptionButton("Messagerie", cardColor, textGrayColor),
-                  const SizedBox(height: 20),
-                  _buildFamilyOptionButton("Tâches à faire", cardColor, textGrayColor),
-                  const SizedBox(height: 20),
+                  FamilyButton(
+                    label: "Liste de courses",
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                    //targetPage: const ListeCourses(familyName: "Famille #3"),
+                  ),
+                  const SizedBox(height: 10),
 
+                  FamilyButton(
+                    label: "Calendrier",
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                    //targetPage: const Calendrier(familyName: "Famille #3"),
+                  ),
+                  const SizedBox(height: 10),
+
+                  FamilyButton(
+                    label: "Localisation",
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                    //targetPage: const Localisation(familyName: "Famille #3"),
+                  ),
+                  const SizedBox(height: 10),
+
+                  FamilyButton(
+                    label: "Messagerie",
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                    //targetPage: const Messagerie(familyName: "Famille #3"),
+                  ),
+                  const SizedBox(height: 10),
+
+                  FamilyButton(
+                    label: "Tâches a faire",
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                    targetPage: ToDoList(familyName: familyName),
+                  ),
+                  const SizedBox(height: 10),
                   // Bouton "Gérer famille" un peu différent (par exemple plus clair)
-                  _buildFamilyOptionButton("Gérer famille", const Color(0xFFF3EBDD), textGrayColor),
-                  const SizedBox(height: 20),
-
+                  FamilyButton(
+                    label: "Gérer famille",
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                    //targetPage: const GererFamille(familyName: "Famille #3"),
+                  ),
+                  const SizedBox(height: 10),
                   // Bouton "Quitter la famille"
-                  _buildFamilyOptionButton("Quitter la famille", cardColor, textGrayColor),
-                  const SizedBox(height: 40),
+                  FamilyButton(
+                    label: "Quitter la famille",
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                    //targetPage: const QuitterFamille(familyName: "Famille #3"),
+                  ),
                 ],
               ),
             ),
@@ -122,24 +161,5 @@ class FamilyDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFamilyOptionButton(String label, Color backgroundColor, Color textColor) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          elevation: 3,
-        ),
-        onPressed: () {
-          // Action spécifique à chaque option
-        },
-        child: Text(
-          label,
-          style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
+  
 }
