@@ -3,6 +3,7 @@ import '../widgets/header_menu.dart';
 import '../screens/family_details_screen.dart';
 import '../widgets/weather_card.dart';
 import '../widgets/family_button.dart';
+import '../widgets/family_add_button.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -61,7 +62,11 @@ class HomeScreen extends StatelessWidget {
               textColor: textGrayColor,
               targetPage: const FamilyDetailsScreen(familyName: "Famille #4"),
             ),
-
+              const SizedBox(height: 20),
+              FamilyAddButton(
+                backgroundColor: cardColor,
+                textColor: textGrayColor,
+              ),
             ],
           ),
         ),
