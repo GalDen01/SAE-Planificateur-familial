@@ -2,6 +2,7 @@ import 'package:Planificateur_Familial/src/screens/grocery_lists_screen.dart';
 import 'package:Planificateur_Familial/src/screens/todo_list_screen.dart';
 import 'package:Planificateur_Familial/src/widgets/family_button.dart';
 import 'package:flutter/material.dart';
+import '../screens/profil_screen.dart';
 
 class FamilyDetailsScreen extends StatelessWidget {
   final String familyName; // ex: "Famille #3"
@@ -9,13 +10,12 @@ class FamilyDetailsScreen extends StatelessWidget {
   final Color textColor;
   final Color brightCardColor;
 
-  const FamilyDetailsScreen({
-    super.key,
-    required this.familyName,
-    required this.backgroundColor,
-    required this.textColor,
-    required this.brightCardColor
-  });
+  const FamilyDetailsScreen(
+      {super.key,
+      required this.familyName,
+      required this.backgroundColor,
+      required this.textColor,
+      required this.brightCardColor});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,8 @@ class FamilyDetailsScreen extends StatelessWidget {
           children: [
             // Contenu principal
             SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -43,8 +44,10 @@ class FamilyDetailsScreen extends StatelessWidget {
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: cardColor,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 10.0),
                         ),
                         onPressed: () {
                           Navigator.pop(context);
@@ -82,7 +85,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                     backgroundColor: cardColor,
                     child: ClipOval(
                       child: Image.asset(
-                        'assets/images/famille.png', // Chemin vers une image de famille 
+                        'assets/images/famille.png', // Chemin vers une image de famille
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -127,11 +130,16 @@ class FamilyDetailsScreen extends StatelessWidget {
                     label: "Tâches a faire",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
-                    targetPage: ToDoList(familyName: familyName,backgroundColor:cardColor,textColor:textColor,backgroundGrayColor:backgroundColor,brightCardColor:brightCardColor),
+                    targetPage: ToDoList(
+                        familyName: familyName,
+                        backgroundColor: cardColor,
+                        textColor: textColor,
+                        backgroundGrayColor: backgroundColor,
+                        brightCardColor: brightCardColor),
                   ),
                   const SizedBox(height: 10),
                   // Bouton "Gérer famille" un peu différent (par exemple plus clair)
-              /*    const FamilyButton(
+                  /*    const FamilyButton(
                     label: "Gérer famille",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
@@ -158,9 +166,16 @@ class FamilyDetailsScreen extends StatelessWidget {
                 child: FloatingActionButton(
                   backgroundColor: cardColor,
                   onPressed: () {
-                    // Action du bouton profil
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ProfileScreen(backgroundColor: backgroundColor),
+                      ),
+                    );
                   },
-                  child: const Icon(Icons.account_circle, color: Colors.black87),
+                  child:
+                      const Icon(Icons.account_circle, color: Colors.black87),
                 ),
               ),
             ),
@@ -169,6 +184,4 @@ class FamilyDetailsScreen extends StatelessWidget {
       ),
     );
   }
-
-  
 }
