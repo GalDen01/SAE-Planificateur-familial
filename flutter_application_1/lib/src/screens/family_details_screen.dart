@@ -5,8 +5,17 @@ import 'package:flutter/material.dart';
 
 class FamilyDetailsScreen extends StatelessWidget {
   final String familyName; // ex: "Famille #3"
+  final Color backgroundColor;
+  final Color textColor;
+  final Color brightCardColor;
 
-  const FamilyDetailsScreen({super.key, required this.familyName});
+  const FamilyDetailsScreen({
+    super.key,
+    required this.familyName,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.brightCardColor
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +49,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: Text(
+                        child: const Text(
                           "Retour",
                           style: TextStyle(
                             color: textGrayColor,
@@ -58,7 +67,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                   Text(
                     familyName,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: cardColor,
@@ -84,13 +93,15 @@ class FamilyDetailsScreen extends StatelessWidget {
                   // Liste des options
                   FamilyButton(
                     label: "Listes de courses",
+                  const FamilyButton(
+                    label: "Liste de courses",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
                     targetPage: GroceryLists(familyName: familyName),
                   ),
                   const SizedBox(height: 10),
-
-                  FamilyButton(
+                  /*
+                  const FamilyButton(
                     label: "Calendrier",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
@@ -98,7 +109,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  FamilyButton(
+                  const FamilyButton(
                     label: "Localisation",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
@@ -106,23 +117,23 @@ class FamilyDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  FamilyButton(
+                  const FamilyButton(
                     label: "Messagerie",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
                     //targetPage: const Messagerie(familyName: "Famille #3"),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 10),*/
 
                   FamilyButton(
                     label: "Tâches a faire",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
-                    targetPage: ToDoList(familyName: familyName),
+                    targetPage: ToDoList(familyName: familyName,backgroundColor:cardColor,textColor:textColor,backgroundGrayColor:backgroundColor,brightCardColor:brightCardColor),
                   ),
                   const SizedBox(height: 10),
                   // Bouton "Gérer famille" un peu différent (par exemple plus clair)
-                  FamilyButton(
+              /*    const FamilyButton(
                     label: "Gérer famille",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
@@ -130,12 +141,12 @@ class FamilyDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   // Bouton "Quitter la famille"
-                  FamilyButton(
+                  const FamilyButton(
                     label: "Quitter la famille",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
                     //targetPage: const QuitterFamille(familyName: "Famille #3"),
-                  ),
+                  ),*/
                 ],
               ),
             ),

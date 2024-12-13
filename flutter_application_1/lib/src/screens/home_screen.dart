@@ -58,15 +58,15 @@ class HomeScreen extends StatelessWidget {
                             label: family.name,
                             backgroundColor: cardColor,
                             textColor: textGrayColor,
-                            targetPage: FamilyDetailsScreen(familyName: family.name),
+                            targetPage: FamilyDetailsScreen(familyName: family.name,backgroundColor:cardColor,textColor:textGrayColor,brightCardColor:brightCardColor),
                           ),
                           const SizedBox(height: 20), // Espacement entre chaque famille
                         ],
                       ))
-                  .toList(),
+                  ,
 
               // Bouton pour ajouter une famille
-              FamilyAddButton(
+              const FamilyAddButton(
                 backgroundColor: cardColor,
                 textColor: textGrayColor,
               ),

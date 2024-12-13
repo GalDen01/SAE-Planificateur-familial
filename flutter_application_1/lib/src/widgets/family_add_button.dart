@@ -21,17 +21,23 @@ class FamilyAddButton extends StatelessWidget {
           builder: (context) {
             final TextEditingController controller = TextEditingController();
             return AlertDialog(
-              title: const Text('Ajouter une famille'),
+              backgroundColor: backgroundColor,
+              title: Text('Créer une famille',style: TextStyle(color: textColor)),
               content: TextField(
                 controller: controller,
-                decoration: const InputDecoration(
+                decoration:  InputDecoration(
                   hintText: 'Nom de la famille',
+                  hintStyle: TextStyle(color: textColor),
                 ),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Annuler'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: textColor, // Change la couleur du texte
+                    backgroundColor: backgroundColor, // Change la couleur de fond du bouton
+                  ),
+                  child: Text('Annuler', style: TextStyle(color: textColor)),
                 ),
                 TextButton(
                   onPressed: () {
@@ -41,7 +47,11 @@ class FamilyAddButton extends StatelessWidget {
                       Navigator.pop(context);
                     }
                   },
-                  child: const Text('Ajouter'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: textColor, // Change la couleur du texte
+                    backgroundColor: backgroundColor, // Change la couleur de fond du bouton
+                  ),
+                  child: Text('Ajouter', style: TextStyle(color: textColor)),
                 ),
               ],
             );
@@ -50,9 +60,9 @@ class FamilyAddButton extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor, // Couleur du bouton
-        foregroundColor: textColor,      // Couleur du texte du bouton
+        foregroundColor: textColor, // Couleur du texte du bouton
       ),
-      child: const Text('Ajouter une famille'),
+      child: Text('Ajouter une famille', style: TextStyle(color: textColor)),
     );
   }
 }
