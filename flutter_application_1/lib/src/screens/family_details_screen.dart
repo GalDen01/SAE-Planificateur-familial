@@ -93,8 +93,6 @@ class FamilyDetailsScreen extends StatelessWidget {
                   // Liste des options
                   FamilyButton(
                     label: "Listes de courses",
-                  const FamilyButton(
-                    label: "Liste de courses",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
                     targetPage: GroceryLists(familyName: familyName),
