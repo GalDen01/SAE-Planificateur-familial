@@ -58,7 +58,7 @@ class HomeScreen extends StatelessWidget {
                             label: family.name,
                             backgroundColor: cardColor,
                             textColor: textGrayColor,
-                            targetPage: FamilyDetailsScreen(familyName: family.name),
+                            targetPage: FamilyDetailsScreen(familyName: family.name,backgroundColor:cardColor,textColor:textGrayColor,brightCardColor:brightCardColor),
                           ),
                           const SizedBox(height: 20), // Espacement entre chaque famille
                         ],

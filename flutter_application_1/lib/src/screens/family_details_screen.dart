@@ -4,8 +4,17 @@ import 'package:flutter/material.dart';
 
 class FamilyDetailsScreen extends StatelessWidget {
   final String familyName; // ex: "Famille #3"
+  final Color backgroundColor;
+  final Color textColor;
+  final Color brightCardColor;
 
-  const FamilyDetailsScreen({super.key, required this.familyName});
+  const FamilyDetailsScreen({
+    super.key,
+    required this.familyName,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.brightCardColor
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +126,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                     label: "Tâches a faire",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
-                    targetPage: ToDoList(familyName: familyName),
+                    targetPage: ToDoList(familyName: familyName,backgroundColor:cardColor,textColor:textColor,backgroundGrayColor:backgroundColor,brightCardColor:brightCardColor),
                   ),
                   const SizedBox(height: 10),
                   // Bouton "Gérer famille" un peu différent (par exemple plus clair)

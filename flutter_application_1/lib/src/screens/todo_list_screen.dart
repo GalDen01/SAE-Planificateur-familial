@@ -2,8 +2,19 @@ import 'package:flutter/material.dart';
 
 class ToDoList extends StatefulWidget {
   final String familyName;
+  final Color backgroundColor;
+  final Color textColor;
+  final Color backgroundGrayColor;
+  final Color brightCardColor;
 
-  const ToDoList({super.key, required this.familyName});
+  const ToDoList({
+    super.key, 
+    required this.familyName,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.backgroundGrayColor,
+    required this.brightCardColor
+  });
 
   @override
   _ToDoListState createState() => _ToDoListState();
@@ -44,8 +55,10 @@ class _ToDoListState extends State<ToDoList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: widget.backgroundGrayColor,
       appBar: AppBar(
-        title: Text('To-Do List de ${widget.familyName}'),
+        backgroundColor: widget.backgroundGrayColor,
+        title: Text('To-Do List de ${widget.familyName}',style: TextStyle(color: widget.brightCardColor)),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_forever),
@@ -71,7 +84,11 @@ class _ToDoListState extends State<ToDoList> {
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: addTask,
-              child: const Text('Ajouter'),
+              style: TextButton.styleFrom(
+                    foregroundColor: widget.textColor, // Change la couleur du texte
+                    backgroundColor: widget.backgroundColor, // Change la couleur de fond du bouton
+                  ),
+              child: Text('Ajouter',style: TextStyle(color: widget.textColor)),
             ),
             const SizedBox(height: 20),
             Expanded(
