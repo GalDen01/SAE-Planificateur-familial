@@ -4,11 +4,12 @@ import 'package:Planificateur_Familial/src/widgets/family_button.dart';
 import 'package:Planificateur_Familial/src/widgets/list_add_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../screens/profil_screen.dart';
 
 class GroceryLists extends StatelessWidget {
   final String familyName; // ex: "Famille #3"
 
-  const GroceryLists ({super.key, required this.familyName});
+  const GroceryLists({super.key, required this.familyName});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,8 @@ class GroceryLists extends StatelessWidget {
           children: [
             // Contenu principal
             SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -38,8 +40,10 @@ class GroceryLists extends StatelessWidget {
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: cardColor,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 10.0),
                         ),
                         onPressed: () {
                           Navigator.pop(context);
@@ -77,7 +81,7 @@ class GroceryLists extends StatelessWidget {
                     backgroundColor: cardColor,
                     child: ClipOval(
                       child: Image.asset(
-                        'assets/images/famille.png', // Chemin vers une image de famille 
+                        'assets/images/famille.png', // Chemin vers une image de famille
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -99,13 +103,11 @@ class GroceryLists extends StatelessWidget {
                       ))
                   .toList(),
 
-              // Bouton pour ajouter une famille
-              ListAddButton(
-                backgroundColor: cardColor,
-                textColor: textGrayColor,
-              ),
-
-                 
+                  // Bouton pour ajouter une famille
+                  ListAddButton(
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                  ),
                 ],
               ),
             ),
@@ -119,9 +121,16 @@ class GroceryLists extends StatelessWidget {
                 child: FloatingActionButton(
                   backgroundColor: cardColor,
                   onPressed: () {
-                    // Action du bouton profil
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ProfileScreen(backgroundColor: backgroundColor),
+                      ),
+                    );
                   },
-                  child: const Icon(Icons.account_circle, color: Colors.black87),
+                  child:
+                      const Icon(Icons.account_circle, color: Colors.black87),
                 ),
               ),
             ),
@@ -130,6 +139,4 @@ class GroceryLists extends StatelessWidget {
       ),
     );
   }
-
-  
 }
