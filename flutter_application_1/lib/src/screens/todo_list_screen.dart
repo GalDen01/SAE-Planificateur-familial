@@ -7,14 +7,13 @@ class ToDoList extends StatefulWidget {
   final Color backgroundGrayColor;
   final Color brightCardColor;
 
-  const ToDoList({
-    super.key, 
-    required this.familyName,
-    required this.backgroundColor,
-    required this.textColor,
-    required this.backgroundGrayColor,
-    required this.brightCardColor
-  });
+  const ToDoList(
+      {super.key,
+      required this.familyName,
+      required this.backgroundColor,
+      required this.textColor,
+      required this.backgroundGrayColor,
+      required this.brightCardColor});
 
   @override
   _ToDoListState createState() => _ToDoListState();
@@ -58,7 +57,8 @@ class _ToDoListState extends State<ToDoList> {
       backgroundColor: widget.backgroundGrayColor,
       appBar: AppBar(
         backgroundColor: widget.backgroundGrayColor,
-        title: Text('To-Do List de ${widget.familyName}',style: TextStyle(color: widget.brightCardColor)),
+        title: Text('To-Do List de ${widget.familyName}',
+            style: TextStyle(color: widget.brightCardColor)),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_forever),
@@ -76,19 +76,22 @@ class _ToDoListState extends State<ToDoList> {
           children: [
             TextField(
               controller: taskController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Nouvelle tâche',
-                border: OutlineInputBorder(),
+                filled: true, // Active la couleur de fond
+                fillColor: widget.backgroundColor, // Définir la couleur de fond
               ),
+              style: TextStyle(color: widget.textColor),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: addTask,
               style: TextButton.styleFrom(
-                    foregroundColor: widget.textColor, // Change la couleur du texte
-                    backgroundColor: widget.backgroundColor, // Change la couleur de fond du bouton
-                  ),
-              child: Text('Ajouter',style: TextStyle(color: widget.textColor)),
+                foregroundColor: widget.textColor, // Change la couleur du texte
+                backgroundColor: widget
+                    .backgroundColor, // Change la couleur de fond du bouton
+              ),
+              child: Text('Ajouter', style: TextStyle(color: widget.textColor)),
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -97,39 +100,46 @@ class _ToDoListState extends State<ToDoList> {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            // Checkbox pour marquer la tâche comme terminée
-                            Checkbox(
-                              value: tasks[index]['isChecked'],
-                              onChanged: (bool? value) {
-                                toggleTaskCompletion(index);
-                              },
-                            ),
-                            // Titre de la tâche avec une barre de traversée si elle est terminée
-                            Text(
-                              tasks[index]['title'],
-                              style: TextStyle(
-                                fontSize: 18,
-                                decoration: tasks[index]['isChecked']
-                                    ? TextDecoration.lineThrough
-                                    : null,
+                    child: Container(
+                      // Appliquer un fond différent selon si la tâche est cochée ou non
+                      color: tasks[index]['isChecked']
+                          ? Colors.grey[300] // Fond gris pour les tâches terminées
+                          : widget.backgroundColor, // Utilise la couleur définie pour les tâches non terminées
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              // Checkbox pour marquer la tâche comme terminée
+                              Checkbox(
+                                value: tasks[index]['isChecked'],
+                                onChanged: (bool? value) {
+                                  toggleTaskCompletion(index);
+                                },
                               ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5.0),
-                          child: IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () => deleteTask(index),
+                              // Titre de la tâche avec une barre de traversée si elle est terminée
+                              Text(
+                                tasks[index]['title'],
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  decoration: tasks[index]['isChecked']
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                  color: widget.textColor, // Couleur du texte
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5.0),
+                            child: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => deleteTask(index),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
