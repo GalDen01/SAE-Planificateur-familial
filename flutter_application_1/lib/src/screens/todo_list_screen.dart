@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
-
 class ToDoList extends StatefulWidget {
-  final String familyName; // Paramètre pour le nom de la famille
+  final String familyName;
 
-  // Le constructeur attend un nom de famille en paramètre
   const ToDoList({super.key, required this.familyName});
 
   @override
@@ -12,26 +10,34 @@ class ToDoList extends StatefulWidget {
 }
 
 class _ToDoListState extends State<ToDoList> {
-  // Liste de tâches
-  List<String> tasks = [];
-
-  // Contrôleur pour saisir une nouvelle tâche
+  // Liste des tâches avec un état de case à cocher (isChecked)
+  List<Map<String, dynamic>> tasks = [];
   final TextEditingController taskController = TextEditingController();
 
-  // Fonction pour ajouter une tâche
+  // Ajouter une nouvelle tâche
   void addTask() {
     if (taskController.text.isNotEmpty) {
       setState(() {
-        tasks.add(taskController.text);
-        taskController.clear();  // Vide le champ de texte après ajout
+        tasks.add({
+          'title': taskController.text,
+          'isChecked': false,
+        });
+        taskController.clear();
       });
     }
   }
 
-  // Fonction pour supprimer une tâche
+  // Supprimer une tâche
   void deleteTask(int index) {
     setState(() {
       tasks.removeAt(index);
+    });
+  }
+
+  // Modifier l'état de la tâche (cocher ou décocher)
+  void toggleTaskCompletion(int index) {
+    setState(() {
+      tasks[index]['isChecked'] = !tasks[index]['isChecked'];
     });
   }
 
@@ -39,13 +45,13 @@ class _ToDoListState extends State<ToDoList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('To-Do List de ${widget.familyName}'), // Utilisation du nom de famille dans le titre
+        title: Text('To-Do List de ${widget.familyName}'),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_forever),
             onPressed: () {
               setState(() {
-                tasks.clear();  // Effacer toutes les tâches
+                tasks.clear();
               });
             },
           ),
@@ -55,7 +61,6 @@ class _ToDoListState extends State<ToDoList> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Champ de texte pour ajouter une tâche
             TextField(
               controller: taskController,
               decoration: const InputDecoration(
@@ -69,16 +74,45 @@ class _ToDoListState extends State<ToDoList> {
               child: const Text('Ajouter'),
             ),
             const SizedBox(height: 20),
-            // Liste des tâches
             Expanded(
               child: ListView.builder(
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(tasks[index]),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => deleteTask(index),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            // Checkbox pour marquer la tâche comme terminée
+                            Checkbox(
+                              value: tasks[index]['isChecked'],
+                              onChanged: (bool? value) {
+                                toggleTaskCompletion(index);
+                              },
+                            ),
+                            // Titre de la tâche avec une barre de traversée si elle est terminée
+                            Text(
+                              tasks[index]['title'],
+                              style: TextStyle(
+                                fontSize: 18,
+                                decoration: tasks[index]['isChecked']
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5.0),
+                          child: IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () => deleteTask(index),
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 },

@@ -88,7 +88,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                     //targetPage: const ListeCourses(familyName: "Famille #3"),
                   ),
                   const SizedBox(height: 10),
-
+                  /*
                   const FamilyButton(
                     label: "Calendrier",
                     backgroundColor: cardColor,
@@ -111,7 +111,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                     textColor: textGrayColor,
                     //targetPage: const Messagerie(familyName: "Famille #3"),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 10),*/
 
                   FamilyButton(
                     label: "Tâches a faire",
@@ -121,7 +121,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   // Bouton "Gérer famille" un peu différent (par exemple plus clair)
-                  const FamilyButton(
+              /*    const FamilyButton(
                     label: "Gérer famille",
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
@@ -134,7 +134,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
                     //targetPage: const QuitterFamille(familyName: "Famille #3"),
-                  ),
+                  ),*/
                 ],
               ),
             ),
