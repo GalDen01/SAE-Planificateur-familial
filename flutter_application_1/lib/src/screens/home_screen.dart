@@ -6,15 +6,17 @@ import '../widgets/weather_card.dart';
 import '../widgets/family_button.dart';
 import '../widgets/family_add_button.dart';
 import '../screens/family_details_screen.dart';
+import '../screens/profil_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const Color backgroundColor = Color.fromARGB(255, 104, 104, 104); // Gris foncé
-    const Color cardColor = Color(0xFFF5D5CD);       // Rose saumon pâle
-    const Color textGrayColor = Color(0xFF6D6D6D);   // Gris pour le texte
+    const Color backgroundColor =
+        Color.fromARGB(255, 104, 104, 104); // Gris foncé
+    const Color cardColor = Color(0xFFF5D5CD); // Rose saumon pâle
+    const Color textGrayColor = Color(0xFF6D6D6D); // Gris pour le texte
     const Color brightCardColor = Color(0xFFF0E5D6);
     const Color blackColor = Color.fromARGB(255, 49, 49, 49);
 
@@ -51,19 +53,22 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 50),
 
               // Liste des boutons familles avec espacement
-              ...families
-                  .map((family) => Column(
-                        children: [
-                          FamilyButton(
-                            label: family.name,
+              ...families.map((family) => Column(
+                    children: [
+                      FamilyButton(
+                        label: family.name,
+                        backgroundColor: cardColor,
+                        textColor: textGrayColor,
+                        targetPage: FamilyDetailsScreen(
+                            familyName: family.name,
                             backgroundColor: cardColor,
                             textColor: textGrayColor,
-                            targetPage: FamilyDetailsScreen(familyName: family.name,backgroundColor:cardColor,textColor:textGrayColor,brightCardColor:brightCardColor),
-                          ),
-                          const SizedBox(height: 20), // Espacement entre chaque famille
-                        ],
-                      ))
-                  ,
+                            brightCardColor: brightCardColor),
+                      ),
+                      const SizedBox(
+                          height: 20), // Espacement entre chaque famille
+                    ],
+                  )),
 
               // Bouton pour ajouter une famille
               const FamilyAddButton(
@@ -82,6 +87,12 @@ class HomeScreen extends StatelessWidget {
           backgroundColor: brightCardColor,
           onPressed: () {
             // Action du bouton profil
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfileScreen(backgroundColor:backgroundColor),
+              ),
+            );
           },
           child: const Icon(Icons.account_circle, color: Colors.black87),
         ),
