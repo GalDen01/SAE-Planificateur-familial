@@ -92,7 +92,7 @@ class GroceryLists extends StatelessWidget {
                             label: list.name,
                             backgroundColor: cardColor,
                             textColor: textGrayColor,
-                            targetPage: GroceryList(listname: list.name),
+                            targetPage: GroceryList(listName: list.name),
                           ),
                           const SizedBox(height: 20), // Espacement entre chaque famille
                         ],
