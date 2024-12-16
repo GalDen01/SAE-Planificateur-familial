@@ -2,7 +2,8 @@ import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart'
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ListAddButton extends StatelessWidget {
+class ListAddButton
+ extends StatelessWidget {
   final Color backgroundColor;
   final Color textColor;
 
@@ -21,17 +22,23 @@ class ListAddButton extends StatelessWidget {
           builder: (context) {
             final TextEditingController controller = TextEditingController();
             return AlertDialog(
-              title: const Text('Ajouter une liste de course'),
+              backgroundColor: backgroundColor,
+              title: Text('Créer une liste',style: TextStyle(color: textColor)),
               content: TextField(
                 controller: controller,
-                decoration: const InputDecoration(
+                decoration:  InputDecoration(
                   hintText: 'Nom de la liste',
+                  hintStyle: TextStyle(color: textColor),
                 ),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Annuler'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: textColor, // Change la couleur du texte
+                    backgroundColor: backgroundColor, // Change la couleur de fond du bouton
+                  ),
+                  child: Text('Annuler', style: TextStyle(color: textColor)),
                 ),
                 TextButton(
                   onPressed: () {
@@ -41,7 +48,11 @@ class ListAddButton extends StatelessWidget {
                       Navigator.pop(context);
                     }
                   },
-                  child: const Text('Ajouter'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: textColor, // Change la couleur du texte
+                    backgroundColor: backgroundColor, // Change la couleur de fond du bouton
+                  ),
+                  child: Text('Ajouter', style: TextStyle(color: textColor)),
                 ),
               ],
             );
@@ -50,9 +61,9 @@ class ListAddButton extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor, // Couleur du bouton
-        foregroundColor: textColor,      // Couleur du texte du bouton
+        foregroundColor: textColor, // Couleur du texte du bouton
       ),
-      child: const Text('Ajouter une liste'),
+      child: Text('Ajouter une liste', style: TextStyle(color: textColor)),
     );
   }
 }
