@@ -1,22 +1,15 @@
-import 'package:Planificateur_Familial/src/screens/grocery_lists_screen.dart';
+import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
 import 'package:Planificateur_Familial/src/screens/todo_list_screen.dart';
-import 'package:Planificateur_Familial/src/screens/todo_lists_screen.dart';
 import 'package:Planificateur_Familial/src/widgets/family_button.dart';
+import 'package:Planificateur_Familial/src/widgets/todo_list_add_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../screens/profil_screen.dart';
 
-class FamilyDetailsScreen extends StatelessWidget {
+class TodoLists extends StatelessWidget {
   final String familyName; // ex: "Famille #3"
-  final Color backgroundColor;
-  final Color textColor;
-  final Color brightCardColor;
 
-  const FamilyDetailsScreen(
-      {super.key,
-      required this.familyName,
-      required this.backgroundColor,
-      required this.textColor,
-      required this.brightCardColor});
+  const TodoLists({super.key, required this.familyName});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +17,8 @@ class FamilyDetailsScreen extends StatelessWidget {
     const Color backgroundColor = Color(0xFF6D6D6D);
     const Color cardColor = Color(0xFFF2C3C3);
     const Color textGrayColor = Color(0xFF6D6D6D);
+
+    final lists = context.watch<TodoListProvider>().lists;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -53,7 +48,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: const Text(
+                        child: Text(
                           "Retour",
                           style: TextStyle(
                             color: textGrayColor,
@@ -69,9 +64,9 @@ class FamilyDetailsScreen extends StatelessWidget {
 
                   // Nom de la famille et image
                   Text(
-                    familyName,
+                    "To-do listes de ${familyName}",
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: cardColor,
@@ -94,63 +89,25 @@ class FamilyDetailsScreen extends StatelessWidget {
 
                   const SizedBox(height: 40),
 
-                  // Liste des options
-                  FamilyButton(
-                    label: "Listes de courses",
-                    backgroundColor: cardColor,
-                    textColor: textGrayColor,
-                    targetPage: GroceryLists(familyName: familyName),
-                  ),
-                  const SizedBox(height: 10),
-                  /*
-                  const FamilyButton(
-                    label: "Calendrier",
-                    backgroundColor: cardColor,
-                    textColor: textGrayColor,
-                    //targetPage: const Calendrier(familyName: "Famille #3"),
-                  ),
-                  const SizedBox(height: 10),
+                  ...lists
+                  .map((list) => Column(
+                        children: [
+                          FamilyButton(
+                            label: list.name,
+                            backgroundColor: cardColor,
+                            textColor: textGrayColor,
+                            targetPage: ToDoList(listName: list.name),
+                          ),
+                          const SizedBox(height: 20), // Espacement entre chaque famille
+                        ],
+                      ))
+                  .toList(),
 
-                  const FamilyButton(
-                    label: "Localisation",
+                  // Bouton pour ajouter une famille
+                  TodoListAddButton(
                     backgroundColor: cardColor,
                     textColor: textGrayColor,
-                    //targetPage: const Localisation(familyName: "Famille #3"),
                   ),
-                  const SizedBox(height: 10),
-
-                  const FamilyButton(
-                    label: "Messagerie",
-                    backgroundColor: cardColor,
-                    textColor: textGrayColor,
-                    //targetPage: const Messagerie(familyName: "Famille #3"),
-                  ),
-                  const SizedBox(height: 10),*/
-
-                  FamilyButton(
-                    label: "Tâches a faire",
-                    backgroundColor: cardColor,
-                    textColor: textGrayColor,
-                    targetPage: TodoLists(
-                        familyName: familyName,
-                        ),
-                  ),
-                  const SizedBox(height: 10),
-                  // Bouton "Gérer famille" un peu différent (par exemple plus clair)
-                  /*    const FamilyButton(
-                    label: "Gérer famille",
-                    backgroundColor: cardColor,
-                    textColor: textGrayColor,
-                    //targetPage: const GererFamille(familyName: "Famille #3"),
-                  ),
-                  const SizedBox(height: 10),
-                  // Bouton "Quitter la famille"
-                  const FamilyButton(
-                    label: "Quitter la famille",
-                    backgroundColor: cardColor,
-                    textColor: textGrayColor,
-                    //targetPage: const QuitterFamille(familyName: "Famille #3"),
-                  ),*/
                 ],
               ),
             ),

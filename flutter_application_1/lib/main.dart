@@ -1,4 +1,6 @@
+import 'package:Planificateur_Familial/src/models/todo_list.dart';
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
+import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'src/screens/home_screen.dart';
@@ -10,6 +12,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => FamilyProvider()),
         ChangeNotifierProvider(create: (_) => ListProvider()),
+        ChangeNotifierProvider(create: (_) => TodoListProvider()),
       ],
       child: const MyApp(),
     ),

@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ToDoList extends StatefulWidget {
-  final String familyName;
-  final Color backgroundColor;
-  final Color textColor;
-  final Color backgroundGrayColor;
-  final Color brightCardColor;
+  final String listName;
 
   const ToDoList(
       {super.key,
-      required this.familyName,
-      required this.backgroundColor,
-      required this.textColor,
-      required this.backgroundGrayColor,
-      required this.brightCardColor});
+      required this.listName,
+      });
 
   @override
   _ToDoListState createState() => _ToDoListState();
@@ -38,6 +31,7 @@ class _ToDoListState extends State<ToDoList> {
   }
 
   // Supprimer une tâche
+
   void deleteTask(int index) {
     setState(() {
       tasks.removeAt(index);
@@ -53,12 +47,16 @@ class _ToDoListState extends State<ToDoList> {
 
   @override
   Widget build(BuildContext context) {
+    const Color backgroundGrayColor = Color(0xFF6D6D6D);
+    const Color textColor = Color(0xFF6D6D6D);
+    const Color backgroundColor = Color(0xFFF2C3C3);
+    const Color brightCardColor = Color(0xFFF0E5D6);
     return Scaffold(
-      backgroundColor: widget.backgroundGrayColor,
+      backgroundColor: backgroundGrayColor,
       appBar: AppBar(
-        backgroundColor: widget.backgroundGrayColor,
-        title: Text('To-Do List de ${widget.familyName}',
-            style: TextStyle(color: widget.brightCardColor)),
+        backgroundColor: backgroundGrayColor,
+        title: Text(widget.listName,
+            style: TextStyle(color: brightCardColor)),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_forever),
@@ -79,19 +77,18 @@ class _ToDoListState extends State<ToDoList> {
               decoration: InputDecoration(
                 labelText: 'Nouvelle tâche',
                 filled: true, // Active la couleur de fond
-                fillColor: widget.backgroundColor, // Définir la couleur de fond
+                fillColor: backgroundColor, // Définir la couleur de fond
               ),
-              style: TextStyle(color: widget.textColor),
+              style: TextStyle(color: textColor),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: addTask,
               style: TextButton.styleFrom(
-                foregroundColor: widget.textColor, // Change la couleur du texte
-                backgroundColor: widget
-                    .backgroundColor, // Change la couleur de fond du bouton
+                foregroundColor: textColor, // Change la couleur du texte
+                backgroundColor: backgroundColor, // Change la couleur de fond du bouton
               ),
-              child: Text('Ajouter', style: TextStyle(color: widget.textColor)),
+              child: Text('Ajouter', style: TextStyle(color: textColor)),
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -104,7 +101,7 @@ class _ToDoListState extends State<ToDoList> {
                       // Appliquer un fond différent selon si la tâche est cochée ou non
                       color: tasks[index]['isChecked']
                           ? Colors.grey[300] // Fond gris pour les tâches terminées
-                          : widget.backgroundColor, // Utilise la couleur définie pour les tâches non terminées
+                          : backgroundColor, // Utilise la couleur définie pour les tâches non terminées
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -126,7 +123,7 @@ class _ToDoListState extends State<ToDoList> {
                                   decoration: tasks[index]['isChecked']
                                       ? TextDecoration.lineThrough
                                       : null,
-                                  color: widget.textColor, // Couleur du texte
+                                  color:textColor, // Couleur du texte
                                 ),
                               ),
                             ],

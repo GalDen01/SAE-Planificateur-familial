@@ -16,16 +16,16 @@ class GroceryList extends StatefulWidget {
 class _GroceryListState extends State<GroceryList> {
   // Liste des tâches avec un état de case à cocher (isChecked)
   List<Map<String, dynamic>> articles = [];
-  final TextEditingController taskController = TextEditingController();
+  final TextEditingController articleController = TextEditingController();
 
   // Ajouter une nouvelle tâche
   void addTask() {
-    if (taskController.text.isNotEmpty) {
+    if (articleController.text.isNotEmpty) {
       setState(() {
         articles.add({
-          'title': taskController.text,
+          'title': articleController.text,
         });
-        taskController.clear();
+        articleController.clear();
       });
     }
   }
@@ -48,7 +48,7 @@ class _GroceryListState extends State<GroceryList> {
       backgroundColor: backgroundColor,
       appBar: AppBar(
         backgroundColor: backgroundColor,
-        title: Text('To-Do List de ${widget.listName}',
+        title: Text(widget.listName,
             style: TextStyle(color: brightCardColor)),
         actions: [
           IconButton(
@@ -66,7 +66,7 @@ class _GroceryListState extends State<GroceryList> {
         child: Column(
           children: [
             TextField(
-              controller: taskController,
+              controller: articleController,
               decoration: InputDecoration(
                 labelText: 'Nouvel article',
                 filled: true, // Active la couleur de fond
