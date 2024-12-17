@@ -30,6 +30,39 @@ class _GroceryListState extends State<GroceryList> {
     }
   }
 
+  void confirmDeleteAllTasks() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Confirmer la suppression'),
+        content: const Text('Êtes-vous sûr de vouloir supprimer toutes les tâches ?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Fermer la boîte de dialogue
+            },
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () {
+              deleteAllTasks(); // Supprimer toutes les tâches
+              Navigator.of(context).pop(); // Fermer la boîte de dialogue
+            },
+            child: const Text('Supprimer'),
+          ),
+        ],
+      );
+    },
+  );
+}
+void deleteAllTasks() {
+  setState(() {
+    articles.clear();
+  });
+}
+
+
   // Supprimer une tâche
   void deleteTask(int index) {
     setState(() {
@@ -53,12 +86,9 @@ class _GroceryListState extends State<GroceryList> {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_forever),
-            onPressed: () {
-              setState(() {
-                articles.clear();
-              });
-            },
+            onPressed:confirmDeleteAllTasks
           ),
+
         ],
       ),
       body: Padding(

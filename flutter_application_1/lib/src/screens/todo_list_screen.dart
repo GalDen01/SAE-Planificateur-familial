@@ -29,7 +29,37 @@ class _ToDoListState extends State<ToDoList> {
       });
     }
   }
-
+void confirmDeleteAllTasks() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Confirmer la suppression'),
+        content: const Text('Êtes-vous sûr de vouloir supprimer toutes les tâches ?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Fermer la boîte de dialogue
+            },
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () {
+              deleteAllTasks(); // Supprimer toutes les tâches
+              Navigator.of(context).pop(); // Fermer la boîte de dialogue
+            },
+            child: const Text('Supprimer'),
+          ),
+        ],
+      );
+    },
+  );
+}
+void deleteAllTasks() {
+  setState(() {
+    tasks.clear();
+  });
+}
   // Supprimer une tâche
 
   void deleteTask(int index) {
@@ -60,11 +90,7 @@ class _ToDoListState extends State<ToDoList> {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_forever),
-            onPressed: () {
-              setState(() {
-                tasks.clear();
-              });
-            },
+            onPressed:confirmDeleteAllTasks
           ),
         ],
       ),
