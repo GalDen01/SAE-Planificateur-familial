@@ -2,74 +2,93 @@ import 'package:flutter/material.dart';
 
 class GroceryList extends StatefulWidget {
   final String listName;
-  
 
-  const GroceryList(
-      {super.key,
-      required this.listName,
-      });
+  const GroceryList({
+    super.key,
+    required this.listName,
+  });
 
   @override
   _GroceryListState createState() => _GroceryListState();
 }
 
 class _GroceryListState extends State<GroceryList> {
-  // Liste des tâches avec un état de case à cocher (isChecked)
+  // Liste des articles avec un compteur pour chaque article
   List<Map<String, dynamic>> articles = [];
   final TextEditingController articleController = TextEditingController();
+  bool isError = false; // Indique si le champ est vide
 
-  // Ajouter une nouvelle tâche
+  // Ajouter un article ou incrémenter son compteur
   void addTask() {
     if (articleController.text.isNotEmpty) {
       setState(() {
-        articles.add({
-          'title': articleController.text,
-        });
+        isError = false; // Réinitialiser l'état d'erreur si le champ est rempli
+
+        // Chercher si l'article existe déjà dans la liste
+        int existingIndex = articles.indexWhere(
+            (article) => article['title'].toLowerCase() == articleController.text.toLowerCase());
+        
+        if (existingIndex != -1) {
+          // Incrémenter le compteur si l'article existe
+          articles[existingIndex]['count'] += 1;
+        } else {
+          // Ajouter un nouvel article avec un compteur initial à 1
+          articles.add({
+            'title': articleController.text,
+            'count': 1,
+          });
+        }
         articleController.clear();
+      });
+    } else {
+      // Si le champ est vide, activer l'état d'erreur
+      setState(() {
+        isError = true;
       });
     }
   }
 
+  // Afficher une boîte de dialogue pour confirmer la suppression de tous les articles
   void confirmDeleteAllTasks() {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Confirmer la suppression'),
-        content: const Text('Êtes-vous sûr de vouloir supprimer toutes les tâches ?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Fermer la boîte de dialogue
-            },
-            child: const Text('Annuler'),
-          ),
-          TextButton(
-            onPressed: () {
-              deleteAllTasks(); // Supprimer toutes les tâches
-              Navigator.of(context).pop(); // Fermer la boîte de dialogue
-            },
-            child: const Text('Supprimer'),
-          ),
-        ],
-      );
-    },
-  );
-}
-void deleteAllTasks() {
-  setState(() {
-    articles.clear();
-  });
-}
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmer la suppression'),
+          content: const Text('Êtes-vous sûr de vouloir supprimer tous les articles ?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fermer la boîte de dialogue
+              },
+              child: const Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                deleteAllTasks(); // Supprimer tous les articles
+                Navigator.of(context).pop(); // Fermer la boîte de dialogue
+              },
+              child: const Text('Supprimer'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
+  // Supprimer tous les articles
+  void deleteAllTasks() {
+    setState(() {
+      articles.clear();
+    });
+  }
 
-  // Supprimer une tâche
+  // Supprimer un article
   void deleteTask(int index) {
     setState(() {
       articles.removeAt(index);
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -77,18 +96,17 @@ void deleteAllTasks() {
     const Color textColor = Color(0xFF6D6D6D);
     const Color cardColor = Color(0xFFF2C3C3);
     const Color brightCardColor = Color(0xFFF0E5D6);
+
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
         backgroundColor: backgroundColor,
-        title: Text(widget.listName,
-            style: TextStyle(color: brightCardColor)),
+        title: Text(widget.listName, style: TextStyle(color: brightCardColor)),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_forever),
-            onPressed:confirmDeleteAllTasks
+            onPressed: confirmDeleteAllTasks,
           ),
-
         ],
       ),
       body: Padding(
@@ -98,9 +116,17 @@ void deleteAllTasks() {
             TextField(
               controller: articleController,
               decoration: InputDecoration(
-                labelText: 'Nouvel article',
+                labelText: isError ? 'Le champ ne peut pas être vide' : 'Nouvel article',
+                labelStyle: TextStyle(
+                  color: isError ? Colors.red : textColor, // Texte du label en rouge si erreur
+                ),
                 filled: true, // Active la couleur de fond
-                fillColor: cardColor, // Définir la couleur de fond
+                fillColor: isError ? Colors.red.shade100 : cardColor, // Fond rouge si erreur
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: isError ? Colors.red : Colors.transparent,
+                  ),
+                ),
               ),
               style: TextStyle(color: textColor),
             ),
@@ -121,20 +147,18 @@ void deleteAllTasks() {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Container(
-                      // Appliquer un fond différent selon si la tâche est cochée ou non
                       color: cardColor, // Utilise la couleur définie pour les tâches non terminées
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Row(                          
+                          Row(
                             children: [
-                              // Titre de la tâche avec une barre de traversée si elle est terminée
                               Text(
-                                articles[index]['title'],
+                                "${articles[index]['title']} (x${articles[index]['count']})",
                                 style: const TextStyle(
-                                  fontSize: 18,                                  
-                                  color:textColor, // Couleur du texte
+                                  fontSize: 18,
+                                  color: textColor, // Couleur du texte
                                 ),
                               ),
                             ],
