@@ -96,18 +96,38 @@ class _GroceryListState extends State<GroceryList> {
     const Color textColor = Color(0xFF6D6D6D);
     const Color cardColor = Color(0xFFF2C3C3);
     const Color brightCardColor = Color(0xFFF0E5D6);
+    const Color textGrayColor = Color(0xFF6D6D6D);
 
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
         backgroundColor: backgroundColor,
-        title: Text(widget.listName, style: TextStyle(color: brightCardColor)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_forever),
-            onPressed: confirmDeleteAllTasks,
-          ),
-        ],
+        automaticallyImplyLeading: false, // Désactive la flèche de retour par défaut
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Bouton Retour
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: cardColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              ),
+              onPressed: () {
+                Navigator.pop(context); // Action du bouton Retour (retourner à l'écran précédent)
+              },
+              child: Text(
+                "Retour",
+                style: TextStyle(
+                  color: textGrayColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

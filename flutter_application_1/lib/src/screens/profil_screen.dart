@@ -7,13 +7,42 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const Color cardColor = Color(0xFFF2C3C3); // Définir une couleur pour le bouton Retour
+    const Color textGrayColor = Color(0xFF6D6D6D); // Définir une couleur pour le texte du bouton
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profil"),
-        backgroundColor: backgroundColor, // Couleur de la barre d'applications
+        backgroundColor: backgroundColor,
+        automaticallyImplyLeading: false, // Désactiver la flèche de retour par défaut
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Bouton Retour
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: cardColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              ),
+              onPressed: () {
+                Navigator.pop(context); // Action du bouton Retour (retourner à l'écran précédent)
+              },
+              child: Text(
+                "Retour",
+                style: TextStyle(
+                  color: textGrayColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            // L'icône de profil sera gérée en FloatingActionButton, donc rien ici.
+          ],
+        ),
       ),
       body: Container(
-        color: backgroundColor, // Couleur de fond du corps
+        color: backgroundColor,
         child: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
