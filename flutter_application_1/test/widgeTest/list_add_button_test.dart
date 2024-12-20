@@ -12,8 +12,8 @@ void main() {
         child: MaterialApp(
           home: Scaffold(
             body: ListAddButton(
-              backgroundColor: Colors.blue,
-              textColor: Colors.white,
+              cardColor: Colors.blue,
+              grayColor: Colors.white,
             ),
           ),
         ),
@@ -41,8 +41,8 @@ void main() {
         child: MaterialApp(
           home: Scaffold(
             body: ListAddButton(
-              backgroundColor: Colors.blue,
-              textColor: Colors.white,
+              cardColor: Colors.blue,
+              grayColor: Colors.white,
             ),
           ),
         ),
@@ -74,8 +74,8 @@ void main() {
         child: MaterialApp(
           home: Scaffold(
             body: ListAddButton(
-              backgroundColor: Colors.blue,
-              textColor: Colors.white,
+              cardColor: Colors.blue,
+              grayColor: Colors.white,
             ),
           ),
         ),

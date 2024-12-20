@@ -4,13 +4,13 @@ import 'package:provider/provider.dart';
 
 class ListAddButton
  extends StatelessWidget {
-  final Color backgroundColor;
-  final Color textColor;
+  final Color cardColor;
+  final Color grayColor;
 
   const ListAddButton({
     super.key,
-    required this.backgroundColor,
-    required this.textColor,
+    required this.cardColor,
+    required this.grayColor,
   });
 
   @override
@@ -22,23 +22,23 @@ class ListAddButton
           builder: (context) {
             final TextEditingController controller = TextEditingController();
             return AlertDialog(
-              backgroundColor: backgroundColor,
-              title: Text('Créer une liste',style: TextStyle(color: textColor)),
+              backgroundColor: cardColor,
+              title: Text('Créer une liste',style: TextStyle(color: grayColor)),
               content: TextField(
                 controller: controller,
                 decoration:  InputDecoration(
                   hintText: 'Nom de la liste',
-                  hintStyle: TextStyle(color: textColor),
+                  hintStyle: TextStyle(color: grayColor),
                 ),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   style: TextButton.styleFrom(
-                    foregroundColor: textColor, // Change la couleur du texte
-                    backgroundColor: backgroundColor, // Change la couleur de fond du bouton
+                    foregroundColor: grayColor, // Change la couleur du texte
+                    backgroundColor: cardColor, // Change la couleur de fond du bouton
                   ),
-                  child: Text('Annuler', style: TextStyle(color: textColor)),
+                  child: Text('Annuler', style: TextStyle(color: grayColor)),
                 ),
                 TextButton(
                   onPressed: () {
@@ -49,10 +49,10 @@ class ListAddButton
                     }
                   },
                   style: TextButton.styleFrom(
-                    foregroundColor: textColor, // Change la couleur du texte
-                    backgroundColor: backgroundColor, // Change la couleur de fond du bouton
+                    foregroundColor: grayColor, // Change la couleur du texte
+                    backgroundColor: cardColor, // Change la couleur de fond du bouton
                   ),
-                  child: Text('Ajouter', style: TextStyle(color: textColor)),
+                  child: Text('Ajouter', style: TextStyle(color: grayColor)),
                 ),
               ],
             );
@@ -60,10 +60,10 @@ class ListAddButton
         );
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor, // Couleur du bouton
-        foregroundColor: textColor, // Couleur du texte du bouton
+        backgroundColor: cardColor, // Couleur du bouton
+        foregroundColor: grayColor, // Couleur du texte du bouton
       ),
-      child: Text('Ajouter une liste', style: TextStyle(color: textColor)),
+      child: Text('Ajouter une liste', style: TextStyle(color: grayColor)),
     );
   }
 }

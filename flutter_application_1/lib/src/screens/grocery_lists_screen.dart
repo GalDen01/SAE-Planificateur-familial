@@ -8,20 +8,24 @@ import '../screens/profil_screen.dart';
 
 class GroceryLists extends StatelessWidget {
   final String familyName; // ex: "Famille #3"
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
 
-  const GroceryLists({super.key, required this.familyName});
+  const GroceryLists(
+      {super.key,
+      required this.familyName,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
 
   @override
   Widget build(BuildContext context) {
-    // Les mêmes couleurs que dans le menu principal
-    const Color backgroundColor = Color(0xFF6D6D6D);
-    const Color cardColor = Color(0xFFF2C3C3);
-    const Color textGrayColor = Color(0xFF6D6D6D);
-
+    
     final lists = context.watch<ListProvider>().lists;
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: grayColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -51,7 +55,7 @@ class GroceryLists extends StatelessWidget {
                         child: Text(
                           "Retour",
                           style: TextStyle(
-                            color: textGrayColor,
+                            color: grayColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -95,8 +99,11 @@ class GroceryLists extends StatelessWidget {
                           FamilyButton(
                             label: list.name,
                             backgroundColor: cardColor,
-                            textColor: textGrayColor,
-                            targetPage: GroceryList(listName: list.name),
+                            textColor: grayColor,
+                            targetPage: GroceryList(listName: list.name,
+                                                  cardColor: cardColor, 
+                                                  grayColor: grayColor, 
+                                                  brightCardColor: brightCardColor),
                           ),
                           const SizedBox(height: 20), // Espacement entre chaque famille
                         ],
@@ -105,8 +112,8 @@ class GroceryLists extends StatelessWidget {
 
                   // Bouton pour ajouter une famille
                   ListAddButton(
-                    backgroundColor: cardColor,
-                    textColor: textGrayColor,
+                    cardColor: cardColor,
+                    grayColor: grayColor,
                   ),
                 ],
               ),
@@ -125,7 +132,10 @@ class GroceryLists extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            ProfileScreen(backgroundColor: backgroundColor),
+                            ProfileScreen(
+                                    grayColor:grayColor,
+                                    cardColor: cardColor,
+                                    brightCardColor: brightCardColor),
                       ),
                     );
                   },

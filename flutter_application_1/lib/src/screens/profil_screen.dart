@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
-  final Color backgroundColor;
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
 
-  const ProfileScreen({Key? key, required this.backgroundColor}) : super(key: key);
+  const ProfileScreen(
+      {super.key,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
 
   @override
   Widget build(BuildContext context) {
-    const Color cardColor = Color(0xFFF2C3C3); // Définir une couleur pour le bouton Retour
-    const Color textGrayColor = Color(0xFF6D6D6D); // Définir une couleur pour le texte du bouton
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: backgroundColor,
+        backgroundColor: grayColor,
         automaticallyImplyLeading: false, // Désactiver la flèche de retour par défaut
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -32,7 +36,7 @@ class ProfileScreen extends StatelessWidget {
               child: Text(
                 "Retour",
                 style: TextStyle(
-                  color: textGrayColor,
+                  color: grayColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -42,7 +46,7 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
       body: Container(
-        color: backgroundColor,
+        color: grayColor,
         child: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

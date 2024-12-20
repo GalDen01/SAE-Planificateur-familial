@@ -1,18 +1,34 @@
 import 'package:flutter/material.dart';
 
 class ToDoList extends StatefulWidget {
-  final String listName;
+  final String listName; // ex: "Famille #3"
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
 
-  const ToDoList({
-    super.key,
-    required this.listName,
-  });
+  const ToDoList(
+      {super.key,
+      required this.listName,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
 
   @override
-  _ToDoListState createState() => _ToDoListState();
+  _ToDoListState createState() => _ToDoListState(listName: listName, cardColor: cardColor, grayColor: grayColor, brightCardColor: brightCardColor);
 }
 
 class _ToDoListState extends State<ToDoList> {
+  final String listName; // ex: "Famille #3"
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
+
+  _ToDoListState(
+      {
+      required this.listName,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
   // Liste des tâches avec un état de case à cocher (isChecked)
   List<Map<String, dynamic>> tasks = [];
   final TextEditingController taskController = TextEditingController();
@@ -91,17 +107,11 @@ class _ToDoListState extends State<ToDoList> {
 
   @override
   Widget build(BuildContext context) {
-    const Color backgroundGrayColor = Color(0xFF6D6D6D);
-    const Color textColor = Color(0xFF6D6D6D);
-    const Color backgroundColor = Color(0xFFF2C3C3);
-    const Color brightCardColor = Color(0xFFF0E5D6);
-    const Color cardColor = Color(0xFFF2C3C3);
-    const Color textGrayColor = Color(0xFF6D6D6D);
 
     return Scaffold(
-      backgroundColor: backgroundGrayColor,
+      backgroundColor: grayColor,
       appBar: AppBar(
-        backgroundColor: backgroundGrayColor,
+        backgroundColor: grayColor,
         automaticallyImplyLeading: false, // Désactive la flèche de retour par défaut
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -121,7 +131,7 @@ class _ToDoListState extends State<ToDoList> {
               child: Text(
                 "Retour",
                 style: TextStyle(
-                  color: textGrayColor,
+                  color: grayColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -139,19 +149,19 @@ class _ToDoListState extends State<ToDoList> {
                 labelText: labelText, // Texte dynamique
                 labelStyle: TextStyle(color: labelTextColor), // Couleur dynamique
                 filled: true,
-                fillColor: backgroundColor,
+                fillColor: grayColor,
                 border: const OutlineInputBorder(),
               ),
-              style: TextStyle(color: textColor),
+              style: TextStyle(color: grayColor),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: addTask,
               style: TextButton.styleFrom(
-                foregroundColor: textColor,
+                foregroundColor: grayColor,
                 backgroundColor: const Color(0xFFF2C3C3),
               ),
-              child: Text('Ajouter', style: TextStyle(color: textColor)),
+              child: Text('Ajouter', style: TextStyle(color: grayColor)),
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -186,7 +196,7 @@ class _ToDoListState extends State<ToDoList> {
                                   decoration: tasks[index]['isChecked']
                                       ? TextDecoration.lineThrough
                                       : null,
-                                  color: textColor,
+                                  color: grayColor,
                                 ),
                               ),
                             ],

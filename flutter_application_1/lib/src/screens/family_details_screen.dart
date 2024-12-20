@@ -1,5 +1,4 @@
 import 'package:Planificateur_Familial/src/screens/grocery_lists_screen.dart';
-import 'package:Planificateur_Familial/src/screens/todo_list_screen.dart';
 import 'package:Planificateur_Familial/src/screens/todo_lists_screen.dart';
 import 'package:Planificateur_Familial/src/widgets/family_button.dart';
 import 'package:flutter/material.dart';
@@ -7,26 +6,22 @@ import '../screens/profil_screen.dart';
 
 class FamilyDetailsScreen extends StatelessWidget {
   final String familyName; // ex: "Famille #3"
-  final Color backgroundColor;
-  final Color textColor;
+  final Color cardColor;
+  final Color grayColor;
   final Color brightCardColor;
 
   const FamilyDetailsScreen(
       {super.key,
       required this.familyName,
-      required this.backgroundColor,
-      required this.textColor,
+      required this.cardColor,
+      required this.grayColor,
       required this.brightCardColor});
 
   @override
   Widget build(BuildContext context) {
-    // Les mêmes couleurs que dans le menu principal
-    const Color backgroundColor = Color(0xFF6D6D6D);
-    const Color cardColor = Color(0xFFF2C3C3);
-    const Color textGrayColor = Color(0xFF6D6D6D);
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: this.grayColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -53,10 +48,10 @@ class FamilyDetailsScreen extends StatelessWidget {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: const Text(
+                        child: Text(
                           "Retour",
                           style: TextStyle(
-                            color: textGrayColor,
+                            color: grayColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -71,7 +66,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                   Text(
                     familyName,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: cardColor,
@@ -98,8 +93,12 @@ class FamilyDetailsScreen extends StatelessWidget {
                   FamilyButton(
                     label: "Listes de courses",
                     backgroundColor: cardColor,
-                    textColor: textGrayColor,
-                    targetPage: GroceryLists(familyName: familyName),
+                    textColor: grayColor,
+                    targetPage: GroceryLists(
+                          familyName: familyName,
+                          grayColor: grayColor,
+                          cardColor: cardColor,
+                          brightCardColor: brightCardColor,),
                   ),
                   const SizedBox(height: 10),
                   /*
@@ -130,9 +129,12 @@ class FamilyDetailsScreen extends StatelessWidget {
                   FamilyButton(
                     label: "Tâches a faire",
                     backgroundColor: cardColor,
-                    textColor: textGrayColor,
+                    textColor: grayColor,
                     targetPage: TodoLists(
                         familyName: familyName,
+                        cardColor: cardColor,
+                        grayColor: grayColor,
+                        brightCardColor: brightCardColor,
                         ),
                   ),
                   const SizedBox(height: 10),
@@ -168,7 +170,10 @@ class FamilyDetailsScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            ProfileScreen(backgroundColor: backgroundColor),
+                            ProfileScreen(
+                              brightCardColor: brightCardColor,
+                              cardColor: cardColor,
+                              grayColor: grayColor,)
                       ),
                     );
                   },

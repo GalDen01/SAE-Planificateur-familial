@@ -13,17 +13,15 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color backgroundColor =
-        Color.fromARGB(255, 104, 104, 104); // Gris foncé
     const Color cardColor = Color(0xFFF5D5CD); // Rose saumon pâle
-    const Color textGrayColor = Color(0xFF6D6D6D); // Gris pour le texte
+    const Color grayColor = Color(0xFF6D6D6D); // Gris pour le texte
     const Color brightCardColor = Color(0xFFF0E5D6);
     const Color blackColor = Color.fromARGB(255, 49, 49, 49);
 
     final families = context.watch<FamilyProvider>().families;
 
-    return Scaffold(
-      backgroundColor: backgroundColor,
+    return Scaffold( 
+      backgroundColor: grayColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
@@ -58,11 +56,11 @@ class HomeScreen extends StatelessWidget {
                       FamilyButton(
                         label: family.name,
                         backgroundColor: cardColor,
-                        textColor: textGrayColor,
+                        textColor: grayColor,
                         targetPage: FamilyDetailsScreen(
                             familyName: family.name,
-                            backgroundColor: cardColor,
-                            textColor: textGrayColor,
+                            cardColor: cardColor,
+                            grayColor: grayColor,
                             brightCardColor: brightCardColor),
                       ),
                       const SizedBox(
@@ -73,7 +71,7 @@ class HomeScreen extends StatelessWidget {
               // Bouton pour ajouter une famille
               const FamilyAddButton(
                 backgroundColor: cardColor,
-                textColor: textGrayColor,
+                textColor: grayColor,
               ),
             ],
           ),
@@ -90,7 +88,10 @@ class HomeScreen extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProfileScreen(backgroundColor:backgroundColor),
+                builder: (context) => const ProfileScreen(
+                                    grayColor:grayColor,
+                                    cardColor: cardColor,
+                                    brightCardColor: brightCardColor),
               ),
             );
           },

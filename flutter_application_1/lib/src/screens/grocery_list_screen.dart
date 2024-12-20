@@ -1,18 +1,34 @@
 import 'package:flutter/material.dart';
 
 class GroceryList extends StatefulWidget {
-  final String listName;
+  final String listName; // ex: "Famille #3"
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
 
-  const GroceryList({
-    super.key,
-    required this.listName,
-  });
+  const GroceryList(
+      {super.key,
+      required this.listName,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
 
   @override
-  _GroceryListState createState() => _GroceryListState();
+  _GroceryListState createState() => _GroceryListState(listName: listName, cardColor: cardColor, grayColor: grayColor, brightCardColor: brightCardColor);
 }
 
 class _GroceryListState extends State<GroceryList> {
+  final String listName; // ex: "Famille #3"
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
+
+  _GroceryListState(
+      {
+      required this.listName,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
   // Liste des articles avec un compteur pour chaque article
   List<Map<String, dynamic>> articles = [];
   final TextEditingController articleController = TextEditingController();
@@ -92,16 +108,11 @@ class _GroceryListState extends State<GroceryList> {
 
   @override
   Widget build(BuildContext context) {
-    const Color backgroundColor = Color(0xFF6D6D6D);
-    const Color textColor = Color(0xFF6D6D6D);
-    const Color cardColor = Color(0xFFF2C3C3);
-    const Color brightCardColor = Color(0xFFF0E5D6);
-    const Color textGrayColor = Color(0xFF6D6D6D);
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: grayColor,
       appBar: AppBar(
-        backgroundColor: backgroundColor,
+        backgroundColor: grayColor,
         automaticallyImplyLeading: false, // Désactive la flèche de retour par défaut
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -121,7 +132,7 @@ class _GroceryListState extends State<GroceryList> {
               child: Text(
                 "Retour",
                 style: TextStyle(
-                  color: textGrayColor,
+                  color: grayColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -138,7 +149,7 @@ class _GroceryListState extends State<GroceryList> {
               decoration: InputDecoration(
                 labelText: isError ? 'Le champ ne peut pas être vide' : 'Nouvel article',
                 labelStyle: TextStyle(
-                  color: isError ? Colors.red : textColor, // Texte du label en rouge si erreur
+                  color: isError ? Colors.red : grayColor, // Texte du label en rouge si erreur
                 ),
                 filled: true, // Active la couleur de fond
                 fillColor: isError ? Colors.red.shade100 : cardColor, // Fond rouge si erreur
@@ -148,16 +159,16 @@ class _GroceryListState extends State<GroceryList> {
                   ),
                 ),
               ),
-              style: TextStyle(color: textColor),
+              style: TextStyle(color: grayColor),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: addTask,
               style: TextButton.styleFrom(
-                foregroundColor: textColor, // Change la couleur du texte
+                foregroundColor: grayColor, // Change la couleur du texte
                 backgroundColor: cardColor, // Change la couleur de fond du bouton
               ),
-              child: Text('Ajouter', style: TextStyle(color: textColor)),
+              child: Text('Ajouter', style: TextStyle(color: grayColor)),
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -176,9 +187,9 @@ class _GroceryListState extends State<GroceryList> {
                             children: [
                               Text(
                                 "${articles[index]['title']} (x${articles[index]['count']})",
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 18,
-                                  color: textColor, // Couleur du texte
+                                  color: grayColor, // Couleur du texte
                                 ),
                               ),
                             ],
