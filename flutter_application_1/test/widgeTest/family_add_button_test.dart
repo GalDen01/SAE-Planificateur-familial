@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import '../../lib/src/providers/family_provider.dart';
-import '../../lib/src/widgets/family_add_button.dart';
+import '../../lib/src/ui/widgets/buttons/family_add_button.dart';
 
 void main() {
   testWidgets('FamilyAddButton shows dialog on button press', (WidgetTester tester) async {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../../lib/src/widgets/header_menu.dart';
+import '../../lib/src/ui/widgets/header_menu.dart';
 
 void main() {
   testWidgets('HeaderMenu displays the correct title', (WidgetTester tester) async {

@@ -13,7 +13,7 @@ class FamilyButton extends StatelessWidget {
     required this.backgroundColor,
     required this.textColor,
     this.onPressed,
-    this.targetPage, // Ajout du paramètre pour navigation
+    this.targetPage,
   });
 
   @override
@@ -29,13 +29,11 @@ class FamilyButton extends StatelessWidget {
         ),
         onPressed: () {
           if (targetPage != null) {
-            // Naviguer vers la page spécifiée
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => targetPage!),
             );
           } else if (onPressed != null) {
-            // Action par défaut
             onPressed!();
           }
         },

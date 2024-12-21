@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../models/grocery_list.dart';
+import 'package:Planificateur_Familial/src/models/grocery_list.dart';
 
-class ListProvider with ChangeNotifier {
-  final List<GroceryList> _lists = [];
+class ListProvider extends ChangeNotifier {
+  final List<GroceryListModel> _lists = [];
 
-  List<GroceryList> get lists => List.unmodifiable(_lists);
+  List<GroceryListModel> get lists => _lists;
 
   void addList(String name) {
-    _lists.add(GroceryList(name: name));
+    _lists.add(GroceryListModel(name: name));
     notifyListeners();
   }
 }

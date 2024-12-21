@@ -6,8 +6,8 @@ class HeaderMenu extends StatelessWidget {
   final double fontSize;
 
   const HeaderMenu({
-    super.key, 
-    required this.title, 
+    super.key,
+    required this.title,
     required this.textColor,
     this.fontSize = 24,
   });

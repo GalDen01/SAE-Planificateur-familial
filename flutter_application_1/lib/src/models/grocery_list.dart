@@ -1,5 +1,5 @@
-class GroceryList{
+class GroceryListModel {
   final String name;
 
-  GroceryList({required this.name});
+  GroceryListModel({required this.name});
 }

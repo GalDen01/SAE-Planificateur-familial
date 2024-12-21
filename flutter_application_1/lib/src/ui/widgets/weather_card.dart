@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:Planificateur_Familial/src/config/constants.dart';
 
 class WeatherCard extends StatelessWidget {
   final Color backgroundColor;
@@ -26,14 +27,14 @@ class WeatherCard extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: textColor,size: 32.0),
+        Icon(icon, color: textColor, size: 32.0),
         const SizedBox(width: 8),
         Text(
           label,
           style: TextStyle(
-            fontSize: 24, 
-            color: textColor, 
-            fontWeight: FontWeight.bold
+            fontSize: 24,
+            color: textColor,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ],
@@ -43,7 +44,7 @@ class WeatherCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity, 
+      width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
       decoration: BoxDecoration(
         color: backgroundColor,

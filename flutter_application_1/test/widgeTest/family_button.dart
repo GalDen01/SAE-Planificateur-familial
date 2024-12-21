@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../../lib/src/widgets/family_button.dart';
+import '../../lib/src/ui/widgets/buttons/family_button.dart';
 
 void main() {
   testWidgets('FamilyButton displays label', (WidgetTester tester) async {

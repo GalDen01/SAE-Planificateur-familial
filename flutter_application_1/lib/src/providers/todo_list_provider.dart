@@ -1,13 +1,13 @@
-import 'package:Planificateur_Familial/src/models/todo_list.dart';
 import 'package:flutter/material.dart';
+import 'package:Planificateur_Familial/src/models/todo_list.dart';
 
-class TodoListProvider with ChangeNotifier {
-  final List<TodoList> _lists = [];
+class TodoListProvider extends ChangeNotifier {
+  final List<TodoListModel> _lists = [];
 
-  List<TodoList> get lists => List.unmodifiable(_lists);
+  List<TodoListModel> get lists => _lists;
 
   void addList(String name) {
-    _lists.add(TodoList(name: name));
+    _lists.add(TodoListModel(name: name));
     notifyListeners();
   }
 }

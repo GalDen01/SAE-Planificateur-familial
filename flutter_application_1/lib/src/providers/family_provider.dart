@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/family.dart';
+import 'package:Planificateur_Familial/src/models/family.dart';
 
-class FamilyProvider with ChangeNotifier {
+class FamilyProvider extends ChangeNotifier {
   final List<Family> _families = [];
 
-  List<Family> get families => List.unmodifiable(_families);
+  List<Family> get families => _families;
 
   void addFamily(String name) {
     _families.add(Family(name: name));

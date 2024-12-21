@@ -1,53 +1,49 @@
-import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
-import 'package:Planificateur_Familial/src/screens/todo_list_screen.dart';
-import 'package:Planificateur_Familial/src/widgets/family_button.dart';
-import 'package:Planificateur_Familial/src/widgets/todo_list_add_button.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../screens/profil_screen.dart';
+import 'package:Planificateur_Familial/src/ui/screens/profile/profile_screen.dart';
+import 'package:Planificateur_Familial/src/ui/screens/grocery/grocery_lists_screen.dart';
+import 'package:Planificateur_Familial/src/ui/screens/todo/todo_lists_screen.dart';
+import 'package:Planificateur_Familial/src/ui/widgets/buttons/family_button.dart';
 
-class TodoLists extends StatelessWidget {
+class FamilyDetailsScreen extends StatelessWidget {
   final String familyName;
   final Color cardColor;
   final Color grayColor;
   final Color brightCardColor;
 
-  const TodoLists(
-      {super.key,
-      required this.familyName,
-      required this.cardColor,
-      required this.grayColor,
-      required this.brightCardColor});
+  const FamilyDetailsScreen({
+    super.key,
+    required this.familyName,
+    required this.cardColor,
+    required this.grayColor,
+    required this.brightCardColor,
+  });
 
   @override
   Widget build(BuildContext context) {
-
-    final lists = context.watch<TodoListProvider>().lists;
-
     return Scaffold(
       backgroundColor: grayColor,
       body: SafeArea(
         child: Stack(
           children: [
-            // Contenu principal
             SingleChildScrollView(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Ligne du haut avec le bouton retour et le titre
+                  // Ligne du haut : bouton retour
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Bouton Retour
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: cardColor,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0)),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 20.0, vertical: 10.0),
+                            horizontal: 20.0,
+                            vertical: 10.0,
+                          ),
                         ),
                         onPressed: () {
                           Navigator.pop(context);
@@ -60,15 +56,14 @@ class TodoLists extends StatelessWidget {
                           ),
                         ),
                       ),
-                      // L'icône de profil sera gérée en FloatingActionButton, donc rien ici.
+                      // profil géré plus bas
                     ],
                   ),
-
                   const SizedBox(height: 30),
 
-                  // Nom de la famille et image
+                  // Nom de la famille
                   Text(
-                    "To-do listes de ${familyName}",
+                    familyName,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
@@ -76,47 +71,53 @@ class TodoLists extends StatelessWidget {
                       color: cardColor,
                     ),
                   ),
-
                   const SizedBox(height: 20),
 
-                  // Image de la famille (CircleAvatar)
+                  // Image (CircleAvatar)
                   CircleAvatar(
                     radius: 40.0,
                     backgroundColor: cardColor,
                     child: ClipOval(
                       child: Image.asset(
-                        'assets/images/famille.png', // Chemin vers une image de famille
+                        'assets/images/famille.png',
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 40),
 
-                  ...lists
-                  .map((list) => Column(
-                        children: [
-                          FamilyButton(
-                            label: list.name,
-                            backgroundColor: cardColor,
-                            textColor: grayColor,
-                            targetPage: ToDoList(listName: list.name, cardColor: cardColor, grayColor: grayColor, brightCardColor: brightCardColor),
-                          ),
-                          const SizedBox(height: 20), // Espacement entre chaque famille
-                        ],
-                      ))
-                  .toList(),
-
-                  // Bouton pour ajouter une famille
-                  TodoListAddButton(
-                    cardColor: cardColor,
-                    grayColor: grayColor,
+                  FamilyButton(
+                    label: "Listes de courses",
+                    backgroundColor: cardColor,
+                    textColor: grayColor,
+                    targetPage: GroceryListsScreen(
+                      familyName: familyName,
+                      cardColor: cardColor,
+                      grayColor: grayColor,
+                      brightCardColor: brightCardColor,
+                    ),
                   ),
+                  const SizedBox(height: 10),
+
+                  FamilyButton(
+                    label: "Tâches à faire",
+                    backgroundColor: cardColor,
+                    textColor: grayColor,
+                    targetPage: TodoListsScreen(
+                      familyName: familyName,
+                      cardColor: cardColor,
+                      grayColor: grayColor,
+                      brightCardColor: brightCardColor,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Tu peux ajouter ici d'autres FamilyButton selon tes besoins
                 ],
               ),
             ),
 
-            // Bouton profil en haut à droite
+            // Bouton profil
             Positioned(
               top: 0,
               right: 0,
@@ -128,16 +129,15 @@ class TodoLists extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            ProfileScreen(
-                                    grayColor:grayColor,
-                                    cardColor: cardColor,
-                                    brightCardColor: brightCardColor),
+                        builder: (context) => ProfileScreen(
+                          cardColor: cardColor,
+                          grayColor: grayColor,
+                          brightCardColor: brightCardColor,
+                        ),
                       ),
                     );
                   },
-                  child:
-                      const Icon(Icons.account_circle, color: Colors.black87),
+                  child: const Icon(Icons.account_circle, color: Colors.black87),
                 ),
               ),
             ),

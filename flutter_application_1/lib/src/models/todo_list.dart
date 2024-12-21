@@ -1,5 +1,5 @@
-class TodoList{
+class TodoListModel {
   final String name;
 
-  TodoList({required this.name});
+  TodoListModel({required this.name});
 }

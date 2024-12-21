@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
-import 'package:Planificateur_Familial/src/widgets/list_add_button.dart';
+import 'package:Planificateur_Familial/src/ui/widgets/buttons/list_add_button.dart';
 
 void main() {
   testWidgets('ListAddButton shows dialog on button press', (WidgetTester tester) async {

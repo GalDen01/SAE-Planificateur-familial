@@ -1,0 +1,1534 @@
+J'ai le projet plannificateur familial en flutter avec le code et l'arboressance suivante (prend le bien en mémoire toutes les questions que je te poserai seront dessus):
+
+lib
+- src
+  - localization
+    - app_en.arb
+  - models
+    - family.dart "class Family{
+  final String name;
+
+  Family({required this.name});
+}"
+    - grocery_list.dart "class GroceryList{
+  final String name;
+
+  GroceryList({required this.name});
+}"
+    - todo_list.dart "class TodoList{
+  final String name;
+
+  TodoList({required this.name});
+}"
+  - providers
+  - sample_feature
+  - screens
+    - family_details_screen.dart "import 'package:Planificateur_Familial/src/screens/grocery_lists_screen.dart';
+import 'package:Planificateur_Familial/src/screens/todo_lists_screen.dart';
+import 'package:Planificateur_Familial/src/widgets/family_button.dart';
+import 'package:flutter/material.dart';
+import '../screens/profil_screen.dart';
+
+class FamilyDetailsScreen extends StatelessWidget {
+  final String familyName; // ex: "Famille #3"
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
+
+  const FamilyDetailsScreen(
+      {super.key,
+      required this.familyName,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      backgroundColor: this.grayColor,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Contenu principal
+            SingleChildScrollView(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Ligne du haut avec le bouton retour et le titre
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Bouton Retour
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: cardColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 10.0),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Retour",
+                          style: TextStyle(
+                            color: grayColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      // L'icône de profil sera gérée en FloatingActionButton, donc rien ici.
+                    ],
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Nom de la famille et image
+                  Text(
+                    familyName,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: cardColor,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Image de la famille (CircleAvatar)
+                  CircleAvatar(
+                    radius: 40.0,
+                    backgroundColor: cardColor,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/famille.png', // Chemin vers une image de famille
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // Liste des options
+                  FamilyButton(
+                    label: "Listes de courses",
+                    backgroundColor: cardColor,
+                    textColor: grayColor,
+                    targetPage: GroceryLists(
+                          familyName: familyName,
+                          grayColor: grayColor,
+                          cardColor: cardColor,
+                          brightCardColor: brightCardColor,),
+                  ),
+                  const SizedBox(height: 10),
+                  /*
+                  const FamilyButton(
+                    label: "Calendrier",
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                    //targetPage: const Calendrier(familyName: "Famille #3"),
+                  ),
+                  const SizedBox(height: 10),
+
+                  const FamilyButton(
+                    label: "Localisation",
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                    //targetPage: const Localisation(familyName: "Famille #3"),
+                  ),
+                  const SizedBox(height: 10),
+
+                  const FamilyButton(
+                    label: "Messagerie",
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                    //targetPage: const Messagerie(familyName: "Famille #3"),
+                  ),
+                  const SizedBox(height: 10),*/
+
+                  FamilyButton(
+                    label: "Tâches a faire",
+                    backgroundColor: cardColor,
+                    textColor: grayColor,
+                    targetPage: TodoLists(
+                        familyName: familyName,
+                        cardColor: cardColor,
+                        grayColor: grayColor,
+                        brightCardColor: brightCardColor,
+                        ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Bouton "Gérer famille" un peu différent (par exemple plus clair)
+                  /*    const FamilyButton(
+                    label: "Gérer famille",
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                    //targetPage: const GererFamille(familyName: "Famille #3"),
+                  ),
+                  const SizedBox(height: 10),
+                  // Bouton "Quitter la famille"
+                  const FamilyButton(
+                    label: "Quitter la famille",
+                    backgroundColor: cardColor,
+                    textColor: textGrayColor,
+                    //targetPage: const QuitterFamille(familyName: "Famille #3"),
+                  ),*/
+                ],
+              ),
+            ),
+
+            // Bouton profil en haut à droite
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: FloatingActionButton(
+                  backgroundColor: cardColor,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ProfileScreen(
+                              brightCardColor: brightCardColor,
+                              cardColor: cardColor,
+                              grayColor: grayColor,)
+                      ),
+                    );
+                  },
+                  child:
+                      const Icon(Icons.account_circle, color: Colors.black87),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+"
+    - grocery_list_screen.dart "import 'package:flutter/material.dart';
+
+class GroceryList extends StatefulWidget {
+  final String listName; // ex: "Famille #3"
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
+
+  const GroceryList(
+      {super.key,
+      required this.listName,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
+
+  @override
+  _GroceryListState createState() => _GroceryListState(listName: listName, cardColor: cardColor, grayColor: grayColor, brightCardColor: brightCardColor);
+}
+
+class _GroceryListState extends State<GroceryList> {
+  final String listName; // ex: "Famille #3"
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
+
+  _GroceryListState(
+      {
+      required this.listName,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
+  // Liste des articles avec un compteur pour chaque article
+  List<Map<String, dynamic>> articles = [];
+  final TextEditingController articleController = TextEditingController();
+  bool isError = false; // Indique si le champ est vide
+
+  // Ajouter un article ou incrémenter son compteur
+  void addTask() {
+    if (articleController.text.isNotEmpty) {
+      setState(() {
+        isError = false; // Réinitialiser l'état d'erreur si le champ est rempli
+
+        // Chercher si l'article existe déjà dans la liste
+        int existingIndex = articles.indexWhere(
+            (article) => article['title'].toLowerCase() == articleController.text.toLowerCase());
+        
+        if (existingIndex != -1) {
+          // Incrémenter le compteur si l'article existe
+          articles[existingIndex]['count'] += 1;
+        } else {
+          // Ajouter un nouvel article avec un compteur initial à 1
+          articles.add({
+            'title': articleController.text,
+            'count': 1,
+          });
+        }
+        articleController.clear();
+      });
+    } else {
+      // Si le champ est vide, activer l'état d'erreur
+      setState(() {
+        isError = true;
+      });
+    }
+  }
+
+  // Afficher une boîte de dialogue pour confirmer la suppression de tous les articles
+  void confirmDeleteAllTasks() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmer la suppression'),
+          content: const Text('Êtes-vous sûr de vouloir supprimer tous les articles ?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fermer la boîte de dialogue
+              },
+              child: const Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                deleteAllTasks(); // Supprimer tous les articles
+                Navigator.of(context).pop(); // Fermer la boîte de dialogue
+              },
+              child: const Text('Supprimer'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Supprimer tous les articles
+  void deleteAllTasks() {
+    setState(() {
+      articles.clear();
+    });
+  }
+
+  // Supprimer un article
+  void deleteTask(int index) {
+    setState(() {
+      articles.removeAt(index);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      backgroundColor: grayColor,
+      appBar: AppBar(
+        backgroundColor: grayColor,
+        automaticallyImplyLeading: false, // Désactive la flèche de retour par défaut
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Bouton Retour
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: cardColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              ),
+              onPressed: () {
+                Navigator.pop(context); // Action du bouton Retour (retourner à l'écran précédent)
+              },
+              child: Text(
+                "Retour",
+                style: TextStyle(
+                  color: grayColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: articleController,
+              decoration: InputDecoration(
+                labelText: isError ? 'Le champ ne peut pas être vide' : 'Nouvel article',
+                labelStyle: TextStyle(
+                  color: isError ? Colors.red : grayColor, // Texte du label en rouge si erreur
+                ),
+                filled: true, // Active la couleur de fond
+                fillColor: isError ? Colors.red.shade100 : cardColor, // Fond rouge si erreur
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: isError ? Colors.red : Colors.transparent,
+                  ),
+                ),
+              ),
+              style: TextStyle(color: grayColor),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: addTask,
+              style: TextButton.styleFrom(
+                foregroundColor: grayColor, // Change la couleur du texte
+                backgroundColor: cardColor, // Change la couleur de fond du bouton
+              ),
+              child: Text('Ajouter', style: TextStyle(color: grayColor)),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: articles.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Container(
+                      color: cardColor, // Utilise la couleur définie pour les tâches non terminées
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "${articles[index]['title']} (x${articles[index]['count']})",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: grayColor, // Couleur du texte
+                                ),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5.0),
+                            child: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => deleteTask(index),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+"
+    - grocery_lists_screen.dart "import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
+import 'package:Planificateur_Familial/src/screens/grocery_list_screen.dart';
+import 'package:Planificateur_Familial/src/widgets/family_button.dart';
+import 'package:Planificateur_Familial/src/widgets/list_add_button.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../screens/profil_screen.dart';
+
+class GroceryLists extends StatelessWidget {
+  final String familyName; // ex: "Famille #3"
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
+
+  const GroceryLists(
+      {super.key,
+      required this.familyName,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
+
+  @override
+  Widget build(BuildContext context) {
+    
+    final lists = context.watch<ListProvider>().lists;
+
+    return Scaffold(
+      backgroundColor: grayColor,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Contenu principal
+            SingleChildScrollView(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Ligne du haut avec le bouton retour et le titre
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Bouton Retour
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: cardColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 10.0),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Retour",
+                          style: TextStyle(
+                            color: grayColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      // L'icône de profil sera gérée en FloatingActionButton, donc rien ici.
+                    ],
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Nom de la famille et image
+                  Text(
+                    "Listes de courses de ${familyName}",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: cardColor,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Image de la famille (CircleAvatar)
+                  CircleAvatar(
+                    radius: 40.0,
+                    backgroundColor: cardColor,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/famille.png', // Chemin vers une image de famille
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  ...lists
+                  .map((list) => Column(
+                        children: [
+                          FamilyButton(
+                            label: list.name,
+                            backgroundColor: cardColor,
+                            textColor: grayColor,
+                            targetPage: GroceryList(listName: list.name,
+                                                  cardColor: cardColor, 
+                                                  grayColor: grayColor, 
+                                                  brightCardColor: brightCardColor),
+                          ),
+                          const SizedBox(height: 20), // Espacement entre chaque famille
+                        ],
+                      ))
+                  .toList(),
+
+                  // Bouton pour ajouter une famille
+                  ListAddButton(
+                    cardColor: cardColor,
+                    grayColor: grayColor,
+                  ),
+                ],
+              ),
+            ),
+
+            // Bouton profil en haut à droite
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: FloatingActionButton(
+                  backgroundColor: cardColor,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ProfileScreen(
+                                    grayColor:grayColor,
+                                    cardColor: cardColor,
+                                    brightCardColor: brightCardColor),
+                      ),
+                    );
+                  },
+                  child:
+                      const Icon(Icons.account_circle, color: Colors.black87),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+"
+    - home_screen.dart "import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/family_provider.dart';
+import '../widgets/header_menu.dart';
+import '../widgets/weather_card.dart';
+import '../widgets/family_button.dart';
+import '../widgets/family_add_button.dart';
+import '../screens/family_details_screen.dart';
+import '../screens/profil_screen.dart';
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    const Color cardColor = Color(0xFFF5D5CD); // Rose saumon pâle
+    const Color grayColor = Color(0xFF6D6D6D); // Gris pour le texte
+    const Color brightCardColor = Color(0xFFF0E5D6);
+    const Color blackColor = Color.fromARGB(255, 49, 49, 49);
+
+    final families = context.watch<FamilyProvider>().families;
+
+    return Scaffold( 
+      backgroundColor: grayColor,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Titre "Menu principal"
+              const HeaderMenu(
+                title: "Menu principal",
+                textColor: brightCardColor,
+                fontSize: 32,
+              ),
+              const SizedBox(height: 30),
+
+              // WeatherCard
+              const WeatherCard(
+                backgroundColor: cardColor,
+                cityName: "Limoges",
+                temperature: "12°C",
+                weatherLabel: "Pluie",
+                weatherIcon: Icons.cloud,
+                temperatureIcon: Icons.thermostat,
+                homeIcon: Icons.home,
+                textColor: blackColor,
+              ),
+
+              const SizedBox(height: 50),
+
+              // Liste des boutons familles avec espacement
+              ...families.map((family) => Column(
+                    children: [
+                      FamilyButton(
+                        label: family.name,
+                        backgroundColor: cardColor,
+                        textColor: grayColor,
+                        targetPage: FamilyDetailsScreen(
+                            familyName: family.name,
+                            cardColor: cardColor,
+                            grayColor: grayColor,
+                            brightCardColor: brightCardColor),
+                      ),
+                      const SizedBox(
+                          height: 20), // Espacement entre chaque famille
+                    ],
+                  )),
+
+              // Bouton pour ajouter une famille
+              const FamilyAddButton(
+                backgroundColor: cardColor,
+                textColor: grayColor,
+              ),
+            ],
+          ),
+        ),
+      ),
+      // Icône de profil en haut à droite
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(top: 10.0),
+        child: FloatingActionButton(
+          backgroundColor: brightCardColor,
+          onPressed: () {
+            // Action du bouton profil
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProfileScreen(
+                                    grayColor:grayColor,
+                                    cardColor: cardColor,
+                                    brightCardColor: brightCardColor),
+              ),
+            );
+          },
+          child: const Icon(Icons.account_circle, color: Colors.black87),
+        ),
+      ),
+    );
+  }
+}
+"
+    - profil_screen.dart "import 'package:flutter/material.dart';
+
+class ProfileScreen extends StatelessWidget {
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
+
+  const ProfileScreen(
+      {super.key,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: grayColor,
+        automaticallyImplyLeading: false, // Désactiver la flèche de retour par défaut
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Bouton Retour
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: cardColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              ),
+              onPressed: () {
+                Navigator.pop(context); // Action du bouton Retour (retourner à l'écran précédent)
+              },
+              child: Text(
+                "Retour",
+                style: TextStyle(
+                  color: grayColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            // L'icône de profil sera gérée en FloatingActionButton, donc rien ici.
+          ],
+        ),
+      ),
+      body: Container(
+        color: grayColor,
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Mon Profil"),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+"
+    - todo_list_screen.dart "import 'package:flutter/material.dart';
+
+class ToDoList extends StatefulWidget {
+  final String listName; // ex: "Famille #3"
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
+
+  const ToDoList(
+      {super.key,
+      required this.listName,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
+
+  @override
+  _ToDoListState createState() => _ToDoListState(listName: listName, cardColor: cardColor, grayColor: grayColor, brightCardColor: brightCardColor);
+}
+
+class _ToDoListState extends State<ToDoList> {
+  final String listName; // ex: "Famille #3"
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
+
+  _ToDoListState(
+      {
+      required this.listName,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
+  // Liste des tâches avec un état de case à cocher (isChecked)
+  List<Map<String, dynamic>> tasks = [];
+  final TextEditingController taskController = TextEditingController();
+
+  // Texte et couleur du label du champ de texte
+  String labelText = "Nouvelle tâche";
+  Color labelTextColor = Colors.black;
+
+  // Ajouter une nouvelle tâche
+  void addTask() {
+    if (taskController.text.isNotEmpty) {
+      setState(() {
+        tasks.add({
+          'title': taskController.text,
+          'isChecked': false,
+        });
+        taskController.clear();
+        // Réinitialiser le label à l'état normal
+        labelText = "Nouvelle tâche";
+        labelTextColor = Colors.black;
+        sortTasks(); // Trier après ajout
+      });
+    } else {
+      // Si le champ est vide, mettre à jour le label pour signaler l'erreur
+      setState(() {
+        labelText = "Veuillez entrer une tâche";
+        labelTextColor = Colors.red;
+      });
+    }
+  }
+
+  void deleteAllTasks() {
+    setState(() {
+      tasks.clear();
+    });
+  }
+
+  void confirmDeleteAllTasks() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmer la suppression'),
+          content: const Text('Êtes-vous sûr de vouloir supprimer tous les articles ?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fermer la boîte de dialogue
+              },
+              child: const Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                deleteAllTasks(); // Supprimer tous les articles
+                Navigator.of(context).pop(); // Fermer la boîte de dialogue
+              },
+              child: const Text('Supprimer'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Trier les tâches par leur état (non cochées en premier)
+  void sortTasks() {
+    tasks.sort((a, b) {
+      if (a['isChecked'] && !b['isChecked']) {
+        return 1; // Les tâches cochées vont après les non cochées
+      } else if (!a['isChecked'] && b['isChecked']) {
+        return -1; // Les tâches non cochées restent avant
+      }
+      return 0; // Garder l'ordre si les deux sont identiques
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      backgroundColor: grayColor,
+      appBar: AppBar(
+        backgroundColor: grayColor,
+        automaticallyImplyLeading: false, // Désactive la flèche de retour par défaut
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Bouton Retour
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: cardColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              ),
+              onPressed: () {
+                Navigator.pop(context); // Action pour retourner à l'écran précédent
+              },
+              child: Text(
+                "Retour",
+                style: TextStyle(
+                  color: grayColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: taskController,
+              decoration: InputDecoration(
+                labelText: labelText, // Texte dynamique
+                labelStyle: TextStyle(color: labelTextColor), // Couleur dynamique
+                filled: true,
+                fillColor: grayColor,
+                border: const OutlineInputBorder(),
+              ),
+              style: TextStyle(color: grayColor),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: addTask,
+              style: TextButton.styleFrom(
+                foregroundColor: grayColor,
+                backgroundColor: const Color(0xFFF2C3C3),
+              ),
+              child: Text('Ajouter', style: TextStyle(color: grayColor)),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: tasks.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Container(
+                      color: tasks[index]['isChecked']
+                          ? Colors.grey[300]
+                          : const Color(0xFFF2C3C3),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: tasks[index]['isChecked'],
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    tasks[index]['isChecked'] = !tasks[index]['isChecked'];
+                                    sortTasks();
+                                  });
+                                },
+                              ),
+                              Text(
+                                tasks[index]['title'],
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  decoration: tasks[index]['isChecked']
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                  color: grayColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5.0),
+                            child: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                setState(() {
+                                  tasks.removeAt(index);
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+"
+    - todo_lists_screen.dart "import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
+import 'package:Planificateur_Familial/src/screens/todo_list_screen.dart';
+import 'package:Planificateur_Familial/src/widgets/family_button.dart';
+import 'package:Planificateur_Familial/src/widgets/todo_list_add_button.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../screens/profil_screen.dart';
+
+class TodoLists extends StatelessWidget {
+  final String familyName;
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
+
+  const TodoLists(
+      {super.key,
+      required this.familyName,
+      required this.cardColor,
+      required this.grayColor,
+      required this.brightCardColor});
+
+  @override
+  Widget build(BuildContext context) {
+
+    final lists = context.watch<TodoListProvider>().lists;
+
+    return Scaffold(
+      backgroundColor: grayColor,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Contenu principal
+            SingleChildScrollView(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Ligne du haut avec le bouton retour et le titre
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Bouton Retour
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: cardColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 10.0),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Retour",
+                          style: TextStyle(
+                            color: grayColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      // L'icône de profil sera gérée en FloatingActionButton, donc rien ici.
+                    ],
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Nom de la famille et image
+                  Text(
+                    "To-do listes de ${familyName}",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: cardColor,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Image de la famille (CircleAvatar)
+                  CircleAvatar(
+                    radius: 40.0,
+                    backgroundColor: cardColor,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/famille.png', // Chemin vers une image de famille
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  ...lists
+                  .map((list) => Column(
+                        children: [
+                          FamilyButton(
+                            label: list.name,
+                            backgroundColor: cardColor,
+                            textColor: grayColor,
+                            targetPage: ToDoList(listName: list.name, cardColor: cardColor, grayColor: grayColor, brightCardColor: brightCardColor),
+                          ),
+                          const SizedBox(height: 20), // Espacement entre chaque famille
+                        ],
+                      ))
+                  .toList(),
+
+                  // Bouton pour ajouter une famille
+                  TodoListAddButton(
+                    cardColor: cardColor,
+                    grayColor: grayColor,
+                  ),
+                ],
+              ),
+            ),
+
+            // Bouton profil en haut à droite
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: FloatingActionButton(
+                  backgroundColor: cardColor,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ProfileScreen(
+                                    grayColor:grayColor,
+                                    cardColor: cardColor,
+                                    brightCardColor: brightCardColor),
+                      ),
+                    );
+                  },
+                  child:
+                      const Icon(Icons.account_circle, color: Colors.black87),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+"
+  - settings
+    - settings_controller.dart ""
+    - settings_service.dart ""
+    - settings_view.dart ""
+  - widgets
+    - family_add_button.dart "import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/family_provider.dart';
+
+class FamilyAddButton extends StatelessWidget {
+  final Color backgroundColor;
+  final Color textColor;
+
+  const FamilyAddButton({
+    super.key,
+    required this.backgroundColor,
+    required this.textColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            final TextEditingController controller = TextEditingController();
+            return AlertDialog(
+              backgroundColor: backgroundColor,
+              title: Text('Créer une famille',style: TextStyle(color: textColor)),
+              content: TextField(
+                controller: controller,
+                decoration:  InputDecoration(
+                  hintText: 'Nom de la famille',
+                  hintStyle: TextStyle(color: textColor),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    foregroundColor: textColor, // Change la couleur du texte
+                    backgroundColor: backgroundColor, // Change la couleur de fond du bouton
+                  ),
+                  child: Text('Annuler', style: TextStyle(color: textColor)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    final familyName = controller.text.trim();
+                    if (familyName.isNotEmpty) {
+                      context.read<FamilyProvider>().addFamily(familyName);
+                      Navigator.pop(context);
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: textColor, // Change la couleur du texte
+                    backgroundColor: backgroundColor, // Change la couleur de fond du bouton
+                  ),
+                  child: Text('Ajouter', style: TextStyle(color: textColor)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: backgroundColor, // Couleur du bouton
+        foregroundColor: textColor, // Couleur du texte du bouton
+      ),
+      child: Text('Ajouter une famille', style: TextStyle(color: textColor)),
+    );
+  }
+}
+"
+    - family_button.dart "import 'package:flutter/material.dart';
+
+class FamilyButton extends StatelessWidget {
+  final String label;
+  final Color backgroundColor;
+  final Color textColor;
+  final VoidCallback? onPressed;
+  final Widget? targetPage; // Nouvelle page à naviguer
+
+  const FamilyButton({
+    super.key,
+    required this.label,
+    required this.backgroundColor,
+    required this.textColor,
+    this.onPressed,
+    this.targetPage, // Ajout du paramètre pour navigation
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          elevation: 3,
+        ),
+        onPressed: () {
+          if (targetPage != null) {
+            // Naviguer vers la page spécifiée
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => targetPage!),
+            );
+          } else if (onPressed != null) {
+            // Action par défaut
+            onPressed!();
+          }
+        },
+        child: Text(
+          label,
+          style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+}
+"
+    - header_menu.dart "import 'package:flutter/material.dart';
+
+class HeaderMenu extends StatelessWidget {
+  final String title;
+  final Color textColor;
+  final double fontSize;
+
+  const HeaderMenu({
+    super.key, 
+    required this.title, 
+    required this.textColor,
+    this.fontSize = 24,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.bold,
+        color: textColor,
+      ),
+    );
+  }
+}
+"
+    - list_add_button.dart "import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class ListAddButton
+ extends StatelessWidget {
+  final Color cardColor;
+  final Color grayColor;
+
+  const ListAddButton({
+    super.key,
+    required this.cardColor,
+    required this.grayColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            final TextEditingController controller = TextEditingController();
+            return AlertDialog(
+              backgroundColor: cardColor,
+              title: Text('Créer une liste',style: TextStyle(color: grayColor)),
+              content: TextField(
+                controller: controller,
+                decoration:  InputDecoration(
+                  hintText: 'Nom de la liste',
+                  hintStyle: TextStyle(color: grayColor),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    foregroundColor: grayColor, // Change la couleur du texte
+                    backgroundColor: cardColor, // Change la couleur de fond du bouton
+                  ),
+                  child: Text('Annuler', style: TextStyle(color: grayColor)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    final listname = controller.text.trim();
+                    if (listname.isNotEmpty) {
+                      context.read<ListProvider>().addList(listname);
+                      Navigator.pop(context);
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: grayColor, // Change la couleur du texte
+                    backgroundColor: cardColor, // Change la couleur de fond du bouton
+                  ),
+                  child: Text('Ajouter', style: TextStyle(color: grayColor)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: cardColor, // Couleur du bouton
+        foregroundColor: grayColor, // Couleur du texte du bouton
+      ),
+      child: Text('Ajouter une liste', style: TextStyle(color: grayColor)),
+    );
+  }
+}
+"
+    - todo_list_add_button.dart "import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class TodoListAddButton
+ extends StatelessWidget {
+  final Color cardColor;
+  final Color grayColor;
+
+  const TodoListAddButton({
+    super.key,
+    required this.cardColor,
+    required this.grayColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            final TextEditingController controller = TextEditingController();
+            return AlertDialog(
+              backgroundColor: cardColor,
+              title: Text('Créer une liste',style: TextStyle(color: grayColor)),
+              content: TextField(
+                controller: controller,
+                decoration:  InputDecoration(
+                  hintText: 'Nom de la liste',
+                  hintStyle: TextStyle(color: grayColor),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    foregroundColor: grayColor, // Change la couleur du texte
+                    backgroundColor: cardColor, // Change la couleur de fond du bouton
+                  ),
+                  child: Text('Annuler', style: TextStyle(color: grayColor)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    final listname = controller.text.trim();
+                    if (listname.isNotEmpty) {
+                      context.read<TodoListProvider>().addList(listname);
+                      Navigator.pop(context);
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: grayColor, // Change la couleur du texte
+                    backgroundColor: cardColor, // Change la couleur de fond du bouton
+                  ),
+                  child: Text('Ajouter', style: TextStyle(color: grayColor)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: cardColor, // Couleur du bouton
+        foregroundColor: grayColor, // Couleur du texte du bouton
+      ),
+      child: Text('Ajouter une liste', style: TextStyle(color: grayColor)),
+    );
+  }
+}
+"
+    - weather_card.dart "import 'package:flutter/material.dart';
+
+class WeatherCard extends StatelessWidget {
+  final Color backgroundColor;
+  final String cityName;
+  final String temperature;
+  final String weatherLabel;
+  final IconData weatherIcon;
+  final IconData temperatureIcon;
+  final IconData homeIcon;
+  final Color textColor;
+
+  const WeatherCard({
+    super.key,
+    required this.backgroundColor,
+    required this.cityName,
+    required this.temperature,
+    required this.weatherLabel,
+    required this.weatherIcon,
+    required this.temperatureIcon,
+    required this.homeIcon,
+    required this.textColor,
+  });
+
+  Widget _buildInfoItem(IconData icon, String label) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: textColor,size: 32.0),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 24, 
+            color: textColor, 
+            fontWeight: FontWeight.bold
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity, 
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(10.0),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 4,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildInfoItem(homeIcon, cityName),
+          const SizedBox(height: 16),
+          _buildInfoItem(temperatureIcon, temperature),
+          const SizedBox(height: 16),
+          _buildInfoItem(weatherIcon, weatherLabel),
+        ],
+      ),
+    );
+  }
+}
+"
+  - app.dart ""
+  - main.dart "import 'package:Planificateur_Familial/src/models/todo_list.dart';
+import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
+import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'src/screens/home_screen.dart';
+import 'src/providers/family_provider.dart';
+
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => FamilyProvider()),
+        ChangeNotifierProvider(create: (_) => ListProvider()),
+        ChangeNotifierProvider(create: (_) => TodoListProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Plannificateur Familial',
+      theme: ThemeData(
+        fontFamily: 'Roboto', // Par exemple, si tu as une police spécifique
+      ),
+      home: const HomeScreen(),
+    );
+  }
+}
+"
+
+Dans un premier temps refactore moi ce code. Fait manière à ce que ce code soit conçu (pour ce qui est nécéssaire)
+de manière itérative et incrémentable. N'ésite pas à modifier l'arboressance et creer des fichiers pour que ça soit plus POO ou si c'est tous simplement nécéssaire pour avoir un bon code     

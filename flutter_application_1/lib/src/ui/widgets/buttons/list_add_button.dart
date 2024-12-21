@@ -1,9 +1,8 @@
-import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
 
-class ListAddButton
- extends StatelessWidget {
+class ListAddButton extends StatelessWidget {
   final Color cardColor;
   final Color grayColor;
 
@@ -23,10 +22,10 @@ class ListAddButton
             final TextEditingController controller = TextEditingController();
             return AlertDialog(
               backgroundColor: cardColor,
-              title: Text('Créer une liste',style: TextStyle(color: grayColor)),
+              title: Text('Créer une liste', style: TextStyle(color: grayColor)),
               content: TextField(
                 controller: controller,
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Nom de la liste',
                   hintStyle: TextStyle(color: grayColor),
                 ),
@@ -35,8 +34,8 @@ class ListAddButton
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   style: TextButton.styleFrom(
-                    foregroundColor: grayColor, // Change la couleur du texte
-                    backgroundColor: cardColor, // Change la couleur de fond du bouton
+                    foregroundColor: grayColor,
+                    backgroundColor: cardColor,
                   ),
                   child: Text('Annuler', style: TextStyle(color: grayColor)),
                 ),
@@ -49,8 +48,8 @@ class ListAddButton
                     }
                   },
                   style: TextButton.styleFrom(
-                    foregroundColor: grayColor, // Change la couleur du texte
-                    backgroundColor: cardColor, // Change la couleur de fond du bouton
+                    foregroundColor: grayColor,
+                    backgroundColor: cardColor,
                   ),
                   child: Text('Ajouter', style: TextStyle(color: grayColor)),
                 ),
@@ -60,8 +59,8 @@ class ListAddButton
         );
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: cardColor, // Couleur du bouton
-        foregroundColor: grayColor, // Couleur du texte du bouton
+        backgroundColor: cardColor,
+        foregroundColor: grayColor,
       ),
       child: Text('Ajouter une liste', style: TextStyle(color: grayColor)),
     );

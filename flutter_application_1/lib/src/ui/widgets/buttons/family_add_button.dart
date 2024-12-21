@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/family_provider.dart';
+import 'package:Planificateur_Familial/src/providers/family_provider.dart';
 
 class FamilyAddButton extends StatelessWidget {
   final Color backgroundColor;
@@ -22,10 +22,10 @@ class FamilyAddButton extends StatelessWidget {
             final TextEditingController controller = TextEditingController();
             return AlertDialog(
               backgroundColor: backgroundColor,
-              title: Text('Créer une famille',style: TextStyle(color: textColor)),
+              title: Text('Créer une famille', style: TextStyle(color: textColor)),
               content: TextField(
                 controller: controller,
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Nom de la famille',
                   hintStyle: TextStyle(color: textColor),
                 ),
@@ -34,8 +34,8 @@ class FamilyAddButton extends StatelessWidget {
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   style: TextButton.styleFrom(
-                    foregroundColor: textColor, // Change la couleur du texte
-                    backgroundColor: backgroundColor, // Change la couleur de fond du bouton
+                    foregroundColor: textColor,
+                    backgroundColor: backgroundColor,
                   ),
                   child: Text('Annuler', style: TextStyle(color: textColor)),
                 ),
@@ -48,8 +48,8 @@ class FamilyAddButton extends StatelessWidget {
                     }
                   },
                   style: TextButton.styleFrom(
-                    foregroundColor: textColor, // Change la couleur du texte
-                    backgroundColor: backgroundColor, // Change la couleur de fond du bouton
+                    foregroundColor: textColor,
+                    backgroundColor: backgroundColor,
                   ),
                   child: Text('Ajouter', style: TextStyle(color: textColor)),
                 ),
@@ -59,8 +59,8 @@ class FamilyAddButton extends StatelessWidget {
         );
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor, // Couleur du bouton
-        foregroundColor: textColor, // Couleur du texte du bouton
+        backgroundColor: backgroundColor,
+        foregroundColor: textColor,
       ),
       child: Text('Ajouter une famille', style: TextStyle(color: textColor)),
     );

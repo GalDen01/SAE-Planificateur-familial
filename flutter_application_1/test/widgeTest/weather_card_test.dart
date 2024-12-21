@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../../lib/src/widgets/weather_card.dart';
+import '../../lib/src/ui/widgets/weather_card.dart';
 
 void main() {
   testWidgets('WeatherCard displays correct information', (WidgetTester tester) async {
