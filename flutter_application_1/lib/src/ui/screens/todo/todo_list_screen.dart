@@ -1,4 +1,7 @@
+// lib/src/ui/screens/todo/todo_list_screen.dart
+
 import 'package:flutter/material.dart';
+import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
 
 class ToDoListScreen extends StatefulWidget {
   final String listName;
@@ -57,7 +60,8 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Confirmer la suppression'),
-          content: const Text('Êtes-vous sûr de vouloir supprimer tous les articles ?'),
+          content:
+              const Text('Êtes-vous sûr de vouloir supprimer tous les articles ?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -78,8 +82,11 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
 
   void sortTasks() {
     tasks.sort((a, b) {
-      if (a['isChecked'] && !b['isChecked']) return 1;
-      if (!a['isChecked'] && b['isChecked']) return -1;
+      if (a['isChecked'] && !b['isChecked']) {
+        return 1;
+      } else if (!a['isChecked'] && b['isChecked']) {
+        return -1;
+      }
       return 0;
     });
   }
@@ -87,33 +94,11 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget.grayColor,
-      appBar: AppBar(
-        backgroundColor: widget.grayColor,
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: widget.cardColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-              ),
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                "Retour",
-                style: TextStyle(
-                  color: widget.grayColor,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
+      // Utilisation du BackProfileBar
+      appBar: BackProfileBar(
+        onBack: () => Navigator.pop(context),
       ),
+      backgroundColor: widget.grayColor,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

@@ -1,4 +1,7 @@
+// lib/src/ui/screens/grocery/grocery_list_screen.dart
+
 import 'package:flutter/material.dart';
+import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
 
 class GroceryListScreen extends StatefulWidget {
   final String listName;
@@ -54,7 +57,8 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Confirmer la suppression'),
-          content: const Text('Êtes-vous sûr de vouloir supprimer tous les articles ?'),
+          content:
+              const Text('Êtes-vous sûr de vouloir supprimer tous les articles ?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -88,33 +92,11 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget.grayColor,
-      appBar: AppBar(
-        backgroundColor: widget.grayColor,
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: widget.cardColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-              ),
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                "Retour",
-                style: TextStyle(
-                  color: widget.grayColor,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
+      // AppBar avec BackProfileBar
+      appBar: BackProfileBar(
+        onBack: () => Navigator.pop(context),
       ),
+      backgroundColor: widget.grayColor,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -122,7 +104,8 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
             TextField(
               controller: articleController,
               decoration: InputDecoration(
-                labelText: isError ? 'Le champ ne peut pas être vide' : 'Nouvel article',
+                labelText:
+                    isError ? 'Le champ ne peut pas être vide' : 'Nouvel article',
                 labelStyle: TextStyle(
                   color: isError ? Colors.red : widget.grayColor,
                 ),
@@ -150,6 +133,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
               child: ListView.builder(
                 itemCount: articles.length,
                 itemBuilder: (context, index) {
+                  final item = articles[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Container(
@@ -158,7 +142,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "${articles[index]['title']} (x${articles[index]['count']})",
+                            "${item['title']} (x${item['count']})",
                             style: TextStyle(
                               fontSize: 18,
                               color: widget.grayColor,
