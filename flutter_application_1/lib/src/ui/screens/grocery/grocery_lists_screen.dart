@@ -1,5 +1,3 @@
-// lib/src/ui/screens/grocery/grocery_lists_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
@@ -33,9 +31,7 @@ class GroceryListsScreen extends StatelessWidget {
       ),
       backgroundColor: grayColor,
       body: SingleChildScrollView(
-        // On peut mettre un Center ici
         child: Center(
-          // Pour gérer le padding global, on l'ajoute autour de la Column
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
             child: Column(
@@ -66,7 +62,7 @@ class GroceryListsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
-                // Pour chaque liste
+                // déplie les elt de groceryList et les mets dans une liste de widget
                 ...lists.map((groceryList) => Column(
                       children: [
                         FamilyButton(

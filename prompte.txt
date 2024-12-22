@@ -1,10 +1,7 @@
-à partir de maintenant nous partons du code de ce que tu m'as donné ci-dessus
-
-Le truc ici c'est que dans presque toutes les pages nous avons en haut les 2 boutons : "Retour"
-et celui qui redirige vers la page profil de l'utilisateur 
-
-Je sais pas ce que tu en pense mais comme il est dans chacune des page il faudrait peut être faire un widget 
-de ces 2 boutons comme ça on a juste à appeler le widget en question.
-Aussi je voudrais que le bouton profil ne soit pas coller sur le côté gauche mais avec un peu d'écart
-comme cela l'ait sur la home page. Aussi je veux que le bouton retour et profil est la couleur brightCardColor
-donne moi tous les fichiers qu'il faut modifier pour cela (si c'est nécéssaire)
+Je veux maintenant un système de connection. Pour facilité ce système on ne pourra se connecter uniquement via notre compte google
+Nous allons procédé si nécéssaire pas à pas dans l'implémentation de cette fonctionnalité.
+L'idée et que à la première installation de notre application si nous ne sommes pas connécté avant il faut nous rediriger 
+vers la page qui ressemble à la screen. à toi de faire cette page. L'image qui se trouve au milieu de la screen je l'ai il te suffit
+de mettre l'emplacement de l'image (le lien) dans le code que je modifierait moi.
+Ensuite quand on clique sur "se connecter via google" sa doit être comme sur toutes les autres applications une connection
+via compte google basique  
