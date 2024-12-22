@@ -79,7 +79,7 @@ class LoginScreen extends StatelessWidget {
                       "SE CONNECTER VIA GOOGLE",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black, // Couleur du texte
+                        color: Colors.black,
                       ),
                     ),
                   ),
