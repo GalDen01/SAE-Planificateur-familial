@@ -1,36 +1,32 @@
 // android/build.gradle (top-level)
 
 buildscript {
-    // Si besoin d'autres classpath (par ex. google-services), on les met ici
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        // Normalement, si tu utilises pluginManagement dans settings.gradle,
-        // tu n'as plus besoin de "classpath 'com.android.tools.build:gradle:x.x.x'" ici
+        // Si tu utilises google-services (Firebase), tu pourrais mettre :
+        // classpath 'com.google.gms:google-services:4.3.15'
     }
 }
 
 allprojects {
-    // Depots globaux
     repositories {
         google()
         mavenCentral()
     }
 }
 
-// On peut garder ou non ces parties si on veut construire
-// nos builds dans des dossiers spécifiques :
+// Dossiers de build
 rootProject.buildDir = "../build"
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(":app")
+    // (optionnel) project.evaluationDependsOn(":app")
 }
 
-// Tâche clean
+// Tâche "clean"
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
