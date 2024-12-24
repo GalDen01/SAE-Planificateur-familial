@@ -8,23 +8,19 @@ class FamilyProvider extends ChangeNotifier {
 
   /// Charge toutes les familles depuis la table `families` de Supabase
   Future<void> loadFamiliesFromSupabase() async {
-    final supabase = Supabase.instance.client;
+  final supabase = Supabase.instance.client;
 
-    // On SELECT toutes les lignes
-    final response = await supabase
+  try {
+    // data sera une List<dynamic> si on SELECT plusieurs lignes
+    final data = await supabase
         .from('families')
         .select('*');
 
-    // Vérifier si une erreur s'est produite
-    if (response.hasError) {
-      debugPrint("Erreur lors du chargement des familles: ${response.errorMessage}");
-      return;
-    }
-
-    // Si pas d'erreur, on récupère la liste (response.data)
-    final data = response.data as List<dynamic>;
+    // On vide la liste locale
     _families.clear();
-    for (var item in data) {
+
+    // data est un List, on itère
+    for (final item in data) {
       _families.add(
         Family(
           id: item['id'] as int,
@@ -32,35 +28,44 @@ class FamilyProvider extends ChangeNotifier {
         ),
       );
     }
+
     notifyListeners();
+
+  } catch (e) {
+    debugPrint("Erreur lors du chargement des familles: $e");
   }
+}
+
 
   /// Insère une nouvelle famille dans la table `families` de Supabase
   Future<void> addFamilyToSupabase(String familyName) async {
-    final supabase = Supabase.instance.client;
+  final supabase = Supabase.instance.client;
 
-    // Insertion : on fait un .insert(), puis on récupère la ligne insérée en .select()
-    final response = await supabase
+  try {
+    // 1) Insertion -> récupère la Map de la famille insérée
+    final data = await supabase
         .from('families')
         .insert({'name': familyName})
         .select()
-        .single(); // ou .maybeSingle()
+        .single();
 
-    // Vérifier erreur
-    if (response.hasError) {
-      debugPrint("Erreur lors de l'ajout de la famille: ${response.errorMessage}");
-      return;
-    }
+    // data est désormais un Map représentant la ligne insérée
+    // Exemple: {"id": 42, "name": "Famille X", "created_at": ...}
 
-    // Récupérer l'objet inséré
-    final inserted = response.data;
+    // 2) Convertir en objet Family
     final newFamily = Family(
-      id: inserted['id'] as int,
-      name: inserted['name'] as String,
+      id: data['id'] as int,
+      name: data['name'] as String,
     );
 
-    // Mettre à jour la liste locale
+    // 3) Mise à jour de ta liste locale
     _families.add(newFamily);
     notifyListeners();
+
+  } catch (e) {
+    // Si une erreur survient (ex. row-level security, violation)
+    debugPrint("Erreur lors de l'ajout de la famille: $e");
   }
+}
+
 }

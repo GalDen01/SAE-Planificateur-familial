@@ -8,9 +8,23 @@ import 'package:Planificateur_Familial/src/ui/widgets/buttons/family_button.dart
 import 'package:Planificateur_Familial/src/ui/widgets/buttons/family_add_button.dart';
 import 'package:Planificateur_Familial/src/ui/screens/family/family_details_screen.dart';
 import 'package:Planificateur_Familial/src/ui/screens/profile/profile_screen.dart';
+import 'package:Planificateur_Familial/src/models/family.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    // Charger la liste des familles depuis Supabase
+    context.read<FamilyProvider>().loadFamiliesFromSupabase();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +44,7 @@ class HomeScreen extends StatelessWidget {
                 fontSize: 32,
               ),
               const SizedBox(height: 30),
+
               const WeatherCard(
                 backgroundColor: AppColors.cardColor,
                 cityName: "Limoges",
@@ -40,25 +55,28 @@ class HomeScreen extends StatelessWidget {
                 homeIcon: Icons.home,
                 textColor: AppColors.blackColor,
               ),
+
               const SizedBox(height: 50),
 
               // Liste des familles
-              ...families.map((family) => Column(
-                    children: [
-                      FamilyButton(
-                        label: family.name,
-                        backgroundColor: AppColors.cardColor,
-                        textColor: AppColors.grayColor,
-                        targetPage: FamilyDetailsScreen(
-                          familyName: family.name,
-                          cardColor: AppColors.cardColor,
-                          grayColor: AppColors.grayColor,
-                          brightCardColor: AppColors.brightCardColor,
-                        ),
+              ...families.map((Family family) {
+                return Column(
+                  children: [
+                    FamilyButton(
+                      label: family.name,
+                      backgroundColor: AppColors.cardColor,
+                      textColor: AppColors.grayColor,
+                      targetPage: FamilyDetailsScreen(
+                        familyName: family.name,
+                        cardColor: AppColors.cardColor,
+                        grayColor: AppColors.grayColor,
+                        brightCardColor: AppColors.brightCardColor,
                       ),
-                      const SizedBox(height: 20),
-                    ],
-                  )),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                );
+              }).toList(),
 
               // Bouton pour ajouter une famille
               const FamilyAddButton(
