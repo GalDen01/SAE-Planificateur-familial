@@ -1,5 +1,9 @@
-class Family{
+class Family {
+  final int? id;
   final String name;
 
-  Family({required this.name});
+  Family({
+    this.id,
+    required this.name,
+  });
 }

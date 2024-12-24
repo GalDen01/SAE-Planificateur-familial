@@ -40,10 +40,10 @@ class FamilyAddButton extends StatelessWidget {
                   child: Text('Annuler', style: TextStyle(color: textColor)),
                 ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     final familyName = controller.text.trim();
                     if (familyName.isNotEmpty) {
-                      context.read<FamilyProvider>().addFamily(familyName);
+                      await context.read<FamilyProvider>().addFamilyToSupabase(familyName);
                       Navigator.pop(context);
                     }
                   },
