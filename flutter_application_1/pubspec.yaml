@@ -15,12 +15,10 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   #http: ^0.13.5
-  #geolocator: ^9.0.2
   google_sign_in: ^5.4.2
   google_sign_in_web: ^0.10.2
   provider: ^6.0.5
-  supabase_flutter: ^1.6.3
-
+  supabase_flutter: ^2.8.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -34,5 +32,4 @@ flutter:
   generate: true
 
   assets:
-    # Add assets from the images directory to the application.
     - assets/images/
