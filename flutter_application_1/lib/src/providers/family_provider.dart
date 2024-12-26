@@ -50,6 +50,30 @@ Future<void> addMemberToFamily(int familyId, String userEmail) async {
   }
 }
 
+Future<void> loadFamiliesForUser(String userEmail) async {
+  final supabase = Supabase.instance.client;
+  try {
+    final data = await supabase
+      .from('families')
+      .select('id, name, family_members!inner(user_email)')
+      .eq('family_members.user_email', userEmail); 
+      // la syntaxe PostgREST pour jointure
+
+    _families.clear();
+    for (final item in data) {
+      _families.add(
+        Family(
+          id: item['id'] as int,
+          name: item['name'] as String,
+        ),
+      );
+    }
+    notifyListeners();
+  } catch (e) {
+    debugPrint("Erreur: $e");
+  }
+}
+
 
 Future<void> addFamilyToSupabase(String familyName, String? userEmail) async {
   final supabase = Supabase.instance.client;

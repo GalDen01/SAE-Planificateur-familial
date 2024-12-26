@@ -9,6 +9,7 @@ import 'package:Planificateur_Familial/src/ui/widgets/buttons/family_add_button.
 import 'package:Planificateur_Familial/src/ui/screens/family/family_details_screen.dart';
 import 'package:Planificateur_Familial/src/ui/screens/profile/profile_screen.dart';
 import 'package:Planificateur_Familial/src/models/family.dart';
+import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,8 +23,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<FamilyProvider>().loadFamiliesFromSupabase();
+    final userEmail = context.read<AuthProvider>().currentUser?.email;
+    if (userEmail != null) {
+      context.read<FamilyProvider>().loadFamiliesForUser(userEmail);
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
