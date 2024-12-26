@@ -24,8 +24,19 @@ class AuthProvider extends ChangeNotifier {
       debugPrint("Erreur lors de la connexion Google: $error");
     }
   }
+  //si l'utilisateur à déjà accepté
+  Future<void> silentSignIn() async {
+    try {
+      final account = await _googleSignIn.signInSilently();
+      if (account != null) {
+        _currentUser = account;
+        notifyListeners();
+      }
+    } catch (error) {
+      debugPrint("Erreur lors de la connexion silencieuse: $error");
+    }
+  }
 
-  // Déconnexion
   Future<void> signOut() async {
     try {
       await _googleSignIn.signOut();

@@ -11,7 +11,6 @@ class FamilyProvider extends ChangeNotifier {
   final supabase = Supabase.instance.client;
 
   try {
-    // data sera une List<dynamic> si on SELECT plusieurs lignes
     final data = await supabase
         .from('families')
         .select('*');
@@ -36,35 +35,50 @@ class FamilyProvider extends ChangeNotifier {
   }
 }
 
+Future<void> addMemberToFamily(int familyId, String userEmail) async {
+  final supabase = Supabase.instance.client;
+  try {
+    await supabase
+        .from('family_members')
+        .insert({
+          'family_id': familyId,
+          'user_email': userEmail,
+        });
+    // Optionnel: recharger la liste des membres
+  } catch (e) {
+    debugPrint("Erreur addMemberToFamily: $e");
+  }
+}
 
-  /// Insère une nouvelle famille dans la table `families` de Supabase
-  Future<void> addFamilyToSupabase(String familyName) async {
+
+Future<void> addFamilyToSupabase(String familyName, String? userEmail) async {
   final supabase = Supabase.instance.client;
 
   try {
-    // 1) Insertion -> récupère la Map de la famille insérée
+    // 1) Insert dans families
     final data = await supabase
         .from('families')
         .insert({'name': familyName})
         .select()
         .single();
 
-    // data est désormais un Map représentant la ligne insérée
-    // Exemple: {"id": 42, "name": "Famille X", "created_at": ...}
+    final newFamilyId = data['id'] as int;
+    final newFamilyName = data['name'] as String;
 
-    // 2) Convertir en objet Family
-    final newFamily = Family(
-      id: data['id'] as int,
-      name: data['name'] as String,
-    );
-
-    // 3) Mise à jour de ta liste locale
+    // 2) Création d'un objet local
+    final newFamily = Family(id: newFamilyId, name: newFamilyName);
     _families.add(newFamily);
     notifyListeners();
 
+    // 3) Insert dans family_members si userEmail != null
+    if (userEmail != null) {
+      await supabase.from('family_members').insert({
+        'family_id': newFamilyId,
+        'user_email': userEmail,
+      });
+    }
   } catch (e) {
-    // Si une erreur survient (ex. row-level security, violation)
-    debugPrint("Erreur lors de l'ajout de la famille: $e");
+    debugPrint("Erreur addFamilyToSupabase: $e");
   }
 }
 

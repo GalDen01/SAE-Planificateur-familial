@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:Planificateur_Familial/src/ui/screens/grocery/grocery_lists_screen.dart';
 import 'package:Planificateur_Familial/src/ui/screens/todo/todo_lists_screen.dart';
+import 'package:Planificateur_Familial/src/ui/screens/family/manage_members_screen.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/buttons/family_button.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
+import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
+
 
 class FamilyDetailsScreen extends StatelessWidget {
+  final int familyId;
   final String familyName;
   final Color cardColor;
   final Color grayColor;
@@ -12,6 +16,7 @@ class FamilyDetailsScreen extends StatelessWidget {
 
   const FamilyDetailsScreen({
     super.key,
+    required this.familyId,
     required this.familyName,
     required this.cardColor,
     required this.grayColor,
@@ -76,6 +81,18 @@ class FamilyDetailsScreen extends StatelessWidget {
               textColor: grayColor,
               targetPage: TodoListsScreen(
                 familyName: familyName,
+                cardColor: cardColor,
+                grayColor: grayColor,
+                brightCardColor: brightCardColor,
+              ),
+            ),
+            const SizedBox(height: 10),
+            FamilyButton(
+              label: "Gérer les membres",
+              backgroundColor: cardColor,
+              textColor: grayColor,
+              targetPage: ManageMembersScreen(
+                familyId: familyId,
                 cardColor: cardColor,
                 grayColor: grayColor,
                 brightCardColor: brightCardColor,

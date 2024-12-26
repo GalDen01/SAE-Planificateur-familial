@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
 
 class FamilyAddButton extends StatelessWidget {
@@ -43,7 +44,12 @@ class FamilyAddButton extends StatelessWidget {
                   onPressed: () async {
                     final familyName = controller.text.trim();
                     if (familyName.isNotEmpty) {
-                      await context.read<FamilyProvider>().addFamilyToSupabase(familyName);
+                      final userEmail = context.read<AuthProvider>().currentUser?.email;
+                      await context.read<FamilyProvider>().addFamilyToSupabase(
+                        familyName,
+                        userEmail,
+                      );
+
                       Navigator.pop(context);
                     }
                   },

@@ -22,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Charger la liste des familles depuis Supabase
     context.read<FamilyProvider>().loadFamiliesFromSupabase();
   }
 
@@ -67,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       backgroundColor: AppColors.cardColor,
                       textColor: AppColors.grayColor,
                       targetPage: FamilyDetailsScreen(
+                        familyId: family.id!,
                         familyName: family.name,
                         cardColor: AppColors.cardColor,
                         grayColor: AppColors.grayColor,
