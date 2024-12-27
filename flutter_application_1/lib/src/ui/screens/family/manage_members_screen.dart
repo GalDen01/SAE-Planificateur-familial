@@ -1,5 +1,3 @@
-// lib/src/ui/screens/family/manage_members_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
@@ -27,39 +25,32 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
   final TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> suggestions = [];
 
-  @override
-  void initState() {
-    super.initState();
-    // TODO: Charger la liste de membres existants de la famille, si tu veux
-  }
-
+  // Rechercher dans la table 'users' par first_name ou email
   Future<void> searchUsers(String query) async {
     if (query.isEmpty) {
       setState(() => suggestions = []);
       return;
     }
     final supabase = Supabase.instance.client;
-    final res = await supabase
-      .from('users')
-      .select('*')
-      .or('first_name.ilike.%$query%,email.ilike.%$query%')
-      .limit(10);
 
-    if (res is List) {
+    final response = await supabase
+        .from('users')
+        .select('*')
+        .or('first_name.ilike.%$query%,email.ilike.%$query%')
+        .limit(10);
+
+    if (response is List) {
       setState(() {
-        suggestions = res.cast<Map<String, dynamic>>();
+        suggestions = response.cast<Map<String, dynamic>>();
       });
     }
   }
 
   Future<void> addMember(int userId) async {
-    // On ajoute userId à la famille
     await context.read<FamilyProvider>().addMemberToFamilyByUserId(widget.familyId, userId);
-    // Optionnel : show a snackBar
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Membre ajouté')),
     );
-    // On peut aussi rafraîchir la liste des membres
   }
 
   @override
@@ -77,20 +68,18 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Input de recherche
+            // Champ de recherche
             TextField(
               controller: searchController,
-              onChanged: (value) {
-                searchUsers(value.trim());
-              },
+              onChanged: (val) => searchUsers(val.trim()),
               decoration: const InputDecoration(
                 labelText: "Rechercher un utilisateur",
-                hintText: "Saisir le prénom ou l'email",
+                hintText: "Prénom ou Email",
               ),
             ),
             const SizedBox(height: 16),
 
-            // Affichage des suggestions
+            // Liste des suggestions
             Expanded(
               child: ListView.builder(
                 itemCount: suggestions.length,
@@ -98,9 +87,9 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                   final user = suggestions[index];
                   final userId = user['id'] as int;
                   final userEmail = user['email'] as String;
-                  final firstName = user['first_name'] as String? ?? '';
+                  final firstName = (user['first_name'] as String?) ?? '';
                   return ListTile(
-                    title: Text("$firstName ($userEmail)"),
+                    title: Text('$firstName ($userEmail)'),
                     onTap: () {
                       addMember(userId);
                     },
