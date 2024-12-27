@@ -3,11 +3,10 @@ import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/ui/screens/profile/profile_screen.dart';
 
 class BackProfileBar extends StatelessWidget implements PreferredSizeWidget {
-  /// Action à effectuer quand on appuie sur le bouton "Retour".
+  ///action à effectuer quand on appuie sur le bouton Retour
   final VoidCallback onBack;
 
-  /// Action à effectuer quand on appuie sur le bouton "Profil".
-  /// Par défaut, on ouvre la [ProfileScreen]. Mais tu peux le surcharger.
+  ///action à effectuer quand on appuie sur le bouton Profil
   final VoidCallback? onProfile;
 
   const BackProfileBar({
@@ -24,8 +23,7 @@ class BackProfileBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.transparent, // On garde le fond "transparent"
       elevation: 0,
-      automaticallyImplyLeading: false,   // Pas de bouton leading automatique
-      // On peut mettre un SafeArea ou un Padding interne si on veut.
+      automaticallyImplyLeading: false,  // pour personnalisé le bouton retour
       flexibleSpace: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0), 

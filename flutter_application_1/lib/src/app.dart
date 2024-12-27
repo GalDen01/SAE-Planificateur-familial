@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(fontFamily: 'Roboto'),
         initialRoute: '/',
         routes: {
-          '/': (context) => const WrapperScreen(), // On va créer un "wrapper"
+          '/': (context) => const WrapperScreen(),
           '/home': (context) => const HomeScreen(),
           '/login': (context) => const LoginScreen(),
         },

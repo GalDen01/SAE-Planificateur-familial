@@ -1,7 +1,9 @@
+// lib/src/ui/screens/family/manage_members_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
-// et un éventuel 'users_provider' si tu gères la liste des utilisateurs ?
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ManageMembersScreen extends StatefulWidget {
   final int familyId;
@@ -22,21 +24,42 @@ class ManageMembersScreen extends StatefulWidget {
 }
 
 class _ManageMembersScreenState extends State<ManageMembersScreen> {
-  // liste des membres actuels ?
-  List<String> familyMembers = []; // emails
   final TextEditingController searchController = TextEditingController();
+  List<Map<String, dynamic>> suggestions = [];
 
   @override
   void initState() {
     super.initState();
-    // Charger la liste des membres pour `widget.familyId`
-    // ex: context.read<FamilyProvider>().loadMembersOfFamily(widget.familyId)...
+    // TODO: Charger la liste de membres existants de la famille, si tu veux
   }
 
-  void addMember(String userEmail) async {
-    // Appelle une méthode dans FamilyProvider pour insérer (family_id, userEmail) dans family_members
-    await context.read<FamilyProvider>().addMemberToFamily(widget.familyId, userEmail);
-    // puis recharge la liste
+  Future<void> searchUsers(String query) async {
+    if (query.isEmpty) {
+      setState(() => suggestions = []);
+      return;
+    }
+    final supabase = Supabase.instance.client;
+    final res = await supabase
+      .from('users')
+      .select('*')
+      .or('first_name.ilike.%$query%,email.ilike.%$query%')
+      .limit(10);
+
+    if (res is List) {
+      setState(() {
+        suggestions = res.cast<Map<String, dynamic>>();
+      });
+    }
+  }
+
+  Future<void> addMember(int userId) async {
+    // On ajoute userId à la famille
+    await context.read<FamilyProvider>().addMemberToFamilyByUserId(widget.familyId, userId);
+    // Optionnel : show a snackBar
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Membre ajouté')),
+    );
+    // On peut aussi rafraîchir la liste des membres
   }
 
   @override
@@ -54,30 +77,37 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Liste des membres existants...
-            // TextField pour "rechercher" par email/nom...
+            // Input de recherche
             TextField(
               controller: searchController,
+              onChanged: (value) {
+                searchUsers(value.trim());
+              },
               decoration: const InputDecoration(
                 labelText: "Rechercher un utilisateur",
+                hintText: "Saisir le prénom ou l'email",
               ),
-              onSubmitted: (value) {
-                // Optionnel: effectuer un "search" sur un provider de "users"
-              },
             ),
+            const SizedBox(height: 16),
 
-            ElevatedButton(
-              onPressed: () {
-                final emailToAdd = searchController.text.trim();
-                if (emailToAdd.isNotEmpty) {
-                  addMember(emailToAdd);
-                  searchController.clear();
-                }
-              },
-              child: const Text("Ajouter à la famille"),
-            ),
-
-            // ...
+            // Affichage des suggestions
+            Expanded(
+              child: ListView.builder(
+                itemCount: suggestions.length,
+                itemBuilder: (context, index) {
+                  final user = suggestions[index];
+                  final userId = user['id'] as int;
+                  final userEmail = user['email'] as String;
+                  final firstName = user['first_name'] as String? ?? '';
+                  return ListTile(
+                    title: Text("$firstName ($userEmail)"),
+                    onTap: () {
+                      addMember(userId);
+                    },
+                  );
+                },
+              ),
+            )
           ],
         ),
       ),

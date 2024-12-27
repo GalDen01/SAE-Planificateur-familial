@@ -37,7 +37,6 @@ class FamilyDetailsScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 30),
 
-            // Nom de la famille
             Text(
               familyName,
               textAlign: TextAlign.center,

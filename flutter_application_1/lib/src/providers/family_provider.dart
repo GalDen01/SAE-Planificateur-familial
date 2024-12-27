@@ -6,104 +6,78 @@ class FamilyProvider extends ChangeNotifier {
   final List<Family> _families = [];
   List<Family> get families => _families;
 
-  /// Charge toutes les familles depuis la table `families` de Supabase
-  Future<void> loadFamiliesFromSupabase() async {
-  final supabase = Supabase.instance.client;
-
-  try {
-    final data = await supabase
+  Future<void> loadFamiliesForUser(String userEmail) async {
+    final supabase = Supabase.instance.client;
+    try {
+      // jointure
+      final data = await supabase
         .from('families')
-        .select('*');
+        .select('id, name, family_members!inner(user_id, user_email:users(email))')
+        .eq('family_members.users.email', userEmail);
 
-    // On vide la liste locale
-    _families.clear();
-
-    // data est un List, on itère
-    for (final item in data) {
-      _families.add(
-        Family(
-          id: item['id'] as int,
-          name: item['name'] as String,
-        ),
-      );
+      _families.clear();
+      for (final item in data) {
+        _families.add(
+          Family(
+            id: item['id'] as int,
+            name: item['name'] as String,
+          ),
+        );
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Erreur: $e");
     }
-
-    notifyListeners();
-
-  } catch (e) {
-    debugPrint("Erreur lors du chargement des familles: $e");
   }
-}
 
-Future<void> addMemberToFamily(int familyId, String userEmail) async {
-  final supabase = Supabase.instance.client;
-  try {
-    await supabase
-        .from('family_members')
-        .insert({
-          'family_id': familyId,
-          'user_email': userEmail,
-        });
-    // Optionnel: recharger la liste des membres
-  } catch (e) {
-    debugPrint("Erreur addMemberToFamily: $e");
-  }
-}
+  Future<void> addFamilyToSupabase(String familyName, String? userEmail) async {
+    final supabase = Supabase.instance.client;
+    try {
+      // Insert dans families
+      final data = await supabase
+          .from('families')
+          .insert({'name': familyName})
+          .select()
+          .single();
 
-Future<void> loadFamiliesForUser(String userEmail) async {
-  final supabase = Supabase.instance.client;
-  try {
-    final data = await supabase
-      .from('families')
-      .select('id, name, family_members!inner(user_email)')
-      .eq('family_members.user_email', userEmail); 
-      // la syntaxe PostgREST pour jointure
+      final newFamilyId = data['id'] as int;
+      final newFamilyName = data['name'] as String;
+      final newFamily = Family(id: newFamilyId, name: newFamilyName);
+      _families.add(newFamily);
+      notifyListeners();
 
-    _families.clear();
-    for (final item in data) {
-      _families.add(
-        Family(
-          id: item['id'] as int,
-          name: item['name'] as String,
-        ),
-      );
+      // Récupérer l'utilisateur depuis `users` (si userEmail != null)
+      if (userEmail != null) {
+        final userRes = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', userEmail)
+            .maybeSingle();
+        if (userRes != null && userRes['id'] != null) {
+          final userId = userRes['id'] as int;
+          // Insert dans family_members
+          await supabase.from('family_members').insert({
+            'family_id': newFamilyId,
+            'user_id': userId,
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint("Erreur addFamilyToSupabase: $e");
     }
-    notifyListeners();
-  } catch (e) {
-    debugPrint("Erreur: $e");
   }
-}
 
-
-Future<void> addFamilyToSupabase(String familyName, String? userEmail) async {
-  final supabase = Supabase.instance.client;
-
-  try {
-    // 1) Insert dans families
-    final data = await supabase
-        .from('families')
-        .insert({'name': familyName})
-        .select()
-        .single();
-
-    final newFamilyId = data['id'] as int;
-    final newFamilyName = data['name'] as String;
-
-    // 2) Création d'un objet local
-    final newFamily = Family(id: newFamilyId, name: newFamilyName);
-    _families.add(newFamily);
-    notifyListeners();
-
-    // 3) Insert dans family_members si userEmail != null
-    if (userEmail != null) {
-      await supabase.from('family_members').insert({
-        'family_id': newFamilyId,
-        'user_email': userEmail,
-      });
+  Future<void> addMemberToFamilyByUserId(int familyId, int userId) async {
+    final supabase = Supabase.instance.client;
+    try {
+      await supabase
+          .from('family_members')
+          .insert({
+            'family_id': familyId,
+            'user_id': userId,
+          });
+    } catch (e) {
+      debugPrint("Erreur addMemberToFamilyByUserId: $e");
     }
-  } catch (e) {
-    debugPrint("Erreur addFamilyToSupabase: $e");
   }
-}
-
 }

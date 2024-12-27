@@ -3,7 +3,8 @@ import 'package:Planificateur_Familial/src/app.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  //pour l'async fonctionne avant de démarrer l'ui
+  WidgetsFlutterBinding.ensureInitialized();
 
   // bdd Supabase
   await Supabase.initialize(
