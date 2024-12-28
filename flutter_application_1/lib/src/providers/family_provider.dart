@@ -8,27 +8,47 @@ class FamilyProvider extends ChangeNotifier {
   final List<Family> _families = [];
   List<Family> get families => _families;
 
+  /// Ne ramène QUE les familles où l'utilisateur est dans `family_members`,
+  /// jointure sur `users` (email)
   Future<void> loadFamiliesForUser(String userEmail) async {
     final supabase = Supabase.instance.client;
     try {
-      // jointure
       final data = await supabase
-        .from('families')
-        .select('id, name, family_members!inner(user_id, user_email:users(email))')
-        .eq('family_members.users.email', userEmail);
+          // on part de la table families
+          .from('families')
+          // on joint la table family_members et la table users
+          .select('''
+            id,
+            name,
+            family_members!inner(
+              user_id,
+              users!inner(email)
+            )
+          ''')
+          // on filtre pour avoir seulement
+          // "family_members.users.email == userEmail"
+          .eq('family_members.users.email', userEmail);
 
       _families.clear();
-      for (final item in data) {
-        _families.add(
-          Family(
-            id: item['id'] as int,
-            name: item['name'] as String,
-          ),
-        );
+
+      // Si la requête a renvoyé une liste
+      if (data is List) {
+        for (final item in data) {
+          _families.add(
+            Family(
+              id: item['id'] as int,
+              name: item['name'] as String,
+            ),
+          );
+        }
+      } else {
+        // Si ce n'est pas une liste (erreur, etc.)
+        debugPrint("La requête Supabase n'a pas renvoyé de liste: $data");
       }
+
       notifyListeners();
     } catch (e) {
-      debugPrint("Erreur: $e");
+      debugPrint("Erreur dans loadFamiliesForUser: $e");
     }
   }
 
@@ -81,7 +101,7 @@ class FamilyProvider extends ChangeNotifier {
           .maybeSingle();
 
       if (existing != null) {
-        // already in this family
+        // déjà présent
         throw Exception("Cet utilisateur fait déjà partie de cette famille.");
       }
 
@@ -92,19 +112,18 @@ class FamilyProvider extends ChangeNotifier {
       });
     } catch (e) {
       debugPrint("Erreur addMemberToFamilyByUserId: $e");
-      rethrow; // pour que l'UI sache qu'il y a eu une erreur
+      rethrow;
     }
   }
-  Future<List<Map<String, dynamic>>> getMembersOfFamily(int familyId) async {
-  final supabase = Supabase.instance.client;
-  final response = await supabase
-      .from('family_members')
-      // Ajuster la syntaxe selon le nom de la FK
-      .select('user_id, users!inner(first_name, email, photo_url)')
-      .eq('family_id', familyId);
-  
-  return response.cast<Map<String, dynamic>>();
-  
 
-}
+  /// Récupérer la liste des membres d'une famille
+  Future<List<Map<String, dynamic>>> getMembersOfFamily(int familyId) async {
+    final supabase = Supabase.instance.client;
+    final response = await supabase
+        .from('family_members')
+        .select('user_id, users!inner(first_name, email)')
+        .eq('family_id', familyId);
+
+    return response.cast<Map<String, dynamic>>();
+  }
 }
