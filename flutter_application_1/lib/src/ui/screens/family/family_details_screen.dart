@@ -1,3 +1,5 @@
+// lib/src/ui/screens/family/family_details_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:Planificateur_Familial/src/ui/screens/grocery/grocery_lists_screen.dart';
 import 'package:Planificateur_Familial/src/ui/screens/todo/todo_lists_screen.dart';
@@ -11,7 +13,6 @@ class FamilyDetailsScreen extends StatelessWidget {
   final Color cardColor;
   final Color grayColor;
   final Color brightCardColor;
-  final int membersCount;
 
   const FamilyDetailsScreen({
     super.key,
@@ -20,14 +21,14 @@ class FamilyDetailsScreen extends StatelessWidget {
     required this.cardColor,
     required this.grayColor,
     required this.brightCardColor,
-    this.membersCount = 2,  // ou 0, ou le charger autrement
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // AppBar personnalisé
       appBar: BackProfileBar(
-        onBack: () => Navigator.pop(context), 
+        onBack: () => Navigator.pop(context),
       ),
       backgroundColor: grayColor,
       body: SingleChildScrollView(
@@ -47,31 +48,23 @@ class FamilyDetailsScreen extends StatelessWidget {
                 color: cardColor,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 10),
 
-            // Nombre de membres
-            Text(
-              "$membersCount Membres",
-              style: TextStyle(
-                fontSize: 16,
-                color: brightCardColor,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Image (CircleAvatar)
+            // Image (CircleAvatar) - adaptable à tes ressources
             CircleAvatar(
               radius: 40.0,
               backgroundColor: cardColor,
               child: ClipOval(
                 child: Image.asset(
-                  'assets/images/famille.png',
+                  'assets/images/famille.png', // à adapter si besoin
                   fit: BoxFit.cover,
                 ),
               ),
             ),
+
             const SizedBox(height: 40),
 
+            // Bouton vers la page des listes de courses
             FamilyButton(
               label: "Listes de courses",
               backgroundColor: cardColor,
@@ -85,6 +78,7 @@ class FamilyDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
+            // Bouton vers la page to-do
             FamilyButton(
               label: "Tâches à faire",
               backgroundColor: cardColor,
@@ -98,14 +92,13 @@ class FamilyDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
+            // Bouton vers la page de gestion des membres
             FamilyButton(
               label: "Gérer les membres",
               backgroundColor: cardColor,
               textColor: grayColor,
               targetPage: ManageMembersScreen(
-                familyId: familyId,
-                familyName: familyName,
-                membersCount: membersCount,   // Passer un nombre fictif ou charger dynamiquement
+                familyId: familyId,        // identifiant de la famille
                 cardColor: cardColor,
                 grayColor: grayColor,
                 brightCardColor: brightCardColor,

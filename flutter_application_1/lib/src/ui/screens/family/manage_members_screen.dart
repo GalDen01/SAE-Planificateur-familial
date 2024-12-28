@@ -2,14 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:Planificateur_Familial/src/config/constants.dart';
 
 class ManageMembersScreen extends StatefulWidget {
   final int familyId;
-  final String familyName;         // Pour l'afficher en haut
-  final int membersCount;          // Pour l'afficher en haut
   final Color cardColor;
   final Color grayColor;
   final Color brightCardColor;
@@ -17,8 +15,6 @@ class ManageMembersScreen extends StatefulWidget {
   const ManageMembersScreen({
     super.key,
     required this.familyId,
-    required this.familyName,
-    required this.membersCount,
     required this.cardColor,
     required this.grayColor,
     required this.brightCardColor,
@@ -29,11 +25,13 @@ class ManageMembersScreen extends StatefulWidget {
 }
 
 class _ManageMembersScreenState extends State<ManageMembersScreen> {
+  // Recherche
+  bool isSearching = false; // affichage zone de recherche
   final TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> suggestions = [];
 
-  // On stocke la liste des membres existants (pour l'affichage).
-  List<Map<String, dynamic>> members = [];
+  // Liste des membres déjà dans la famille
+  List<Map<String, dynamic>> familyMembers = [];
 
   @override
   void initState() {
@@ -41,79 +39,93 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     loadFamilyMembers();
   }
 
-  // Charger la liste des membres de la famille
   Future<void> loadFamilyMembers() async {
     final supabase = Supabase.instance.client;
-    final response = await supabase
-        .from('family_members')
-        .select('user_id, users!inner(first_name, email, photo_url)')
-        .eq('family_id', widget.familyId);
+    try {
+      // On joint `users` pour récupérer first_name et email
+      final result = await supabase
+          .from('family_members')
+          .select('user_id, users!inner(first_name, email)')
+          .eq('family_id', widget.familyId);
 
-    if (response is List) {
-      setState(() {
-        // response[i] ex: {"user_id": 12, "users": {"first_name": "Jean", "email": "..."}}
-        members = response.cast<Map<String, dynamic>>();
-      });
+      if (result is List) {
+        setState(() {
+          familyMembers = result.cast<Map<String, dynamic>>();
+        });
+      }
+    } catch (e) {
+      debugPrint("Erreur loadFamilyMembers: $e");
     }
   }
 
-  // Rechercher des utilisateurs par nom/email
+  /// Recherche d'utilisateurs par first_name ou email
   Future<void> searchUsers(String query) async {
     if (query.isEmpty) {
       setState(() => suggestions = []);
       return;
     }
     final supabase = Supabase.instance.client;
-    final response = await supabase
-        .from('users')
-        .select('id, first_name, email, photo_url')
-        .or('first_name.ilike.%$query%,email.ilike.%$query%')
-        .limit(10);
+    try {
+      final response = await supabase
+          .from('users')
+          .select('*')
+          .or('first_name.ilike.%$query%,email.ilike.%$query%')
+          .limit(10);
 
-    if (response is List) {
-      setState(() {
-        suggestions = response.cast<Map<String, dynamic>>();
-      });
+      if (response is List) {
+        setState(() {
+          suggestions = response.cast<Map<String, dynamic>>();
+        });
+      }
+    } catch (e) {
+      debugPrint("Erreur searchUsers: $e");
     }
   }
 
   Future<void> addMember(int userId) async {
-    final success = await context.read<FamilyProvider>().addMemberToFamilyByUserId(
-      widget.familyId,
-      userId,
-    );
-    if (!success) {
-      // Membre déjà présent, ou erreur
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Membre déjà présent ou erreur')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Membre ajouté avec succès')),
-      );
-      // Recharger la liste des membres
+    try {
+      await context
+          .read<FamilyProvider>()
+          .addMemberToFamilyByUserId(widget.familyId, userId);
+
+      // Membre ajouté => recharger la liste
       await loadFamilyMembers();
+
+      // On ferme la zone de recherche (optionnel)
+      setState(() {
+        isSearching = false;
+        suggestions.clear();
+        searchController.clear();
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Membre ajouté avec succès!')),
+      );
+    } catch (e) {
+      // Par ex. "Cet utilisateur fait déjà partie de cette famille."
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final memberCount = familyMembers.length;
+
     return Scaffold(
       backgroundColor: widget.grayColor,
       appBar: AppBar(
         backgroundColor: widget.grayColor,
-        automaticallyImplyLeading: false, // on gère “Retour” manuellement si besoin
+        elevation: 0,
+        automaticallyImplyLeading: false,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // BOUTON RETOUR
+            // Bouton Retour
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: widget.brightCardColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               ),
               onPressed: () => Navigator.pop(context),
               child: Text(
@@ -129,148 +141,66 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-          child: Column(
-            children: [
-              // Titre : Nom de la famille
-              Text(
-                widget.familyName,
-                style: TextStyle(
-                  fontSize: 24,
-                  color: widget.brightCardColor,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 6),
-              // Nb de membres
-              Text(
-                "${widget.membersCount} Membres",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: widget.brightCardColor,
-                ),
-              ),
-              const SizedBox(height: 20),
-
-
-              Image.asset(
-                "assets/images/family_tree.png",
-                height: 120,
-                fit: BoxFit.cover,
-              ),
-              const SizedBox(height: 30),
-
-              // Barre de recherche
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: widget.cardColor,
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: searchController,
-                      onChanged: (val) => searchUsers(val.trim()),
-                      style: TextStyle(color: widget.grayColor),
-                      decoration: InputDecoration(
-                        labelText: 'Rechercher des utilisateurs',
-                        labelStyle: TextStyle(color: widget.grayColor),
-                        filled: true,
-                        fillColor: widget.cardColor,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Liste de suggestions
-                    Column(
-                      children: suggestions.map((user) {
-                        final userId = user['id'] as int;
-                        final firstName = user['first_name'] ?? '';
-                        final email = user['email'] ?? '';
-                        final photoUrl = user['photo_url'] as String?; 
-                        
-                        return GestureDetector(
-                          onTap: () => addMember(userId),
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 6.0),
-                            padding: const EdgeInsets.all(10.0),
-                            decoration: BoxDecoration(
-                              color: widget.brightCardColor,
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Row(
-                              children: [
-                                // Photo
-                                CircleAvatar(
-                                  backgroundColor: widget.grayColor,
-                                  backgroundImage: photoUrl != null 
-                                    ? NetworkImage(photoUrl)
-                                    : null,
-                                ),
-                                const SizedBox(width: 10),
-                                // Texte
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      firstName,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: widget.grayColor,
-                                      ),
-                                    ),
-                                    Text(
-                                      email,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: widget.grayColor,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 30),
-
-              // Liste des membres déjà présents
-              // ex: "Jean Depont", "jean.claude@gmail.com"
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          child: Center(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  for (final mem in members) ...{
-                    // "mem" : { "user_id":..., "users": {"first_name":..., "email":..., "photo_url":...} }
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 6.0),
-                      padding: const EdgeInsets.all(10.0),
+                  // Titre de la famille
+                  Text(
+                    "Nom de la Famille",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: widget.brightCardColor,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  // Nombre de membres
+                  Text(
+                    "$memberCount Membres",
+                    style: TextStyle(
+                      color: widget.brightCardColor,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Image (arbre, etc.)
+                  Image.asset(
+                    'assets/images/family_tree.png', // <-- c'est toi qui gères l'image
+                    height: 120,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Liste des membres déjà présents
+                  ...familyMembers.map((fm) {
+                    final firstName = fm['users']['first_name'] ?? '';
+                    final email = fm['users']['email'] ?? '';
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
                       decoration: BoxDecoration(
                         color: widget.cardColor,
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                            backgroundColor: widget.grayColor,
-                            backgroundImage: mem['users']['photo_url'] != null
-                              ? NetworkImage(mem['users']['photo_url'])
-                              : null,
+                          const CircleAvatar(
+                            backgroundColor: Colors.white70,
+                            child: Icon(Icons.person),
                           ),
                           const SizedBox(width: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                mem['users']['first_name'] ?? '',
+                                firstName,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -278,7 +208,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                 ),
                               ),
                               Text(
-                                mem['users']['email'],
+                                email,
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: widget.grayColor,
@@ -288,11 +218,125 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                           ),
                         ],
                       ),
-                    )
-                  }
+                    );
+                  }).toList(),
+
+                  const SizedBox(height: 30),
+
+                  // Bouton pour afficher/masquer la zone de recherche
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() => isSearching = !isSearching);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: widget.brightCardColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 10.0),
+                    ),
+                    child: Text(
+                      isSearching ? "Fermer la recherche" : "Rechercher des utilisateurs",
+                      style: TextStyle(
+                        color: widget.grayColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  if (isSearching) ...[
+                    const SizedBox(height: 20),
+                    // Champ de recherche
+                    Container(
+                      decoration: BoxDecoration(
+                        color: widget.cardColor,
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: searchController,
+                            onChanged: (val) => searchUsers(val.trim()),
+                            style: TextStyle(color: widget.grayColor),
+                            decoration: InputDecoration(
+                              hintText: 'Tapez un prénom ou un email...',
+                              hintStyle: TextStyle(color: widget.grayColor),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              filled: true,
+                              fillColor: widget.cardColor,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+
+                          // Suggestions
+                          if (suggestions.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                color: widget.cardColor,
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Column(
+                                children: suggestions.map((user) {
+                                  final uId = user['id'] as int;
+                                  final fName = user['first_name'] ?? '';
+                                  final mail = user['email'] ?? '';
+                                  return GestureDetector(
+                                    onTap: () => addMember(uId),
+                                    child: Container(
+                                      margin:
+                                          const EdgeInsets.symmetric(vertical: 5),
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF5D5CD), // rose
+                                        borderRadius: BorderRadius.circular(8.0),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          const CircleAvatar(
+                                            backgroundColor: Colors.white70,
+                                            child: Icon(Icons.person),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                fName,
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: widget.grayColor,
+                                                    fontWeight: FontWeight.bold),
+                                              ),
+                                              Text(
+                                                mail,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: widget.grayColor,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),

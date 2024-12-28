@@ -72,14 +72,39 @@ class FamilyProvider extends ChangeNotifier {
   Future<void> addMemberToFamilyByUserId(int familyId, int userId) async {
     final supabase = Supabase.instance.client;
     try {
-      await supabase
+      // Vérifier si déjà dans la table
+      final existing = await supabase
           .from('family_members')
-          .insert({
-            'family_id': familyId,
-            'user_id': userId,
-          });
+          .select('id')
+          .eq('family_id', familyId)
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (existing != null) {
+        // already in this family
+        throw Exception("Cet utilisateur fait déjà partie de cette famille.");
+      }
+
+      // Sinon on insère
+      await supabase.from('family_members').insert({
+        'family_id': familyId,
+        'user_id': userId,
+      });
     } catch (e) {
       debugPrint("Erreur addMemberToFamilyByUserId: $e");
+      rethrow; // pour que l'UI sache qu'il y a eu une erreur
     }
   }
+  Future<List<Map<String, dynamic>>> getMembersOfFamily(int familyId) async {
+  final supabase = Supabase.instance.client;
+  final response = await supabase
+      .from('family_members')
+      // Ajuster la syntaxe selon le nom de la FK
+      .select('user_id, users!inner(first_name, email, photo_url)')
+      .eq('family_id', familyId);
+  
+  return response.cast<Map<String, dynamic>>();
+  
+
+}
 }
