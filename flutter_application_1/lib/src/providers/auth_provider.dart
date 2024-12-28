@@ -1,5 +1,3 @@
-// lib/src/providers/auth_provider.dart
-
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -19,7 +17,6 @@ class AuthProvider extends ChangeNotifier {
   try {
     final account = await _googleSignIn.signIn();
     if (account != null) {
-      debugPrint("GoogleSignIn OK. email=${account.email}, name=${account.displayName}");
 
       _currentUser = account;
       notifyListeners();

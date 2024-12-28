@@ -4,8 +4,6 @@ import 'package:Planificateur_Familial/src/ui/screens/todo/todo_lists_screen.dar
 import 'package:Planificateur_Familial/src/ui/screens/family/manage_members_screen.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/buttons/family_button.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
-import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
-
 
 class FamilyDetailsScreen extends StatelessWidget {
   final int familyId;
@@ -13,6 +11,7 @@ class FamilyDetailsScreen extends StatelessWidget {
   final Color cardColor;
   final Color grayColor;
   final Color brightCardColor;
+  final int membersCount;
 
   const FamilyDetailsScreen({
     super.key,
@@ -21,6 +20,7 @@ class FamilyDetailsScreen extends StatelessWidget {
     required this.cardColor,
     required this.grayColor,
     required this.brightCardColor,
+    this.membersCount = 2,  // ou 0, ou le charger autrement
   });
 
   @override
@@ -37,6 +37,7 @@ class FamilyDetailsScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 30),
 
+            // Nom de la famille
             Text(
               familyName,
               textAlign: TextAlign.center,
@@ -44,6 +45,16 @@ class FamilyDetailsScreen extends StatelessWidget {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: cardColor,
+              ),
+            ),
+            const SizedBox(height: 6),
+
+            // Nombre de membres
+            Text(
+              "$membersCount Membres",
+              style: TextStyle(
+                fontSize: 16,
+                color: brightCardColor,
               ),
             ),
             const SizedBox(height: 20),
@@ -86,12 +97,15 @@ class FamilyDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
+
             FamilyButton(
               label: "Gérer les membres",
               backgroundColor: cardColor,
               textColor: grayColor,
               targetPage: ManageMembersScreen(
                 familyId: familyId,
+                familyName: familyName,
+                membersCount: membersCount,   // Passer un nombre fictif ou charger dynamiquement
                 cardColor: cardColor,
                 grayColor: grayColor,
                 brightCardColor: brightCardColor,
