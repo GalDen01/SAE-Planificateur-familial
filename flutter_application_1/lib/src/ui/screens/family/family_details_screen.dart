@@ -1,8 +1,9 @@
-// lib/src/ui/screens/family/family_details_screen.dart
+
 
 import 'package:flutter/material.dart';
 import 'package:Planificateur_Familial/src/ui/screens/grocery/grocery_lists_screen.dart';
 import 'package:Planificateur_Familial/src/ui/screens/todo/todo_lists_screen.dart';
+import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/ui/screens/family/manage_members_screen.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/buttons/family_button.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
@@ -38,14 +39,13 @@ class FamilyDetailsScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 30),
 
-            // Nom de la famille
             Text(
               familyName,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: cardColor,
+                color: AppColors.whiteColor,
               ),
             ),
             const SizedBox(height: 10),
@@ -98,7 +98,8 @@ class FamilyDetailsScreen extends StatelessWidget {
               backgroundColor: cardColor,
               textColor: grayColor,
               targetPage: ManageMembersScreen(
-                familyId: familyId,        // identifiant de la famille
+                familyId: familyId,
+                familyName: familyName,
                 cardColor: cardColor,
                 grayColor: grayColor,
                 brightCardColor: brightCardColor,

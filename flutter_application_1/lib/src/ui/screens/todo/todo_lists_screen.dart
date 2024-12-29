@@ -1,11 +1,10 @@
-// lib/src/ui/screens/todo/todo_lists_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/buttons/family_button.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/buttons/todo_list_add_button.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
+import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/ui/screens/todo/todo_list_screen.dart';
 
 class TodoListsScreen extends StatelessWidget {
@@ -47,7 +46,7 @@ class TodoListsScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: cardColor,
+                    color: AppColors.whiteColor,
                   ),
                 ),
                 const SizedBox(height: 20),

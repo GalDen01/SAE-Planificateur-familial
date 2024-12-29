@@ -68,7 +68,7 @@ class FamilyAddButton extends StatelessWidget {
         backgroundColor: backgroundColor,
         foregroundColor: textColor,
       ),
-      child: Text('Ajouter une famille', style: TextStyle(color: textColor)),
+      child: Text('Créer une famille', style: TextStyle(color: textColor)),
     );
   }
 }

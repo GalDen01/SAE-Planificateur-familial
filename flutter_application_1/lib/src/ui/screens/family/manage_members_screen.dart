@@ -1,13 +1,13 @@
-// lib/src/ui/screens/family/manage_members_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:Planificateur_Familial/src/config/constants.dart';
+import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
 
 class ManageMembersScreen extends StatefulWidget {
   final int familyId;
+  final String familyName;
   final Color cardColor;
   final Color grayColor;
   final Color brightCardColor;
@@ -15,6 +15,7 @@ class ManageMembersScreen extends StatefulWidget {
   const ManageMembersScreen({
     super.key,
     required this.familyId,
+    required this.familyName,
     required this.cardColor,
     required this.grayColor,
     required this.brightCardColor,
@@ -114,47 +115,30 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     final memberCount = familyMembers.length;
 
     return Scaffold(
-      backgroundColor: widget.grayColor,
-      appBar: AppBar(
-        backgroundColor: widget.grayColor,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Bouton Retour
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: widget.brightCardColor,
-              ),
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                "Retour",
-                style: TextStyle(
-                  color: widget.grayColor,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
+      // Utilisation du BackProfileBar
+      appBar: BackProfileBar(
+        onBack: () => Navigator.pop(context),
+        // On pourrait aussi personnaliser onProfile si besoin
       ),
+      backgroundColor: widget.grayColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 20.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Titre de la famille
                   Text(
-                    "Nom de la Famille",
+                    widget.familyName,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: widget.brightCardColor,
+                      color: AppColors.whiteColor, // Couleur depuis constants.dart
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -163,17 +147,17 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                   Text(
                     "$memberCount Membres",
                     style: TextStyle(
-                      color: widget.brightCardColor,
+                      color: AppColors.brightCardColor,
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 20),
 
-                  // Image (arbre, etc.)
+                  // Image (arbre, etc.) un peu plus grande (160px)
                   Image.asset(
-                    'assets/images/family_tree.png', // <-- c'est toi qui gères l'image
-                    height: 120,
+                    'assets/images/family_tree.png',
+                    height: 160,
                   ),
                   const SizedBox(height: 20),
 
@@ -184,9 +168,11 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 5),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
-                        color: widget.cardColor,
+                        color: AppColors.cardColor,
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Row(
@@ -204,14 +190,14 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: widget.grayColor,
+                                  color: AppColors.grayColor,
                                 ),
                               ),
                               Text(
                                 email,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: widget.grayColor,
+                                  color: AppColors.grayColor,
                                 ),
                               ),
                             ],
@@ -229,7 +215,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                       setState(() => isSearching = !isSearching);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: widget.brightCardColor,
+                      backgroundColor: AppColors.brightCardColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -237,9 +223,11 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                           horizontal: 20.0, vertical: 10.0),
                     ),
                     child: Text(
-                      isSearching ? "Fermer la recherche" : "Rechercher des utilisateurs",
+                      isSearching
+                          ? "Fermer la recherche"
+                          : "Rechercher des utilisateurs",
                       style: TextStyle(
-                        color: widget.grayColor,
+                        color: AppColors.grayColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -250,7 +238,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                     // Champ de recherche
                     Container(
                       decoration: BoxDecoration(
-                        color: widget.cardColor,
+                        color: AppColors.cardColor,
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       padding: const EdgeInsets.all(12.0),
@@ -259,16 +247,16 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                           TextField(
                             controller: searchController,
                             onChanged: (val) => searchUsers(val.trim()),
-                            style: TextStyle(color: widget.grayColor),
+                            style: TextStyle(color: AppColors.grayColor),
                             decoration: InputDecoration(
                               hintText: 'Tapez un prénom ou un email...',
-                              hintStyle: TextStyle(color: widget.grayColor),
+                              hintStyle: TextStyle(color: AppColors.grayColor),
                               border: OutlineInputBorder(
                                 borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               filled: true,
-                              fillColor: widget.cardColor,
+                              fillColor: AppColors.cardColor,
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -278,7 +266,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                             Container(
                               padding: const EdgeInsets.all(8.0),
                               decoration: BoxDecoration(
-                                color: widget.cardColor,
+                                color: AppColors.cardColor,
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Column(
@@ -289,8 +277,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                   return GestureDetector(
                                     onTap: () => addMember(uId),
                                     child: Container(
-                                      margin:
-                                          const EdgeInsets.symmetric(vertical: 5),
+                                      margin: const EdgeInsets.symmetric(vertical: 5),
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
                                         color: const Color(0xFFF5D5CD), // rose
@@ -310,15 +297,16 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                               Text(
                                                 fName,
                                                 style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: widget.grayColor,
-                                                    fontWeight: FontWeight.bold),
+                                                  fontSize: 16,
+                                                  color: AppColors.grayColor,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
                                               Text(
                                                 mail,
                                                 style: TextStyle(
                                                   fontSize: 14,
-                                                  color: widget.grayColor,
+                                                  color: AppColors.grayColor,
                                                 ),
                                               ),
                                             ],

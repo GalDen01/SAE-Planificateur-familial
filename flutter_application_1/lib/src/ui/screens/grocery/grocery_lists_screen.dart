@@ -6,6 +6,7 @@ import 'package:Planificateur_Familial/src/ui/widgets/buttons/list_add_button.da
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
 import 'package:Planificateur_Familial/src/models/grocery_list.dart';
 import 'package:Planificateur_Familial/src/ui/screens/grocery/grocery_list_screen.dart';
+import 'package:Planificateur_Familial/src/config/constants.dart';
 
 class GroceryListsScreen extends StatelessWidget {
   final String familyName;
@@ -45,7 +46,7 @@ class GroceryListsScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: cardColor,
+                    color: AppColors.whiteColor,
                   ),
                 ),
                 const SizedBox(height: 20),
