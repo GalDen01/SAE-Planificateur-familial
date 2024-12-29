@@ -3,10 +3,10 @@ import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/ui/screens/profile/profile_screen.dart';
 
 class BackProfileBar extends StatelessWidget implements PreferredSizeWidget {
-  ///action à effectuer quand on appuie sur le bouton Retour
+  /// Action quand on appuie sur "Retour".
   final VoidCallback onBack;
 
-  ///action à effectuer quand on appuie sur le bouton Profil
+  /// Action quand on appuie sur "Profil". Par défaut, ouvre [ProfileScreen].
   final VoidCallback? onProfile;
 
   const BackProfileBar({
@@ -21,26 +21,24 @@ class BackProfileBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.transparent, // On garde le fond "transparent"
+      backgroundColor: Colors.transparent, // pas de fond
       elevation: 0,
-      automaticallyImplyLeading: false,  // pour personnalisé le bouton retour
+      automaticallyImplyLeading: false,
       flexibleSpace: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0), 
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // --- Bouton RETOUR ---
+              // Bouton RETOUR
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.brightCardColor, // Couleur demandée
+                  backgroundColor: AppColors.brightCardColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                    vertical: 10.0,
-                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                 ),
                 onPressed: onBack,
                 child: Text(
@@ -52,26 +50,22 @@ class BackProfileBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
 
-              // --- Bouton PROFIL ---
+              // Bouton PROFIL
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.brightCardColor, // Couleur demandée
+                  backgroundColor: AppColors.brightCardColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                    vertical: 10.0,
-                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                 ),
                 onPressed: onProfile ??
                     () {
-                      // Action par défaut si onProfile n'est pas fourni :
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const ProfileScreen(
-                            // Met ici les couleurs que tu veux passer
                             cardColor: AppColors.cardColor,
                             grayColor: AppColors.grayColor,
                             brightCardColor: AppColors.brightCardColor,
@@ -79,7 +73,7 @@ class BackProfileBar extends StatelessWidget implements PreferredSizeWidget {
                         ),
                       );
                     },
-                child: const Icon(Icons.account_circle, color: Colors.black87),
+                child: const Icon(Icons.account_circle, color: AppColors.black87),
               ),
             ],
           ),

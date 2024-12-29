@@ -11,7 +11,7 @@ class LoginScreen extends StatelessWidget {
     final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
-      backgroundColor: AppColors.grayColor, // Arrière-plan gris
+      backgroundColor: AppColors.grayColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -20,56 +20,52 @@ class LoginScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Titre principal
-                const Text(
+                Text(
                   "La coordination familiale,\nréinventée",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white, // ou AppColors.brightCardColor
+                    color: AppColors.whiteColor, // remplace Colors.white
                   ),
                 ),
                 const SizedBox(height: 30),
 
                 // IMAGE (au milieu)
-                // Remplace 'https://...' par ton chemin asset ou un lien
                 SizedBox(
-                  height: 180, // ou ce que tu veux
+                  height: 180,
                   child: Image.asset(
-                    "assets/images/login_page_family.png", 
+                    "assets/images/login_page_family.png",
                     fit: BoxFit.contain,
                   ),
                 ),
                 const SizedBox(height: 30),
 
-                // Texte descriptif
-                const Text(
+                Text(
                   "FamLink vous aide à collaborer facilement :\n"
                   "des calendriers synchronisés, des listes interactives\n"
                   "et une localisation sécurisée pour rester en contact.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white,
+                    color: AppColors.whiteColor,
                   ),
                 ),
                 const SizedBox(height: 40),
 
-                // Bouton "Se connecter via Google"
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {
                       await authProvider.signInWithGoogle();
                       if (authProvider.isLoggedIn) {
-                        // Si la connexion réussit, tu peux naviguer vers HomeScreen
                         Navigator.pushReplacementNamed(context, '/home');
                       } else {
-                        // Gérer l'erreur ou rester sur la page
+                        // Gérer l'erreur
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.cardColor,  // rose saumon pale
+                      backgroundColor: AppColors.cardColor, // rose
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -79,7 +75,7 @@ class LoginScreen extends StatelessWidget {
                       "SE CONNECTER VIA GOOGLE",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: AppColors.blackColor,
                       ),
                     ),
                   ),

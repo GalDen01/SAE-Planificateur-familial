@@ -51,7 +51,7 @@ class WeatherCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
         boxShadow: const [
           BoxShadow(
-            color: Colors.black26,
+            color: AppColors.shadowColor,
             blurRadius: 4,
             offset: Offset(0, 4),
           ),

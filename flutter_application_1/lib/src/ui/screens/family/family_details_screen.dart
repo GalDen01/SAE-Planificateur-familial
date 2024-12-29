@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:Planificateur_Familial/src/ui/screens/grocery/grocery_lists_screen.dart';
 import 'package:Planificateur_Familial/src/ui/screens/todo/todo_lists_screen.dart';
@@ -27,7 +25,6 @@ class FamilyDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar personnalisé
       appBar: BackProfileBar(
         onBack: () => Navigator.pop(context),
       ),
@@ -42,29 +39,26 @@ class FamilyDetailsScreen extends StatelessWidget {
             Text(
               familyName,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: AppColors.whiteColor,
+                color: AppColors.whiteColor, // ex. le titre en blanc
               ),
             ),
             const SizedBox(height: 10),
 
-            // Image (CircleAvatar) - adaptable à tes ressources
             CircleAvatar(
               radius: 40.0,
               backgroundColor: cardColor,
               child: ClipOval(
                 child: Image.asset(
-                  'assets/images/famille.png', // à adapter si besoin
+                  'assets/images/famille.png',
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-
             const SizedBox(height: 40),
 
-            // Bouton vers la page des listes de courses
             FamilyButton(
               label: "Listes de courses",
               backgroundColor: cardColor,
@@ -78,7 +72,6 @@ class FamilyDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // Bouton vers la page to-do
             FamilyButton(
               label: "Tâches à faire",
               backgroundColor: cardColor,
@@ -92,7 +85,6 @@ class FamilyDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // Bouton vers la page de gestion des membres
             FamilyButton(
               label: "Gérer les membres",
               backgroundColor: cardColor,

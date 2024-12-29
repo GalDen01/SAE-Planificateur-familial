@@ -26,12 +26,9 @@ class ManageMembersScreen extends StatefulWidget {
 }
 
 class _ManageMembersScreenState extends State<ManageMembersScreen> {
-  // Recherche
-  bool isSearching = false; // affichage zone de recherche
+  bool isSearching = false;
   final TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> suggestions = [];
-
-  // Liste des membres déjà dans la famille
   List<Map<String, dynamic>> familyMembers = [];
 
   @override
@@ -43,7 +40,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
   Future<void> loadFamilyMembers() async {
     final supabase = Supabase.instance.client;
     try {
-      // On joint `users` pour récupérer first_name et email
       final result = await supabase
           .from('family_members')
           .select('user_id, users!inner(first_name, email)')
@@ -59,7 +55,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     }
   }
 
-  /// Recherche d'utilisateurs par first_name ou email
   Future<void> searchUsers(String query) async {
     if (query.isEmpty) {
       setState(() => suggestions = []);
@@ -89,10 +84,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
           .read<FamilyProvider>()
           .addMemberToFamilyByUserId(widget.familyId, userId);
 
-      // Membre ajouté => recharger la liste
       await loadFamilyMembers();
-
-      // On ferme la zone de recherche (optionnel)
       setState(() {
         isSearching = false;
         suggestions.clear();
@@ -103,7 +95,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
         const SnackBar(content: Text('Membre ajouté avec succès!')),
       );
     } catch (e) {
-      // Par ex. "Cet utilisateur fait déjà partie de cette famille."
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
       );
@@ -115,10 +106,8 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     final memberCount = familyMembers.length;
 
     return Scaffold(
-      // Utilisation du BackProfileBar
       appBar: BackProfileBar(
         onBack: () => Navigator.pop(context),
-        // On pourrait aussi personnaliser onProfile si besoin
       ),
       backgroundColor: widget.grayColor,
       body: SafeArea(
@@ -135,18 +124,17 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                   // Titre de la famille
                   Text(
                     widget.familyName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.whiteColor, // Couleur depuis constants.dart
+                      color: AppColors.whiteColor,
                     ),
                   ),
                   const SizedBox(height: 5),
 
-                  // Nombre de membres
                   Text(
                     "$memberCount Membres",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.brightCardColor,
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
@@ -154,32 +142,31 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Image (arbre, etc.) un peu plus grande (160px)
+                  // Image (arbre)
                   Image.asset(
                     'assets/images/family_tree.png',
                     height: 160,
                   ),
                   const SizedBox(height: 20),
 
-                  // Liste des membres déjà présents
+                  // Liste des membres
                   ...familyMembers.map((fm) {
                     final firstName = fm['users']['first_name'] ?? '';
                     final email = fm['users']['email'] ?? '';
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 5),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
+                          horizontal: 12, vertical: 10),
                       decoration: BoxDecoration(
-                        color: AppColors.cardColor,
+                        color: widget.cardColor,
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Row(
                         children: [
-                          const CircleAvatar(
-                            backgroundColor: Colors.white70,
-                            child: Icon(Icons.person),
+                          CircleAvatar(
+                            backgroundColor:
+                                AppColors.whiteColor.withOpacity(0.7),
+                            child: const Icon(Icons.person),
                           ),
                           const SizedBox(width: 10),
                           Column(
@@ -190,14 +177,14 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.grayColor,
+                                  color: widget.grayColor,
                                 ),
                               ),
                               Text(
                                 email,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: AppColors.grayColor,
+                                  color: widget.grayColor,
                                 ),
                               ),
                             ],
@@ -209,7 +196,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
 
                   const SizedBox(height: 30),
 
-                  // Bouton pour afficher/masquer la zone de recherche
                   ElevatedButton(
                     onPressed: () {
                       setState(() => isSearching = !isSearching);
@@ -227,7 +213,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                           ? "Fermer la recherche"
                           : "Rechercher des utilisateurs",
                       style: TextStyle(
-                        color: AppColors.grayColor,
+                        color: widget.grayColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -235,10 +221,9 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
 
                   if (isSearching) ...[
                     const SizedBox(height: 20),
-                    // Champ de recherche
                     Container(
                       decoration: BoxDecoration(
-                        color: AppColors.cardColor,
+                        color: widget.cardColor,
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       padding: const EdgeInsets.all(12.0),
@@ -247,26 +232,25 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                           TextField(
                             controller: searchController,
                             onChanged: (val) => searchUsers(val.trim()),
-                            style: TextStyle(color: AppColors.grayColor),
+                            style: TextStyle(color: widget.grayColor),
                             decoration: InputDecoration(
                               hintText: 'Tapez un prénom ou un email...',
-                              hintStyle: TextStyle(color: AppColors.grayColor),
+                              hintStyle: TextStyle(color: widget.grayColor),
                               border: OutlineInputBorder(
                                 borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               filled: true,
-                              fillColor: AppColors.cardColor,
+                              fillColor: widget.cardColor,
                             ),
                           ),
                           const SizedBox(height: 10),
 
-                          // Suggestions
                           if (suggestions.isNotEmpty)
                             Container(
                               padding: const EdgeInsets.all(8.0),
                               decoration: BoxDecoration(
-                                color: AppColors.cardColor,
+                                color: widget.cardColor,
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Column(
@@ -277,17 +261,20 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                   return GestureDetector(
                                     onTap: () => addMember(uId),
                                     child: Container(
-                                      margin: const EdgeInsets.symmetric(vertical: 5),
+                                      margin:
+                                          const EdgeInsets.symmetric(vertical: 5),
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFFF5D5CD), // rose
-                                        borderRadius: BorderRadius.circular(8.0),
+                                        color: AppColors.cardColor, // ou .withOpacity(x)
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
                                       ),
                                       child: Row(
                                         children: [
-                                          const CircleAvatar(
-                                            backgroundColor: Colors.white70,
-                                            child: Icon(Icons.person),
+                                          CircleAvatar(
+                                            backgroundColor: AppColors.whiteColor
+                                                .withOpacity(0.7),
+                                            child: const Icon(Icons.person),
                                           ),
                                           const SizedBox(width: 10),
                                           Column(
@@ -298,7 +285,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                                 fName,
                                                 style: TextStyle(
                                                   fontSize: 16,
-                                                  color: AppColors.grayColor,
+                                                  color: widget.grayColor,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
@@ -306,7 +293,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                                 mail,
                                                 style: TextStyle(
                                                   fontSize: 14,
-                                                  color: AppColors.grayColor,
+                                                  color: widget.grayColor,
                                                 ),
                                               ),
                                             ],

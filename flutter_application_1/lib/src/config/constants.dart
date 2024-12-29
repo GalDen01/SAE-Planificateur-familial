@@ -6,4 +6,9 @@ class AppColors {
   static const Color brightCardColor = Color(0xFFF0E5D6);
   static const Color blackColor = Color.fromARGB(255, 49, 49, 49);
   static const Color whiteColor = Color.fromARGB(255, 255, 255, 255);
+  static const Color black87 = Color(0xDD000000);
+  static const Color white70 = Color(0xB3FFFFFF);
+  static const Color shadowColor = Color(0x42000000);
+  static const Color errorColor = Color(0xFFFF0000);
+  static const Color lightGray = Color(0xFFD0D0D0);
 }
