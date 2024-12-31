@@ -55,10 +55,13 @@ class GroceryListsScreen extends StatelessWidget {
                   radius: 40.0,
                   backgroundColor: cardColor,
                   child: ClipOval(
+                    child: Padding(
+                    padding: EdgeInsets.all(11.0), // Ajustez le padding selon vos besoins
                     child: Image.asset(
-                      'assets/images/famille.png',
+                      'assets/images/panier.png',
                       fit: BoxFit.cover,
                     ),
+                  ),
                   ),
                 ),
                 const SizedBox(height: 40),

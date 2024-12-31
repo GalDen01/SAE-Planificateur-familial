@@ -1,5 +1,3 @@
-// lib/src/providers/family_provider.dart
-
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:Planificateur_Familial/src/models/family.dart';
@@ -101,7 +99,6 @@ class FamilyProvider extends ChangeNotifier {
           .maybeSingle();
 
       if (existing != null) {
-        // déjà présent
         throw Exception("Cet utilisateur fait déjà partie de cette famille.");
       }
 

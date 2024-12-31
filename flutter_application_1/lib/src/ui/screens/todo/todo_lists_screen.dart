@@ -52,15 +52,20 @@ class TodoListsScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 CircleAvatar(
-                  radius: 40.0,
-                  backgroundColor: cardColor,
-                  child: ClipOval(
+                radius: 40.0,
+                backgroundColor: cardColor,
+                child: ClipOval(
+                  child: Padding(
+                    padding: EdgeInsets.all(9.0), // Ajustez le padding selon vos besoins
                     child: Image.asset(
-                      'assets/images/famille.png',
+                      'assets/images/todo_icon.png',
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
+              ),
+
+
                 const SizedBox(height: 40),
 
                 // Pour chaque liste

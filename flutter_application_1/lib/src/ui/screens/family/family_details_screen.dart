@@ -47,16 +47,37 @@ class FamilyDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            CircleAvatar(
-              radius: 40.0,
-              backgroundColor: cardColor,
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/images/famille.png',
-                  fit: BoxFit.cover,
+            SizedBox(
+                  width: 80,   // Diamètre du cercle
+                  height: 80,
+                  child: Stack(
+                    // IMPORTANT : On ne clippe pas, pour laisser déborder l’image
+                    clipBehavior: Clip.none,
+                    children: [
+                      // 1) Le cercle décoratif (ne clippe pas)
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: cardColor, // Votre couleur de fond
+                        ),
+                      ),
+
+                      // 2) L’image, plus grande ou décalée
+                      Positioned(
+                        // On remonte l’image de 20 pixels par exemple
+                        top: -1,
+                        child: Image.asset(
+                          'assets/images/famille.png',
+                          width: 80,  
+                          // height: 110, // si vous voulez la rendre plus haute
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
             const SizedBox(height: 40),
 
             FamilyButton(

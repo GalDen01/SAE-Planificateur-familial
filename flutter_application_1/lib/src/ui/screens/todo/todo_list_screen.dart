@@ -1,5 +1,4 @@
-// lib/src/ui/screens/todo/todo_list_screen.dart
-
+import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
 
@@ -37,13 +36,13 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
         });
         taskController.clear();
         labelText = "Nouvelle tâche";
-        labelTextColor = Colors.black;
+        labelTextColor = AppColors.cardColor;
         sortTasks();
       });
     } else {
       setState(() {
         labelText = "Veuillez entrer une tâche";
-        labelTextColor = Colors.red;
+        labelTextColor = AppColors.errorColor;
       });
     }
   }

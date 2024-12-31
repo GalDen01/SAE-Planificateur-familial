@@ -1,3 +1,5 @@
+// lib/src/ui/screens/family/manage_members_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
@@ -37,12 +39,14 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     loadFamilyMembers();
   }
 
+  /// Charge la liste des membres de la famille (jointure pour récupérer photo_url)
   Future<void> loadFamilyMembers() async {
     final supabase = Supabase.instance.client;
     try {
+      // On récupère first_name, email, photo_url
       final result = await supabase
           .from('family_members')
-          .select('user_id, users!inner(first_name, email)')
+          .select('user_id, users!inner(first_name, email, photo_url)')
           .eq('family_id', widget.familyId);
 
       if (result is List) {
@@ -55,6 +59,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     }
   }
 
+  /// Recherche d'utilisateurs (table `users`) par first_name ou email
   Future<void> searchUsers(String query) async {
     if (query.isEmpty) {
       setState(() => suggestions = []);
@@ -64,7 +69,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     try {
       final response = await supabase
           .from('users')
-          .select('*')
+          .select('*') // contient first_name, email, photo_url
           .or('first_name.ilike.%$query%,email.ilike.%$query%')
           .limit(10);
 
@@ -78,6 +83,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     }
   }
 
+  /// Ajoute un membre (par userId) à la famille
   Future<void> addMember(int userId) async {
     try {
       await context
@@ -106,6 +112,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     final memberCount = familyMembers.length;
 
     return Scaffold(
+      // On utilise notre appbar custom
       appBar: BackProfileBar(
         onBack: () => Navigator.pop(context),
       ),
@@ -121,7 +128,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Titre de la famille
+                  // Titre
                   Text(
                     widget.familyName,
                     style: const TextStyle(
@@ -142,7 +149,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Image (arbre)
+                  // Image
                   Image.asset(
                     'assets/images/family_tree.png',
                     height: 160,
@@ -151,8 +158,11 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
 
                   // Liste des membres
                   ...familyMembers.map((fm) {
-                    final firstName = fm['users']['first_name'] ?? '';
-                    final email = fm['users']['email'] ?? '';
+                    final userData = fm['users'] ?? {};
+                    final firstName = userData['first_name'] ?? '';
+                    final email = userData['email'] ?? '';
+                    final photoUrl = userData['photo_url']; // On récupère la photo
+
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 5),
                       padding: const EdgeInsets.symmetric(
@@ -163,11 +173,21 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                       ),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                            backgroundColor:
-                                AppColors.whiteColor.withOpacity(0.7),
-                            child: const Icon(Icons.person),
-                          ),
+                          // Si on a une photoUrl non vide, on affiche l'avatar,
+                          // sinon icône par défaut
+                          if (photoUrl != null && photoUrl.isNotEmpty)
+                            CircleAvatar(
+                              backgroundColor:
+                                  AppColors.whiteColor.withOpacity(0.7),
+                              backgroundImage: NetworkImage(photoUrl),
+                            )
+                          else
+                            CircleAvatar(
+                              backgroundColor:
+                                  AppColors.whiteColor.withOpacity(0.7),
+                              child: const Icon(Icons.person),
+                            ),
+
                           const SizedBox(width: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,6 +266,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                           ),
                           const SizedBox(height: 10),
 
+                          // Suggestions
                           if (suggestions.isNotEmpty)
                             Container(
                               padding: const EdgeInsets.all(8.0),
@@ -258,6 +279,8 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                   final uId = user['id'] as int;
                                   final fName = user['first_name'] ?? '';
                                   final mail = user['email'] ?? '';
+                                  final userPhoto = user['photo_url'] ?? '';
+
                                   return GestureDetector(
                                     onTap: () => addMember(uId),
                                     child: Container(
@@ -265,17 +288,26 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                           const EdgeInsets.symmetric(vertical: 5),
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color: AppColors.cardColor, // ou .withOpacity(x)
+                                        color: widget.cardColor,
                                         borderRadius:
                                             BorderRadius.circular(8.0),
                                       ),
                                       child: Row(
                                         children: [
-                                          CircleAvatar(
-                                            backgroundColor: AppColors.whiteColor
-                                                .withOpacity(0.7),
-                                            child: const Icon(Icons.person),
-                                          ),
+                                          if (userPhoto.isNotEmpty)
+                                            CircleAvatar(
+                                              backgroundColor: AppColors
+                                                  .whiteColor
+                                                  .withOpacity(0.7),
+                                              backgroundImage:
+                                                  NetworkImage(userPhoto),
+                                            )
+                                          else
+                                            CircleAvatar(
+                                              backgroundColor: AppColors.whiteColor
+                                                  .withOpacity(0.7),
+                                              child: const Icon(Icons.person),
+                                            ),
                                           const SizedBox(width: 10),
                                           Column(
                                             crossAxisAlignment:
