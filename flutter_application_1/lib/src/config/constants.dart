@@ -10,5 +10,6 @@ class AppColors {
   static const Color white70 = Color(0xB3FFFFFF);
   static const Color shadowColor = Color(0x42000000);
   static const Color errorColor = Color(0xFFFF0000);
+  static const Color deletColor = Color.fromARGB(255, 255, 72, 72);
   static const Color lightGray = Color(0xFFD0D0D0);
 }

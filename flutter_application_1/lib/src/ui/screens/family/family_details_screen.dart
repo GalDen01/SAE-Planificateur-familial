@@ -98,6 +98,7 @@ class FamilyDetailsScreen extends StatelessWidget {
               backgroundColor: cardColor,
               textColor: grayColor,
               targetPage: TodoListsScreen(
+                familyId: familyId,
                 familyName: familyName,
                 cardColor: cardColor,
                 grayColor: grayColor,

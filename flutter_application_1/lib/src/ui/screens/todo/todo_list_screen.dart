@@ -1,8 +1,14 @@
-import 'package:Planificateur_Familial/src/config/constants.dart';
+// lib/src/ui/screens/todo/todo_list_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
+import 'package:provider/provider.dart';
+import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
+import 'package:Planificateur_Familial/src/models/todo_task.dart';
+import 'package:Planificateur_Familial/src/config/constants.dart';
 
 class ToDoListScreen extends StatefulWidget {
+  final int listId;
   final String listName;
   final Color cardColor;
   final Color grayColor;
@@ -10,6 +16,7 @@ class ToDoListScreen extends StatefulWidget {
 
   const ToDoListScreen({
     super.key,
+    required this.listId,
     required this.listName,
     required this.cardColor,
     required this.grayColor,
@@ -22,54 +29,86 @@ class ToDoListScreen extends StatefulWidget {
 
 class _ToDoListScreenState extends State<ToDoListScreen> {
   final TextEditingController taskController = TextEditingController();
-  final List<Map<String, dynamic>> tasks = [];
-
+  List<TodoTaskModel> _allTasks = [];
   String labelText = "Nouvelle tâche";
-  Color labelTextColor = Colors.black;
+  Color labelTextColor = AppColors.blackColor;
 
-  void addTask() {
-    if (taskController.text.isNotEmpty) {
-      setState(() {
-        tasks.add({
-          'title': taskController.text,
-          'isChecked': false,
-        });
-        taskController.clear();
-        labelText = "Nouvelle tâche";
-        labelTextColor = AppColors.cardColor;
-        sortTasks();
-      });
-    } else {
+  bool _showOnlyUnchecked = false; // si vrai => on ne montre que tasks isChecked == false
+
+  @override
+  void initState() {
+    super.initState();
+    loadTasks();
+  }
+
+  Future<void> loadTasks() async {
+    final provider = context.read<TodoListProvider>();
+    final tasks = await provider.loadTasksForList(widget.listId);
+    setState(() {
+      _allTasks = tasks;
+    });
+  }
+
+  List<TodoTaskModel> get filteredTasks {
+    if (_showOnlyUnchecked) {
+      return _allTasks.where((t) => t.isChecked == false).toList();
+    }
+    return _allTasks;
+  }
+
+  Future<void> addTask() async {
+    final text = taskController.text.trim();
+    if (text.isEmpty) {
       setState(() {
         labelText = "Veuillez entrer une tâche";
         labelTextColor = AppColors.errorColor;
       });
+      return;
+    }
+    try {
+      await context.read<TodoListProvider>().createTask(widget.listId, text);
+      taskController.clear();
+      labelText = "Nouvelle tâche";
+      labelTextColor = AppColors.blackColor;
+      await loadTasks();
+    } catch (e) {
+      // Gérer l'erreur, ex. affichage d'un snackbar
     }
   }
 
-  void deleteAllTasks() {
-    setState(() {
-      tasks.clear();
-    });
+  Future<void> toggleChecked(TodoTaskModel task) async {
+    await context
+        .read<TodoListProvider>()
+        .updateTaskChecked(task.id!, !task.isChecked);
+    await loadTasks();
+  }
+
+  Future<void> deleteTask(int taskId) async {
+    await context.read<TodoListProvider>().deleteTask(taskId);
+    await loadTasks();
   }
 
   void confirmDeleteAllTasks() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (ctx) {
         return AlertDialog(
           title: const Text('Confirmer la suppression'),
-          content:
-              const Text('Êtes-vous sûr de vouloir supprimer tous les articles ?'),
+          content: const Text('Supprimer toutes les tâches ?'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.pop(ctx),
               child: const Text('Annuler'),
             ),
             TextButton(
               onPressed: () {
-                deleteAllTasks();
-                Navigator.of(context).pop();
+                // On supprime localement toutes les tasks
+                setState(() {
+                  _allTasks.clear();
+                });
+                Navigator.pop(ctx);
+                // note: si on veut le faire en BDD => on doit faire un .delete() sur "todo_tasks" eq listId
+                // ou un CASCADE sur la table
               },
               child: const Text('Supprimer'),
             ),
@@ -79,21 +118,11 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
     );
   }
 
-  void sortTasks() {
-    tasks.sort((a, b) {
-      if (a['isChecked'] && !b['isChecked']) {
-        return 1;
-      } else if (!a['isChecked'] && b['isChecked']) {
-        return -1;
-      }
-      return 0;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final tasks = filteredTasks;
+
     return Scaffold(
-      // Utilisation du BackProfileBar
       appBar: BackProfileBar(
         onBack: () => Navigator.pop(context),
       ),
@@ -102,75 +131,105 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            // Titre de la liste
+            Text(
+              widget.listName,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: widget.brightCardColor,
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            // Bouton toggle "Afficher que les non cochées"
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Afficher seulement les non-cochées",
+                  style: TextStyle(color: widget.brightCardColor),
+                ),
+                Switch(
+                  value: _showOnlyUnchecked,
+                  onChanged: (val) {
+                    setState(() {
+                      _showOnlyUnchecked = val;
+                    });
+                  },
+                  activeColor: widget.cardColor,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+
+            // TextField pour ajouter
             TextField(
               controller: taskController,
               decoration: InputDecoration(
                 labelText: labelText,
                 labelStyle: TextStyle(color: labelTextColor),
                 filled: true,
-                fillColor: widget.grayColor,
+                fillColor: widget.cardColor,
                 border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
+
             ElevatedButton(
               onPressed: addTask,
-              style: TextButton.styleFrom(
-                foregroundColor: widget.grayColor,
+              style: ElevatedButton.styleFrom(
                 backgroundColor: widget.cardColor,
+                foregroundColor: widget.grayColor,
               ),
-              child: Text('Ajouter', style: TextStyle(color: widget.grayColor)),
+              child: const Text("Ajouter"),
             ),
             const SizedBox(height: 20),
+
             Expanded(
-              child: ListView.builder(
-                itemCount: tasks.length,
-                itemBuilder: (context, index) {
-                  final task = tasks[index];
-                  final isChecked = task['isChecked'] ?? false;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      color: isChecked ? Colors.grey[300] : widget.cardColor,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Checkbox(
-                                value: isChecked,
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    tasks[index]['isChecked'] = !isChecked;
-                                    sortTasks();
-                                  });
-                                },
-                              ),
-                              Text(
-                                task['title'],
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  decoration:
-                                      isChecked ? TextDecoration.lineThrough : null,
-                                  color: widget.grayColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              setState(() {
-                                tasks.removeAt(index);
-                              });
-                            },
-                          ),
-                        ],
+              child: tasks.isEmpty
+                  ? Center(
+                      child: Text(
+                        "Aucune tâche trouvée",
+                        style: TextStyle(color: widget.brightCardColor),
                       ),
+                    )
+                  : ListView.builder(
+                      itemCount: tasks.length,
+                      itemBuilder: (ctx, index) {
+                        final task = tasks[index];
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                            color: task.isChecked
+                                ? AppColors.lightGray
+                                : widget.cardColor,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: ListTile(
+                            leading: Checkbox(
+                              value: task.isChecked,
+                              onChanged: (_) => toggleChecked(task),
+                            ),
+                            title: Text(
+                              task.content,
+                              style: TextStyle(
+                                fontSize: 16,
+                                decoration: task.isChecked
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                                color: widget.grayColor,
+                              ),
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete),
+                              color: AppColors.errorColor,
+                              onPressed: () => deleteTask(task.id!),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),

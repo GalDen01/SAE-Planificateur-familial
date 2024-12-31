@@ -3,11 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
 
 class TodoListAddButton extends StatelessWidget {
+  final int familyId;         // <-- Nouvel attribut pour savoir à quelle famille la liste appartient
   final Color cardColor;
   final Color grayColor;
 
   const TodoListAddButton({
     super.key,
+    required this.familyId,   // <-- On rend obligatoire le passage de familyId
     required this.cardColor,
     required this.grayColor,
   });
@@ -22,7 +24,10 @@ class TodoListAddButton extends StatelessWidget {
             final TextEditingController controller = TextEditingController();
             return AlertDialog(
               backgroundColor: cardColor,
-              title: Text('Créer une liste', style: TextStyle(color: grayColor)),
+              title: Text(
+                'Créer une liste',
+                style: TextStyle(color: grayColor),
+              ),
               content: TextField(
                 controller: controller,
                 decoration: InputDecoration(
@@ -40,10 +45,14 @@ class TodoListAddButton extends StatelessWidget {
                   child: Text('Annuler', style: TextStyle(color: grayColor)),
                 ),
                 TextButton(
-                  onPressed: () {
-                    final listname = controller.text.trim();
-                    if (listname.isNotEmpty) {
-                      context.read<TodoListProvider>().addList(listname);
+                  onPressed: () async {
+                    final listName = controller.text.trim();
+                    if (listName.isNotEmpty) {
+                      // On appelle la nouvelle méthode createList
+                      await context
+                          .read<TodoListProvider>()
+                          .createList(familyId, listName);
+
                       Navigator.pop(context);
                     }
                   },
