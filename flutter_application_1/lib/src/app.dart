@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => FamilyProvider()),
-        ChangeNotifierProvider(create: (_) => ListProvider()),
+        ChangeNotifierProvider(create: (_) => GroceryListProvider()),
         ChangeNotifierProvider(create: (_) => TodoListProvider()),
       ],
       child: MaterialApp(

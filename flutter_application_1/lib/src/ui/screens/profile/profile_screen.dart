@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:Planificateur_Familial/src/config/constants.dart';
+import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
-  final Color cardColor;
-  final Color grayColor;
-  final Color brightCardColor;
-
   const ProfileScreen({
     super.key,
     required this.cardColor,
@@ -12,29 +11,67 @@ class ProfileScreen extends StatelessWidget {
     required this.brightCardColor,
   });
 
+  final Color cardColor;
+  final Color grayColor;
+  final Color brightCardColor;
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.currentUser; 
+    // user?.displayName, user?.email, user?.photoUrl disponibles
+
     return Scaffold(
+      backgroundColor: AppColors.grayColor, // Couleur de fond
       appBar: AppBar(
         backgroundColor: grayColor,
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: false, 
+        // On gère nous-mêmes les boutons dans 'title'
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            // --- Bouton RETOUR ---
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.brightCardColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 10.0,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "Retour",
+                style: TextStyle(
+                  color: AppColors.grayColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            // Espace flexible qui pousse le bouton "Déconnexion" à droite
+            const Spacer(),
+
+            // --- Bouton DÉCONNEXION ---
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: brightCardColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 10.0,
+                ),
               ),
-              onPressed: () {
+              onPressed: () async {
+                await authProvider.signOut();
                 Navigator.pop(context);
               },
               child: Text(
-                "Retour",
+                "Déconnexion",
                 style: TextStyle(
                   color: grayColor,
                   fontWeight: FontWeight.bold,
@@ -44,13 +81,88 @@ class ProfileScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Container(
-        color: grayColor,
-        child: const Center(
+      body: SafeArea(
+        child: Padding(
+          padding:
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Mon Profil"),
+              const SizedBox(height: 20),
+
+              // Titre principal
+              Text(
+                "Profil utilisateur",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.whiteColor,
+                ),
+              ),
+              const SizedBox(height: 30),
+
+              // Avatar (Photo de profil Google de l'utilisateur)
+              Container(
+                width: 100,
+                height: 100,
+                child: ClipOval(
+                  child: user != null &&
+                          user.photoUrl != null &&
+                          user.photoUrl!.isNotEmpty
+                      ? Image.network(
+                          user.photoUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (ctx, error, stack) {
+                            // Si jamais l'image ne se charge pas
+                            return const Icon(Icons.person, size: 64);
+                          },
+                        )
+                      : const Icon(Icons.person, size: 64),
+                ),
+              ),
+              const SizedBox(height: 30),
+
+              // Carte "Votre Prénom"
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                margin: const EdgeInsets.only(bottom: 10.0),
+                decoration: BoxDecoration(
+                  color: AppColors.cardColor,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Center(
+                  child: Text(
+                    "Votre Prénom : ${user?.displayName ?? 'Inconnu'}",
+                    style: TextStyle(
+                      color: AppColors.grayColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+
+              // Carte "Votre email"
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                margin: const EdgeInsets.only(bottom: 30.0),
+                decoration: BoxDecoration(
+                  color: AppColors.cardColor,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Center(
+                  child: Text(
+                    "Votre email : ${user?.email ?? 'Inconnu'}",
+                    style: TextStyle(
+                      color: AppColors.grayColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              // ... autres widgets si besoin ...
             ],
           ),
         ),

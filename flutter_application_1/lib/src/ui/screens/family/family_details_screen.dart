@@ -85,12 +85,14 @@ class FamilyDetailsScreen extends StatelessWidget {
               backgroundColor: cardColor,
               textColor: grayColor,
               targetPage: GroceryListsScreen(
+                familyId: familyId,  // <-- important
                 familyName: familyName,
                 cardColor: cardColor,
                 grayColor: grayColor,
                 brightCardColor: brightCardColor,
               ),
             ),
+
             const SizedBox(height: 10),
 
             FamilyButton(
