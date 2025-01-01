@@ -89,9 +89,11 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
       ),
       backgroundColor: widget.grayColor,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
+        
+        child: SingleChildScrollView(
+          
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+            child: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [

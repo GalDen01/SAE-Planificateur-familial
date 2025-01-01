@@ -144,10 +144,10 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
 
             // Bouton toggle "Afficher que les non cochées"
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  "Afficher seulement les non-cochées",
+                  "Filtrer par tâches",
                   style: TextStyle(color: widget.brightCardColor),
                 ),
                 Switch(
