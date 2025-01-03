@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
+import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
+import 'package:Planificateur_Familial/src/providers/weather_provider.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/header_menu.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/weather_card.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/buttons/family_button.dart';
@@ -9,7 +11,6 @@ import 'package:Planificateur_Familial/src/ui/widgets/buttons/family_add_button.
 import 'package:Planificateur_Familial/src/ui/screens/family/family_details_screen.dart';
 import 'package:Planificateur_Familial/src/ui/screens/profile/profile_screen.dart';
 import 'package:Planificateur_Familial/src/models/family.dart';
-import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,8 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (userEmail != null) {
       context.read<FamilyProvider>().loadFamiliesForUser(userEmail);
     }
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    context.read<WeatherProvider>().fetchWeather();
+  });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +52,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 30),
 
+              /// On n'a plus besoin de passer la ville en paramètre,
+              /// le WeatherCard ira chercher lui-même dans le provider.
+              /// On lui laisse juste les couleurs voulues.
               const WeatherCard(
                 backgroundColor: AppColors.cardColor,
-                cityName: "Limoges",
-                temperature: "12°C",
-                weatherLabel: "Pluie",
-                weatherIcon: Icons.cloud,
-                temperatureIcon: Icons.thermostat,
-                homeIcon: Icons.home,
                 textColor: AppColors.blackColor,
               ),
 
