@@ -18,15 +18,19 @@ class AuthProvider extends ChangeNotifier {
   Future<void> signInWithGoogle() async {
     try {
       final account = await _googleSignIn.signIn();
-      if (account != null) {
-        _currentUser = account; // contient email, displayName, photoUrl
-        notifyListeners();
-        await createOrUpdateUserInSupabase();
+      if (account == null) {
+        return;
       }
+
+      _currentUser = account;
+      notifyListeners();
+
+      await createOrUpdateUserInSupabase();
     } catch (error) {
-      debugPrint("Erreur GoogleSignIn: $error");
+      debugPrint("Erreur signInWithGoogle: $error");
     }
   }
+
 
   Future<void> silentSignIn() async {
     try {

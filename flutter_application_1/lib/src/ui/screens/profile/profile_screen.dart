@@ -18,15 +18,13 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
-    final user = authProvider.currentUser; 
-    // user?.displayName, user?.email, user?.photoUrl disponibles
+    final user = authProvider.currentUser;
 
     return Scaffold(
       backgroundColor: AppColors.grayColor, // Couleur de fond
       appBar: AppBar(
         backgroundColor: grayColor,
-        automaticallyImplyLeading: false, 
-        // On gère nous-mêmes les boutons dans 'title'
+        automaticallyImplyLeading: false,
         title: Row(
           children: [
             // --- Bouton RETOUR ---
@@ -51,7 +49,6 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
 
-            // Espace flexible qui pousse le bouton "Déconnexion" à droite
             const Spacer(),
 
             // --- Bouton DÉCONNEXION ---
@@ -68,7 +65,13 @@ class ProfileScreen extends StatelessWidget {
               ),
               onPressed: () async {
                 await authProvider.signOut();
-                Navigator.pop(context);
+                
+                // Réinitialise la pile de navigation et va sur la page de login :
+                Navigator.pushNamedAndRemoveUntil(
+                  context, 
+                  '/login', // ou '/home' si tu veux un autre comportement
+                  (route) => false,
+                );
               },
               child: Text(
                 "Déconnexion",
@@ -83,12 +86,10 @@ class ProfileScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: Padding(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
           child: Column(
             children: [
               const SizedBox(height: 20),
-
               // Titre principal
               Text(
                 "Profil utilisateur",
@@ -100,7 +101,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 30),
 
-              // Avatar (Photo de profil Google de l'utilisateur)
+              // Avatar (Photo de profil Google)
               Container(
                 width: 100,
                 height: 100,
@@ -112,11 +113,28 @@ class ProfileScreen extends StatelessWidget {
                           user.photoUrl!,
                           fit: BoxFit.cover,
                           errorBuilder: (ctx, error, stack) {
-                            // Si jamais l'image ne se charge pas
-                            return const Icon(Icons.person, size: 64);
+                            return Container(
+                              color: AppColors.whiteColor.withOpacity(0.7),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.person,
+                                  size: 64,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            );
                           },
                         )
-                      : const Icon(Icons.person, size: 64),
+                      : Container(
+                          color: AppColors.whiteColor.withOpacity(0.7),
+                          child: const Center(
+                            child: Icon(
+                              Icons.person,
+                              size: 64,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 30),
@@ -162,7 +180,6 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              // ... autres widgets si besoin ...
             ],
           ),
         ),
