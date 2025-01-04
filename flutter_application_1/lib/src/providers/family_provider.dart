@@ -29,20 +29,15 @@ class FamilyProvider extends ChangeNotifier {
 
       _families.clear();
 
-      // Si la requête a renvoyé une liste
-      if (data is List) {
-        for (final item in data) {
-          _families.add(
-            Family(
-              id: item['id'] as int,
-              name: item['name'] as String,
-            ),
-          );
-        }
-      } else {
-        // Si ce n'est pas une liste (erreur, etc.)
-        debugPrint("La requête Supabase n'a pas renvoyé de liste: $data");
+      for (final item in data) {
+        _families.add(
+          Family(
+            id: item['id'] as int,
+            name: item['name'] as String,
+          ),
+        );
       }
+      
 
       notifyListeners();
     } catch (e) {
@@ -113,7 +108,6 @@ class FamilyProvider extends ChangeNotifier {
     }
   }
 
-  /// Récupérer la liste des membres d'une famille
   Future<List<Map<String, dynamic>>> getMembersOfFamily(int familyId) async {
     final supabase = Supabase.instance.client;
     final response = await supabase

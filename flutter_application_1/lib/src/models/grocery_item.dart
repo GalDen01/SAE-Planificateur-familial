@@ -1,12 +1,10 @@
-// lib/src/models/grocery_item.dart
-
 class GroceryItemModel {
   final int? id;
   final int listId;
   final String name;
   final bool isChecked;
-  final int quantity;    // <-- nouveau
-  final double price;    // <-- nouveau
+  final int quantity;
+  final double price;
 
   GroceryItemModel({
     this.id,

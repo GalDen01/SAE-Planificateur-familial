@@ -1,5 +1,3 @@
-// lib/src/models/grocery_list.dart
-
 class GroceryListModel {
   final int? id;
   final int? familyId;

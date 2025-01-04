@@ -4,7 +4,7 @@ import 'package:Planificateur_Familial/src/providers/family_provider.dart';
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
 import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
 import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
-import 'package:Planificateur_Familial/src/providers/weather_provider.dart'; // <-- AJOUT
+import 'package:Planificateur_Familial/src/providers/weather_provider.dart';
 import 'package:Planificateur_Familial/src/ui/screens/home/home_screen.dart';
 import 'package:Planificateur_Familial/src/ui/screens/auth/login_screen.dart';
 import 'package:Planificateur_Familial/src/ui/screens/auth/wrapper_screen.dart';
@@ -20,7 +20,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => FamilyProvider()),
         ChangeNotifierProvider(create: (_) => GroceryListProvider()),
         ChangeNotifierProvider(create: (_) => TodoListProvider()),
-        // AJOUT
         ChangeNotifierProvider(create: (_) => WeatherProvider()),
       ],
       child: MaterialApp(

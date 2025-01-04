@@ -1,13 +1,9 @@
-// android/build.gradle (top-level)
-
 buildscript {
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        // Si tu utilises google-services (Firebase), tu pourrais mettre :
-        // classpath 'com.google.gms:google-services:4.3.15'
     }
 }
 
@@ -23,10 +19,9 @@ rootProject.buildDir = "../build"
 
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-    // (optionnel) project.evaluationDependsOn(":app")
 }
 
-// Tâche "clean"
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

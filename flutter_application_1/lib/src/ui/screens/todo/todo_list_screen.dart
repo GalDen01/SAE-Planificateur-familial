@@ -87,7 +87,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
     await context.read<TodoListProvider>().deleteTask(taskId);
     await loadTasks();
   }
-
+  // Méthode inutiliser pour le moment à voir plus tard
   void confirmDeleteAllTasks() {
     showDialog(
       context: context,
@@ -107,8 +107,6 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
                   _allTasks.clear();
                 });
                 Navigator.pop(ctx);
-                // note: si on veut le faire en BDD => on doit faire un .delete() sur "todo_tasks" eq listId
-                // ou un CASCADE sur la table
               },
               child: const Text('Supprimer'),
             ),

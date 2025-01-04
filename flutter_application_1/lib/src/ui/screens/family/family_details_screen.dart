@@ -42,36 +42,34 @@ class FamilyDetailsScreen extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: AppColors.whiteColor, // ex. le titre en blanc
+                color: AppColors.whiteColor,
               ),
             ),
             const SizedBox(height: 10),
 
             SizedBox(
-                  width: 80,   // Diamètre du cercle
+                  width: 80,
                   height: 80,
                   child: Stack(
                     // IMPORTANT : On ne clippe pas, pour laisser déborder l’image
                     clipBehavior: Clip.none,
                     children: [
-                      // 1) Le cercle décoratif (ne clippe pas)
+                      // 1) Le cercle décoratif
                       Container(
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: cardColor, // Votre couleur de fond
+                          color: cardColor,
                         ),
                       ),
 
-                      // 2) L’image, plus grande ou décalée
                       Positioned(
-                        // On remonte l’image de 20 pixels par exemple
+                        // On remonte l’image
                         top: -1,
                         child: Image.asset(
                           'assets/images/famille.png',
                           width: 80,  
-                          // height: 110, // si vous voulez la rendre plus haute
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -85,7 +83,7 @@ class FamilyDetailsScreen extends StatelessWidget {
               backgroundColor: cardColor,
               textColor: grayColor,
               targetPage: GroceryListsScreen(
-                familyId: familyId,  // <-- important
+                familyId: familyId,
                 familyName: familyName,
                 cardColor: cardColor,
                 grayColor: grayColor,

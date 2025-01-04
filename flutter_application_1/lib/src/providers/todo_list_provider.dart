@@ -11,7 +11,6 @@ class TodoListProvider extends ChangeNotifier {
 
   final supabase = Supabase.instance.client;
 
-  /// Charge toutes les listes d'une famille
   Future<void> loadListsForFamily(int familyId) async {
     try {
       final response = await supabase
@@ -20,23 +19,22 @@ class TodoListProvider extends ChangeNotifier {
           .eq('family_id', familyId)
           .order('created_at', ascending: true);
 
-      if (response is List) {
-        _lists.clear();
-        for (var item in response) {
-          _lists.add(TodoListModel(
-            id: item['id'] as int,
-            familyId: item['family_id'] as int,
-            name: item['name'] as String,
-          ));
-        }
-        notifyListeners();
+      
+      _lists.clear();
+      for (var item in response) {
+        _lists.add(TodoListModel(
+          id: item['id'] as int,
+          familyId: item['family_id'] as int,
+          name: item['name'] as String,
+        ));
+      
+      notifyListeners();
       }
     } catch (e) {
       debugPrint("Erreur loadListsForFamily: $e");
     }
   }
 
-  /// Créer une liste pour une famille
   Future<void> createList(int familyId, String name) async {
     if (name.trim().isEmpty) {
       throw Exception("Le nom de la liste ne peut pas être vide.");
@@ -51,23 +49,22 @@ class TodoListProvider extends ChangeNotifier {
           .select()
           .single();
 
-      if (response != null) {
-        final newList = TodoListModel(
-          id: response['id'] as int,
-          familyId: response['family_id'] as int,
-          name: response['name'] as String,
-        );
-        _lists.add(newList);
-        notifyListeners();
-      }
+      
+      final newList = TodoListModel(
+        id: response['id'] as int,
+        familyId: response['family_id'] as int,
+        name: response['name'] as String,
+      );
+      _lists.add(newList);
+      notifyListeners();
+      
     } catch (e) {
       debugPrint("Erreur createList: $e");
       rethrow;
     }
   }
 
-  /// Supprime une liste (et éventuellement ses tâches si côté BDD
-  /// tu as mis un cascade, sinon il faudra supprimer d'abord les tasks).
+
   Future<void> deleteList(int listId) async {
     try {
       await supabase
@@ -84,7 +81,6 @@ class TodoListProvider extends ChangeNotifier {
 
   // ========== GESTION DES TÂCHES ========== //
 
-  /// Charge les tâches d'une liste
   Future<List<TodoTaskModel>> loadTasksForList(int listId) async {
     try {
       final response = await supabase
@@ -93,16 +89,15 @@ class TodoListProvider extends ChangeNotifier {
           .eq('list_id', listId)
           .order('created_at', ascending: true);
 
-      if (response is List) {
-        return response.map((item) => TodoTaskModel.fromJson(item)).toList();
-      }
+      
+      return response.map((item) => TodoTaskModel.fromJson(item)).toList();
+      
     } catch (e) {
       debugPrint("Erreur loadTasksForList: $e");
     }
     return [];
   }
 
-  /// Créer une tâche
   Future<void> createTask(int listId, String content) async {
     if (content.trim().isEmpty) {
       throw Exception("La tâche ne peut pas être vide.");
@@ -118,7 +113,6 @@ class TodoListProvider extends ChangeNotifier {
     }
   }
 
-  /// Met à jour l'état coché d'une tâche
   Future<void> updateTaskChecked(int taskId, bool isChecked) async {
     try {
       await supabase
@@ -130,7 +124,6 @@ class TodoListProvider extends ChangeNotifier {
     }
   }
 
-  /// Supprimer une tâche
   Future<void> deleteTask(int taskId) async {
     try {
       await supabase

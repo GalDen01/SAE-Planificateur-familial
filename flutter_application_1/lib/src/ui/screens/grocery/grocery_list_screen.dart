@@ -1,5 +1,3 @@
-// lib/src/ui/screens/grocery/grocery_list_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
@@ -8,7 +6,7 @@ import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
 
 class GroceryListScreen extends StatefulWidget {
-  final int listId; // l'id de la liste en BDD
+  final int listId;
   final String listName;
   final Color cardColor;
   final Color grayColor;
@@ -29,22 +27,16 @@ class GroceryListScreen extends StatefulWidget {
 
 class _GroceryListScreenState extends State<GroceryListScreen> {
   List<GroceryItemModel> _items = [];
-  bool _showOnlyUnchecked = false; // Filtre
-  double _totalBudget = 0.0;        // budget total
-  final GroceryListProvider _provider = 
-      // on pourra l'obtenir dans initState
-      // (on le fera dans didChangeDependencies ou initState)
-      GroceryListProvider();
+  bool _showOnlyUnchecked = false;
+  double _totalBudget = 0.0;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // On le récupère via context
-    final p = context.read<GroceryListProvider>();
-    if (p != _provider) {
-      // ce test est un peu superflu, on peut juste le faire sans test :
+  void initState() {
+    super.initState();
+    // utilisation addPostFrameCallback pour s'assurer que le contexte est disponible
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       loadItemsAndBudget();
-    }
+    });
   }
 
   Future<void> loadItemsAndBudget() async {
@@ -57,6 +49,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     });
   }
 
+  /// Filtre les items en fonction de l'état du switch
   List<GroceryItemModel> get filteredItems {
     if (_showOnlyUnchecked) {
       return _items.where((i) => !i.isChecked).toList();
@@ -140,6 +133,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     );
   }
 
+  /// Toggle l'état "isChecked" d'un article
   Future<void> toggleChecked(GroceryItemModel item) async {
     await context
         .read<GroceryListProvider>()
@@ -153,7 +147,6 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   }
 
   Future<void> editItemDialog(GroceryItemModel item) async {
-    // Pour mettre à jour quantity/price
     final qtyController = TextEditingController(text: "${item.quantity}");
     final priceController = TextEditingController(text: "${item.price}");
 

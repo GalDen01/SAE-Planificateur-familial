@@ -21,7 +21,7 @@ class ProfileScreen extends StatelessWidget {
     final user = authProvider.currentUser;
 
     return Scaffold(
-      backgroundColor: AppColors.grayColor, // Couleur de fond
+      backgroundColor: AppColors.grayColor,
       appBar: AppBar(
         backgroundColor: grayColor,
         automaticallyImplyLeading: false,
@@ -69,7 +69,7 @@ class ProfileScreen extends StatelessWidget {
                 // Réinitialise la pile de navigation et va sur la page de login :
                 Navigator.pushNamedAndRemoveUntil(
                   context, 
-                  '/login', // ou '/home' si tu veux un autre comportement
+                  '/login',
                   (route) => false,
                 );
               },

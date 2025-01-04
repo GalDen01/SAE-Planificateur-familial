@@ -20,7 +20,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -28,9 +27,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (userEmail != null) {
       context.read<FamilyProvider>().loadFamiliesForUser(userEmail);
     }
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    context.read<WeatherProvider>().fetchWeather();
-  });
+    // Pour éviter d'appeler fetchWeather() avant que le widget ne soit monté.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WeatherProvider>().fetchWeather();
+    });
   }
 
   @override
@@ -52,9 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 30),
 
-              /// On n'a plus besoin de passer la ville en paramètre,
-              /// le WeatherCard ira chercher lui-même dans le provider.
-              /// On lui laisse juste les couleurs voulues.
               const WeatherCard(
                 backgroundColor: AppColors.cardColor,
                 textColor: AppColors.blackColor,
@@ -62,7 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 50),
 
-              // Liste des familles
               ...families.map((Family family) {
                 return Column(
                   children: [
@@ -83,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               }).toList(),
 
-              // Bouton pour ajouter une famille
               const FamilyAddButton(
                 backgroundColor: AppColors.cardColor,
                 textColor: AppColors.grayColor,

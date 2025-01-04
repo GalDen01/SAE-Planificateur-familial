@@ -2,19 +2,15 @@
 
 plugins {
     id "com.android.application"
-    // => DOIT correspondre à "org.jetbrains.kotlin.android" (pas "kotlin-android")
     id "org.jetbrains.kotlin.android"
-    // => Le plugin Flutter doit être appliqué APRÈS les plugins Android/Kotlin
     id "dev.flutter.flutter-gradle-plugin"
 }
 
 android {
-    // Harmonise la namespace avec ton package Kotlin (si tu le souhaites)
     namespace = "com.example.flutter_application_1"
     compileSdk = 34
 
-    // (Optionnel) ndkVersion => si ton flutter l'exige
-    // ndkVersion = flutter.ndkVersion
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -25,8 +21,7 @@ android {
     }
 
     defaultConfig {
-        // Ton applicationId => c'est le vrai ID pour le Play Store
-        // tu peux aussi mettre "com.example.flutter_application_1"
+
         applicationId = "com.example.flutter_application_1"
         minSdk = 21
         targetSdk = 34
@@ -36,18 +31,16 @@ android {
 
     buildTypes {
         release {
-            // On utilise debug keys par défaut, si tu veux signer en release => config perso
             signingConfig signingConfigs.debug
         }
     }
 }
 
-// Flutter block => indique où se trouve le code Flutter
 flutter {
     source = "../.."
 }
 
-// Dépendances spécifiques si besoin
+
 dependencies {
     // Ex: Google Play services auth, etc.
     // implementation "com.google.android.gms:play-services-auth:20.5.0"

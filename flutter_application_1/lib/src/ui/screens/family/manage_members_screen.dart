@@ -1,5 +1,3 @@
-// lib/src/ui/screens/family/manage_members_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
@@ -49,11 +47,11 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
           .select('user_id, users!inner(first_name, email, photo_url)')
           .eq('family_id', widget.familyId);
 
-      if (result is List) {
-        setState(() {
-          familyMembers = result.cast<Map<String, dynamic>>();
-        });
-      }
+      
+      setState(() {
+        familyMembers = result.cast<Map<String, dynamic>>();
+      });
+      
     } catch (e) {
       debugPrint("Erreur loadFamilyMembers: $e");
     }
@@ -73,17 +71,16 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
           .or('first_name.ilike.%$query%,email.ilike.%$query%')
           .limit(10);
 
-      if (response is List) {
-        setState(() {
-          suggestions = response.cast<Map<String, dynamic>>();
-        });
-      }
+      
+      setState(() {
+        suggestions = response.cast<Map<String, dynamic>>();
+      });
+      
     } catch (e) {
       debugPrint("Erreur searchUsers: $e");
     }
   }
 
-  /// Ajoute un membre (par userId) à la famille
   Future<void> addMember(int userId) async {
     try {
       await context
@@ -112,7 +109,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     final memberCount = familyMembers.length;
 
     return Scaffold(
-      // On utilise notre appbar custom
       appBar: BackProfileBar(
         onBack: () => Navigator.pop(context),
       ),
@@ -128,7 +124,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Titre
                   Text(
                     widget.familyName,
                     style: const TextStyle(
@@ -149,7 +144,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Image
                   Image.asset(
                     'assets/images/family_tree.png',
                     height: 160,
@@ -161,7 +155,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                     final userData = fm['users'] ?? {};
                     final firstName = userData['first_name'] ?? '';
                     final email = userData['email'] ?? '';
-                    final photoUrl = userData['photo_url']; // On récupère la photo
+                    final photoUrl = userData['photo_url'];
 
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 5),
@@ -174,7 +168,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                       child: Row(
                         children: [
                           // Si on a une photoUrl non vide, on affiche l'avatar,
-                          // sinon icône par défaut
                           if (photoUrl != null && photoUrl.isNotEmpty)
                             CircleAvatar(
                               backgroundColor:

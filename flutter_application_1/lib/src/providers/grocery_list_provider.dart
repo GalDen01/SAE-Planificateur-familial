@@ -1,5 +1,3 @@
-// lib/src/providers/grocery_list_provider.dart
-
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:Planificateur_Familial/src/models/grocery_list.dart';
@@ -20,13 +18,13 @@ class GroceryListProvider extends ChangeNotifier {
           .eq('family_id', familyId)
           .order('created_at', ascending: true);
 
-      if (response is List) {
-        _lists.clear();
-        for (var item in response) {
-          _lists.add(GroceryListModel.fromJson(item));
-        }
-        notifyListeners();
+      
+      _lists.clear();
+      for (var item in response) {
+        _lists.add(GroceryListModel.fromJson(item));
       }
+      notifyListeners();
+      
     } catch (e) {
       debugPrint("Erreur loadListsForFamily: $e");
     }
@@ -47,11 +45,11 @@ class GroceryListProvider extends ChangeNotifier {
           .select()
           .single();
 
-      if (data != null) {
-        final newList = GroceryListModel.fromJson(data);
-        _lists.add(newList);
-        notifyListeners();
-      }
+      
+      final newList = GroceryListModel.fromJson(data);
+      _lists.add(newList);
+      notifyListeners();
+      
     } catch (e) {
       debugPrint("Erreur createList: $e");
       rethrow;
@@ -75,7 +73,6 @@ class GroceryListProvider extends ChangeNotifier {
 
   // ========== GESTION DES ARTICLES ========== //
 
-  /// Charge les articles d'une grocery_list
   Future<List<GroceryItemModel>> loadItemsForList(int listId) async {
     try {
       final response = await supabase
@@ -84,16 +81,15 @@ class GroceryListProvider extends ChangeNotifier {
           .eq('list_id', listId)
           .order('created_at', ascending: true);
 
-      if (response is List) {
-        return response.map((item) => GroceryItemModel.fromJson(item)).toList();
-      }
+      
+      return response.map((item) => GroceryItemModel.fromJson(item)).toList();
+      
     } catch (e) {
       debugPrint("Erreur loadItemsForList: $e");
     }
     return [];
   }
 
-  /// Crée un nouvel article
   Future<void> createItem(int listId, String name, int quantity, double price) async {
     if (name.trim().isEmpty) {
       throw Exception("Le nom de l'article ne peut pas être vide.");
@@ -111,7 +107,6 @@ class GroceryListProvider extends ChangeNotifier {
     }
   }
 
-  /// Met à jour l'état is_checked d'un article
   Future<void> updateItemChecked(int itemId, bool isChecked) async {
     try {
       await supabase
@@ -123,7 +118,6 @@ class GroceryListProvider extends ChangeNotifier {
     }
   }
 
-  /// Met à jour la quantité ou le prix, etc.
   Future<void> updateItem(int itemId, {int? quantity, double? price}) async {
     // Permet de faire un "update" partiel
     final Map<String, dynamic> updates = {};
@@ -142,7 +136,6 @@ class GroceryListProvider extends ChangeNotifier {
     }
   }
 
-  /// Supprime un article
   Future<void> deleteItem(int itemId) async {
     try {
       await supabase
@@ -154,8 +147,6 @@ class GroceryListProvider extends ChangeNotifier {
     }
   }
 
-  /// Calcule le budget total d'une liste
-  /// sum(quantity * price)
   Future<double> getTotalBudget(int listId) async {
     double total = 0.0;
     try {

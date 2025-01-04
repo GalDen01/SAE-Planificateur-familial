@@ -15,6 +15,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   http: ^0.13.5
+
   geolocator: ^9.0.2
   google_sign_in: ^5.4.2
   google_sign_in_web: ^0.10.2
@@ -23,9 +24,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  mocktail: ^1.0.0
+  postgrest: ^2.4.0
   flutter_lints: ^4.0.0
-
+  geolocator_platform_interface: ^4.0.0
 flutter:
   uses-material-design: true
 

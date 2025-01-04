@@ -1,5 +1,3 @@
-// lib/src/ui/screens/grocery/grocery_lists_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
@@ -9,7 +7,7 @@ import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/ui/screens/grocery/grocery_list_screen.dart';
 
 class GroceryListsScreen extends StatefulWidget {
-  final int familyId;        // <-- On récupère l'id de la famille
+  final int familyId;
   final String familyName;
   final Color cardColor;
   final Color grayColor;

@@ -13,7 +13,6 @@ class WeatherCard extends StatelessWidget {
     required this.textColor,
   });
 
-  /// Petit widget pour afficher une info en ligne, ex. le label “28°C” avec son icône
   Widget _buildInfoItem(IconData icon, String label) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -35,17 +34,14 @@ class WeatherCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final weatherProvider = context.watch<WeatherProvider>();
+    final cityName = weatherProvider.cityName;
+    final temperature = weatherProvider.temperature;
+    final description = weatherProvider.weatherDescription;
+    final isLoading = weatherProvider.isLoading;
 
-    final cityName = weatherProvider.cityName;             // Ville
-    final temperature = weatherProvider.temperature;       // Température
-    final description = weatherProvider.weatherDescription; // “Pluie”, “Ciel dégagé”, etc.
-    final isLoading = weatherProvider.isLoading;           // true le temps de charger
-
-    // On peut choisir des icônes Flutter en fonction de l’iconCode. 
-    // Pour l’exemple, on affiche la même icône par défaut.
-    final IconData weatherIcon = Icons.cloud; 
-    final IconData temperatureIcon = Icons.thermostat;
-    final IconData homeIcon = Icons.home;
+    const IconData weatherIcon = Icons.cloud; 
+    const IconData temperatureIcon = Icons.thermostat;
+    const IconData homeIcon = Icons.home;
 
     return Container(
       width: double.infinity,
@@ -62,9 +58,7 @@ class WeatherCard extends StatelessWidget {
         ],
       ),
       child: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
+          ? const Center(child: CircularProgressIndicator())
           : Column(
               mainAxisSize: MainAxisSize.min,
               children: [

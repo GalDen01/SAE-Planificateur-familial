@@ -1,4 +1,3 @@
-// lib/src/models/todo_task.dart
 class TodoTaskModel {
   final int? id;
   final int listId;
@@ -12,7 +11,6 @@ class TodoTaskModel {
     required this.isChecked,
   });
 
-  // Méthodes toJson/fromJson si besoin
   factory TodoTaskModel.fromJson(Map<String, dynamic> json) {
     return TodoTaskModel(
       id: json['id'] as int?,

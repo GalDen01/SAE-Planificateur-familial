@@ -26,7 +26,7 @@ class LoginScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.whiteColor, // remplace Colors.white
+                    color: AppColors.whiteColor,
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -65,7 +65,7 @@ class LoginScreen extends StatelessWidget {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.cardColor, // rose
+                      backgroundColor: AppColors.cardColor,
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
