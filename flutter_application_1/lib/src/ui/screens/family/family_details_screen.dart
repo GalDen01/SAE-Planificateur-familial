@@ -91,8 +91,6 @@ class FamilyDetailsScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 10),
-
             FamilyButton(
               label: "Tâches à faire",
               backgroundColor: cardColor,
@@ -118,6 +116,14 @@ class FamilyDetailsScreen extends StatelessWidget {
                 grayColor: grayColor,
                 brightCardColor: brightCardColor,
               ),
+            ),
+            const SizedBox(height: 10),
+
+            FamilyButton(
+              label: "Quitter la famille",
+              backgroundColor: cardColor,
+              textColor: grayColor,
+
             ),
             const SizedBox(height: 10),
           ],

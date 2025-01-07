@@ -1,5 +1,3 @@
-// lib/src/providers/todo_list_provider.dart
-
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:Planificateur_Familial/src/models/todo_list.dart';

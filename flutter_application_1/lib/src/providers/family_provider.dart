@@ -108,6 +108,43 @@ class FamilyProvider extends ChangeNotifier {
     }
   }
 
+Future<void> deleteMemberToFamilyByUserId(int familyId, int userId) async {
+  final supabase = Supabase.instance.client;
+  try {
+    // Vérifier si l'utilisateur fait partie de la famille
+    final existing = await supabase
+        .from('family_members')
+        .select('id')
+        .eq('family_id', familyId)
+        .eq('user_id', userId)
+        .maybeSingle();
+
+    // Si l'utilisateur est trouvé dans la table family_members
+    if (existing != null && existing['id'] != null) {
+      // Supprimer le membre de la famille
+      final deleteResponse = await supabase
+          .from('family_members')
+          .delete()
+          .eq('family_id', familyId)
+          .eq('user_id', userId);
+
+      // Si la suppression réussit, vous pouvez notifier les auditeurs
+      if (deleteResponse.error == null) {
+        debugPrint("Membre supprimé avec succès.");
+        notifyListeners();  // N'oubliez pas de notifier les auditeurs si nécessaire
+      } else {
+        throw Exception("Erreur lors de la suppression du membre.");
+      }
+    } else {
+      throw Exception("Cet utilisateur ne fait pas partie de cette famille.");
+    }
+  } catch (e) {
+    debugPrint("Erreur deleteMemberToFamilyByUserId: $e");
+    rethrow;
+  }
+}
+
+
   Future<List<Map<String, dynamic>>> getMembersOfFamily(int familyId) async {
     final supabase = Supabase.instance.client;
     final response = await supabase
