@@ -108,7 +108,7 @@ class FamilyProvider extends ChangeNotifier {
     }
   }
 
-Future<void> deleteMemberToFamilyByUserId(int familyId, int userId) async {
+Future<void> deleteMemberToFamilyByUserId(int familyId, String userId) async {
   final supabase = Supabase.instance.client;
   try {
     // Vérifier si l'utilisateur fait partie de la famille
@@ -116,7 +116,7 @@ Future<void> deleteMemberToFamilyByUserId(int familyId, int userId) async {
         .from('family_members')
         .select('id')
         .eq('family_id', familyId)
-        .eq('user_id', userId)
+        .eq('user_id', userId as int)
         .maybeSingle();
 
     // Si l'utilisateur est trouvé dans la table family_members
@@ -131,7 +131,7 @@ Future<void> deleteMemberToFamilyByUserId(int familyId, int userId) async {
       // Si la suppression réussit, vous pouvez notifier les auditeurs
       if (deleteResponse.error == null) {
         debugPrint("Membre supprimé avec succès.");
-        notifyListeners();  // N'oubliez pas de notifier les auditeurs si nécessaire
+        notifyListeners();  // Ne pas oublier de notifier les auditeurs si nécessaire  ||> A faire si temps
       } else {
         throw Exception("Erreur lors de la suppression du membre.");
       }
