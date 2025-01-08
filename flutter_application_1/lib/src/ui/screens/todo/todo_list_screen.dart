@@ -89,32 +89,45 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   }
   // Méthode inutiliser pour le moment à voir plus tard
   void confirmDeleteAllTasks() {
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          title: const Text('Confirmer la suppression'),
-          content: const Text('Supprimer toutes les tâches ?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Annuler'),
+  showDialog(
+    context: context,
+    builder: (ctx) {
+      return AlertDialog(
+        title: Text(
+          'Supprimer toutes les tâches ?',
+          style: TextStyle(color : widget.grayColor), // Couleur du titre
+        ),
+        backgroundColor: widget.cardColor, // Couleur de fond de l'AlertDialog
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            style: TextButton.styleFrom(
+              foregroundColor: widget.grayColor, // Couleur du texte "Annuler"
             ),
-            TextButton(
-              onPressed: () {
-                // On supprime localement toutes les tasks
-                setState(() {
-                  _allTasks.clear();
-                });
-                Navigator.pop(ctx);
-              },
-              child: const Text('Supprimer'),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () {
+              // On supprime localement toutes les tasks
+              setState(() {
+                for (var task in _allTasks) {
+                  deleteTask(task.id!);
+                  }
+                }
+              );
+              Navigator.pop(ctx);
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: widget.grayColor, // Couleur du texte "Supprimer"
             ),
-          ],
-        );
-      },
-    );
-  }
+            child: const Text('Supprimer'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -174,15 +187,41 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
             ),
             const SizedBox(height: 10),
 
-            ElevatedButton(
-              onPressed: addTask,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: widget.cardColor,
-                foregroundColor: widget.grayColor,
-              ),
-              child: const Text("Ajouter"),
+            Row(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: ElevatedButton(
+                      onPressed: addTask,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: widget.cardColor,
+                        foregroundColor: widget.grayColor,
+                      ),
+                      child: const Text("Ajouter"),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0), // Ajoute un espace avec le bord
+                  child: IconButton(
+                      icon: Container(
+                        decoration: BoxDecoration(
+                          color: widget.cardColor, // Couleur de fond beige
+                          shape: BoxShape.circle, // Fond circulaire
+                        ),
+                        padding: const EdgeInsets.all(8.0), // Espace autour de l'icône
+                        child: const Icon(
+                          Icons.delete_forever_outlined,
+                          color: AppColors.errorColor, // Couleur rouge de l'icône
+                        ),
+                      ),
+                      onPressed: () => confirmDeleteAllTasks(),
+                    ),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
+
+
 
             Expanded(
               child: tasks.isEmpty
