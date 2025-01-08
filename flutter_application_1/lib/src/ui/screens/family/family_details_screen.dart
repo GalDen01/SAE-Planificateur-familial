@@ -8,6 +8,8 @@ import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
+import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
+import 'package:Planificateur_Familial/src/ui/screens/home/home_screen.dart';
 
 class FamilyDetailsScreen extends StatelessWidget {
   final int familyId;
@@ -118,33 +120,46 @@ class FamilyDetailsScreen extends StatelessWidget {
               backgroundColor: cardColor,
               textColor: grayColor,
               onPressed: () async {
-                final familyProvider = context.read<FamilyProvider>();
+                final supabase = Supabase.instance.client;
+                final userId = context.read<AuthProvider>().currentUser?.id;
+
+                if (userId == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Utilisateur non identifié !')),
+                  );
+                  return;
+                }
+
                 try {
-                  final currentUser = Supabase.instance.client.auth.currentUser;
-                  if (currentUser == null || currentUser.id.isEmpty) {
-                    throw Exception("Utilisateur non connecté.");
+                  debugPrint('familyId: $familyId, userId: $userId');
+                  
+                  // Supprimer l'utilisateur de la famille
+                  await supabase
+                      .from('family_members')
+                      .delete()
+                      .eq('family_id', familyId)
+                      .eq('user_id', userId);
+
+                  // Mettre à jour la liste des familles
+                  final userEmail = context.read<AuthProvider>().currentUser?.email;
+                  if (userEmail != null) {
+                    await context.read<FamilyProvider>().loadFamiliesForUser(userEmail);
                   }
 
-                  // Supprime l'utilisateur de la famille
-                  await familyProvider.deleteMemberToFamilyByUserId(
-                    familyId,
-                    currentUser.id,
-                  );
-
-                  // Affiche un message de succès
+                  // Afficher un message de succès
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Vous avez quitté la famille avec succès!'),
-                    ),
+                    const SnackBar(content: Text('Vous avez quitté la famille avec succès !')),
                   );
 
-                  // Retour à l'écran précédent
-                  Navigator.pop(context);
+                  // Retourner à l'écran principal (HomeScreen)
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    (route) => false,
+                  );
                 } catch (e) {
+                  // Gérer les erreurs
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Erreur: ${e.toString()}'),
-                    ),
+                    SnackBar(content: Text('Erreur : ${e.toString()}')),
                   );
                 }
               },
