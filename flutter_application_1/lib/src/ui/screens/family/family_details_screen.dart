@@ -178,7 +178,7 @@ class FamilyDetailsScreen extends StatelessWidget {
 
             // Bouton "Gérer les membres"
             FamilyButton(
-              label: "Gérer les membres",
+              label: "Mon Groupe Familial",
               backgroundColor: cardColor,
               textColor: grayColor,
               targetPage: ManageMembersScreen(

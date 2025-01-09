@@ -1,3 +1,5 @@
+// lib/src/ui/screens/family/manage_members_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
@@ -37,27 +39,26 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     loadFamilyMembers();
   }
 
-  /// Charge la liste des membres de la famille (jointure pour récupérer photo_url)
+  /// Charge la liste des membres de la famille
   Future<void> loadFamilyMembers() async {
     final supabase = Supabase.instance.client;
     try {
-      // On récupère first_name, email, photo_url
       final result = await supabase
           .from('family_members')
           .select('user_id, users!inner(first_name, email, photo_url)')
           .eq('family_id', widget.familyId);
 
-      
-      setState(() {
-        familyMembers = result.cast<Map<String, dynamic>>();
-      });
-      
+      if (result is List) {
+        setState(() {
+          familyMembers = result.cast<Map<String, dynamic>>();
+        });
+      }
     } catch (e) {
       debugPrint("Erreur loadFamilyMembers: $e");
     }
   }
 
-  /// Recherche d'utilisateurs (table `users`) par first_name ou email
+  /// Recherche d'utilisateurs
   Future<void> searchUsers(String query) async {
     if (query.isEmpty) {
       setState(() => suggestions = []);
@@ -67,25 +68,27 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     try {
       final response = await supabase
           .from('users')
-          .select('*') // contient first_name, email, photo_url
+          .select('*')
           .or('first_name.ilike.%$query%,email.ilike.%$query%')
           .limit(10);
 
-      
-      setState(() {
-        suggestions = response.cast<Map<String, dynamic>>();
-      });
-      
+      if (response is List) {
+        setState(() {
+          suggestions = response.cast<Map<String, dynamic>>();
+        });
+      }
     } catch (e) {
       debugPrint("Erreur searchUsers: $e");
     }
   }
 
+  /// Auparavant, on ajoutait directement => addMemberToFamily
+  /// Désormais, on envoie une invitation => inviteMemberToFamily
   Future<void> addMember(int userId) async {
     try {
       await context
           .read<FamilyProvider>()
-          .addMemberToFamilyByUserId(widget.familyId, userId);
+          .inviteMemberToFamily(widget.familyId, userId);
 
       await loadFamilyMembers();
       setState(() {
@@ -95,11 +98,11 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Membre ajouté avec succès!')),
+        const SnackBar(content: Text('Invitation envoyée avec succès!')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Cet utilisateur fait déjà partie de cette famille.")),
+        const SnackBar(content: Text("Erreur lors de l'invitation.")),
       );
     }
   }
@@ -160,14 +163,14 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 5),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                        horizontal: 12, vertical: 10
+                      ),
                       decoration: BoxDecoration(
                         color: widget.cardColor,
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Row(
                         children: [
-                          // Si on a une photoUrl non vide, on affiche l'avatar,
                           if (photoUrl != null && photoUrl.isNotEmpty)
                             CircleAvatar(
                               backgroundColor:
@@ -259,7 +262,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                           ),
                           const SizedBox(height: 10),
 
-                          // Suggestions
                           if (suggestions.isNotEmpty)
                             Container(
                               padding: const EdgeInsets.all(8.0),
@@ -277,20 +279,17 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                   return GestureDetector(
                                     onTap: () => addMember(uId),
                                     child: Container(
-                                      margin:
-                                          const EdgeInsets.symmetric(vertical: 5),
+                                      margin: const EdgeInsets.symmetric(vertical: 5),
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
                                         color: widget.cardColor,
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
+                                        borderRadius: BorderRadius.circular(8.0),
                                       ),
                                       child: Row(
                                         children: [
                                           if (userPhoto.isNotEmpty)
                                             CircleAvatar(
-                                              backgroundColor: AppColors
-                                                  .whiteColor
+                                              backgroundColor: AppColors.whiteColor
                                                   .withOpacity(0.7),
                                               backgroundImage:
                                                   NetworkImage(userPhoto),

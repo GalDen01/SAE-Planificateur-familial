@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool _hasAcceptedCGU = false; // Checkbox pour CGU
+  bool _hasAcceptedCGU = false;
 
   Future<void> _showCguDialog() async {
     await showDialog(
