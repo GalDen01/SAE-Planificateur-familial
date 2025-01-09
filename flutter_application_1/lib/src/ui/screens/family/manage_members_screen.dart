@@ -99,7 +99,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
+        const SnackBar(content: Text("Cet utilisateur fait déjà partie de cette famille.")),
       );
     }
   }

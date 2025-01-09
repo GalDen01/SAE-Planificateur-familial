@@ -1,3 +1,4 @@
+// lib/src/ui/screens/todo/todo_lists_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +29,8 @@ class TodoListsScreen extends StatefulWidget {
 }
 
 class _TodoListsScreenState extends State<TodoListsScreen> {
+  String _errorMessage = '';
+
   @override
   void initState() {
     super.initState();
@@ -36,44 +39,77 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
 
   Future<void> _createListDialog() async {
     final controller = TextEditingController();
+    String? localErrorMsg;
+
     final res = await showDialog<String>(
       context: context,
       builder: (ctx) {
-        return AlertDialog(
-          backgroundColor: widget.cardColor,
-          title: Text('Créer une liste', style: TextStyle(color: widget.grayColor)),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: 'Nom de la liste',
-              hintStyle: TextStyle(color: widget.grayColor),
+        return StatefulBuilder(builder: (dialogCtx, setStateDialog) {
+          return AlertDialog(
+            backgroundColor: widget.cardColor,
+            title: Text('Créer une liste', style: TextStyle(color: widget.grayColor)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (localErrorMsg?.isNotEmpty ?? false)
+                    Text(
+                      localErrorMsg ?? '',
+                      style: const TextStyle(color: AppColors.errorColor),
+                    ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                    hintText: 'Nom de la liste',
+                    hintStyle: TextStyle(color: widget.grayColor),
+                  ),
+                ),
+              ],
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              style: TextButton.styleFrom(
-                foregroundColor: widget.grayColor,
-                backgroundColor: widget.cardColor,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogCtx),
+                style: TextButton.styleFrom(
+                  foregroundColor: widget.grayColor,
+                  backgroundColor: widget.cardColor,
+                ),
+                child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
               ),
-              child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-              style: TextButton.styleFrom(
-                foregroundColor: widget.grayColor,
-                backgroundColor: widget.cardColor,
+              TextButton(
+                onPressed: () {
+                  final name = controller.text.trim();
+                  if (name.isEmpty) {
+                    setStateDialog(() {
+                      localErrorMsg = "Le nom de la liste ne peut pas être vide.";
+                    });
+                    return;
+                  }
+                  Navigator.pop(dialogCtx, name);
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: widget.grayColor,
+                  backgroundColor: widget.cardColor,
+                ),
+                child: Text('Ajouter', style: TextStyle(color: widget.grayColor)),
               ),
-              child: Text('Ajouter', style: TextStyle(color: widget.grayColor)),
-            ),
-          ],
-        );
+            ],
+          );
+        });
       },
     );
 
-    if (res != null && res.isNotEmpty) {
+    if (res == null || res.isEmpty) {
+      // Utilisateur a annulé ou laissé vide
+      return;
+    }
+
+    try {
       await context.read<TodoListProvider>().createList(widget.familyId, res);
-      setState(() {}); // rafraîchir
+      setState(() {});
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
     }
   }
 
@@ -88,11 +124,9 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
       ),
       backgroundColor: widget.grayColor,
       body: SafeArea(
-        
         child: SingleChildScrollView(
-          
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-            child: Center(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+          child: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -124,7 +158,6 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                // Bouton "Créer une liste"
                 ElevatedButton(
                   onPressed: _createListDialog,
                   style: ElevatedButton.styleFrom(
@@ -133,6 +166,13 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
                   ),
                   child: const Text("Créer une liste"),
                 ),
+                const SizedBox(height: 10),
+
+                if (_errorMessage.isNotEmpty)
+                  Text(
+                    _errorMessage,
+                    style: const TextStyle(color: AppColors.errorColor),
+                  ),
                 const SizedBox(height: 30),
 
                 // Listes existantes
@@ -152,7 +192,6 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
                         ),
                       ),
                       onTap: () {
-                        // Naviguer vers l'écran des tâches
                         Navigator.push(
                           context,
                           MaterialPageRoute(

@@ -1,10 +1,27 @@
+// lib/src/ui/screens/auth/login_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
 import 'package:Planificateur_Familial/src/config/constants.dart';
+import 'package:Planificateur_Familial/src/ui/screens/auth/cgu_dialog.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  bool _hasAcceptedCGU = false; // Checkbox pour CGU
+
+  Future<void> _showCguDialog() async {
+    await showDialog(
+      context: context,
+      builder: (ctx) => const CguDialog(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,29 +70,81 @@ class LoginScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
+                // Checkbox CGU
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Checkbox(
+                      value: _hasAcceptedCGU,
+                      onChanged: (val) {
+                        setState(() {
+                          _hasAcceptedCGU = val ?? false;
+                        });
+                      },
+                      activeColor: AppColors.cardColor,
+                      checkColor: AppColors.blackColor,
+                    ),
+                    // Bouton "Voir CGU"
+                    GestureDetector(
+                      onTap: _showCguDialog,
+                      child: Text(
+                        "J'accepte les Conditions Générales d'Utilisation",
+                        style: TextStyle(
+                          color: AppColors.whiteColor,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+
+                // Bouton "SE CONNECTER VIA GOOGLE"
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {
+                      if (!_hasAcceptedCGU) {
+                        // Si pas coché, on affiche un message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "Vous devez accepter les CGU pour continuer.",
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+
+                      // Sinon on tente la connexion
                       await authProvider.signInWithGoogle();
                       if (authProvider.isLoggedIn) {
                         Navigator.pushReplacementNamed(context, '/home');
                       } else {
                         // Gérer l'erreur
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Échec de la connexion."),
+                          ),
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.cardColor,
+                      backgroundColor: _hasAcceptedCGU
+                          ? AppColors.cardColor
+                          : AppColors.lightGray, // change la couleur si pas accepté
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       "SE CONNECTER VIA GOOGLE",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.blackColor,
+                        color: _hasAcceptedCGU
+                            ? AppColors.blackColor
+                            : AppColors.whiteColor, // un petit repère visuel
                       ),
                     ),
                   ),

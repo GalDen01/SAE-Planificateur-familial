@@ -1,3 +1,5 @@
+// lib/src/ui/screens/grocery/grocery_lists_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
@@ -27,6 +29,8 @@ class GroceryListsScreen extends StatefulWidget {
 }
 
 class _GroceryListsScreenState extends State<GroceryListsScreen> {
+  String _errorMessage = '';
+
   @override
   void initState() {
     super.initState();
@@ -35,44 +39,77 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
 
   Future<void> _createGroceryListDialog() async {
     final controller = TextEditingController();
+    String? localErrorMsg;
+
     final res = await showDialog<String>(
       context: context,
       builder: (ctx) {
-        return AlertDialog(
-          backgroundColor: widget.cardColor,
-          title: Text('Créer une liste', style: TextStyle(color: widget.grayColor)),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: 'Nom de la liste',
-              hintStyle: TextStyle(color: widget.grayColor),
+        return StatefulBuilder(builder: (dialogCtx, setStateDialog) {
+          return AlertDialog(
+            backgroundColor: widget.cardColor,
+            title: Text('Créer une liste', style: TextStyle(color: widget.grayColor)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (localErrorMsg?.isNotEmpty ?? false)
+                    Text(
+                      localErrorMsg ?? '',
+                      style: const TextStyle(color: AppColors.errorColor),
+                    ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                    hintText: 'Nom de la liste',
+                    hintStyle: TextStyle(color: widget.grayColor),
+                  ),
+                ),
+              ],
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              style: TextButton.styleFrom(
-                foregroundColor: widget.grayColor,
-                backgroundColor: widget.cardColor,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogCtx),
+                style: TextButton.styleFrom(
+                  foregroundColor: widget.grayColor,
+                  backgroundColor: widget.cardColor,
+                ),
+                child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
               ),
-              child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-              style: TextButton.styleFrom(
-                foregroundColor: widget.grayColor,
-                backgroundColor: widget.cardColor,
+              TextButton(
+                onPressed: () {
+                  final name = controller.text.trim();
+                  if (name.isEmpty) {
+                    setStateDialog(() {
+                      localErrorMsg = "Le nom de la liste ne peut pas être vide.";
+                    });
+                    return;
+                  }
+                  Navigator.pop(dialogCtx, name);
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: widget.grayColor,
+                  backgroundColor: widget.cardColor,
+                ),
+                child: Text('Ajouter', style: TextStyle(color: widget.grayColor)),
               ),
-              child: Text('Ajouter', style: TextStyle(color: widget.grayColor)),
-            ),
-          ],
-        );
+            ],
+          );
+        });
       },
     );
 
-    if (res != null && res.isNotEmpty) {
+    if (res == null || res.isEmpty) {
+      // si l'utilisateur a annulé ou n'a pas mis de nom
+      return;
+    }
+
+    try {
       await context.read<GroceryListProvider>().createList(widget.familyId, res);
       setState(() {});
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
     }
   }
 
@@ -103,7 +140,6 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-
                 CircleAvatar(
                   radius: 40.0,
                   backgroundColor: widget.cardColor,
@@ -125,7 +161,14 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
                   ),
                   child: const Text("Créer une liste"),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 10),
+
+                if (_errorMessage.isNotEmpty)
+                  Text(
+                    _errorMessage,
+                    style: const TextStyle(color: AppColors.errorColor),
+                  ),
+                const SizedBox(height: 20),
 
                 ...lists.map((GroceryListModel glist) {
                   return Container(

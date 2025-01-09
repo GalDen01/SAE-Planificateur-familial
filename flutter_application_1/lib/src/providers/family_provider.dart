@@ -154,4 +154,33 @@ Future<void> deleteMemberToFamilyByUserId(int familyId, String userId) async {
 
     return response.cast<Map<String, dynamic>>();
   }
+  
+  Future<void> leaveFamily(int familyId, String userEmail) async {
+    final supabase = Supabase.instance.client;
+
+    // 1) Récupérer l'id de l'utilisateur via l'email
+    final userRes = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', userEmail)
+        .maybeSingle();
+
+    if (userRes == null || userRes['id'] == null) {
+      throw Exception("Impossible de trouver votre compte dans la BDD.");
+    }
+
+    final userId = userRes['id'] as int;
+
+    // 2) Supprimer la ligne correspondante dans family_members
+    await supabase
+        .from('family_members')
+        .delete()
+        .eq('family_id', familyId)
+        .eq('user_id', userId);
+
+    // 3) Recharger la liste des familles
+    await loadFamiliesForUser(userEmail);
+
+    // Pas de notifyListeners() direct ici, car loadFamiliesForUser() le fait déjà
+  }
 }

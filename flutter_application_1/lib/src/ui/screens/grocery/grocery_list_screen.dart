@@ -1,3 +1,5 @@
+// lib/src/ui/screens/grocery/grocery_list_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
@@ -27,13 +29,14 @@ class GroceryListScreen extends StatefulWidget {
 
 class _GroceryListScreenState extends State<GroceryListScreen> {
   List<GroceryItemModel> _items = [];
-  bool _showOnlyUnchecked = false;
-  double _totalBudget = 0.0;
+  bool _showOnlyUnchecked = false; // Filtre
+  double _totalBudget = 0.0;        // budget total
+
+  String _errorMessage = '';        // Pour afficher un message d’erreur global si besoin
 
   @override
   void initState() {
     super.initState();
-    // utilisation addPostFrameCallback pour s'assurer que le contexte est disponible
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadItemsAndBudget();
     });
@@ -49,7 +52,6 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     });
   }
 
-  /// Filtre les items en fonction de l'état du switch
   List<GroceryItemModel> get filteredItems {
     if (_showOnlyUnchecked) {
       return _items.where((i) => !i.isChecked).toList();
@@ -57,83 +59,108 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     return _items;
   }
 
+  /// Bouton pour créer un nouvel article
   Future<void> addItemDialog() async {
     final nameController = TextEditingController();
     final qtyController = TextEditingController(text: "1");
     final priceController = TextEditingController(text: "0.0");
+    String? localErrorMsg; // pour afficher une erreur dans le dialog
 
     await showDialog(
       context: context,
       builder: (ctx) {
-        return AlertDialog(
-          backgroundColor: widget.cardColor,
-          title: Text("Nouvel article", style: TextStyle(color: widget.grayColor)),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: "Nom de l'article",
-                    labelStyle: TextStyle(color: widget.grayColor),
+        return StatefulBuilder(builder: (dialogCtx, setStateDialog) {
+          // On utilise StatefulBuilder pour pouvoir setState dans le dialog
+          return AlertDialog(
+            backgroundColor: widget.cardColor,
+            title: Text("Nouvel article", style: TextStyle(color: widget.grayColor)),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Correction ici : on teste si la chaîne est non-nulle et non vide
+                  if (localErrorMsg?.isNotEmpty ?? false)
+                    Text(
+                      localErrorMsg ?? '',
+                      style: const TextStyle(color: AppColors.errorColor),
+                    ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: "Nom de l'article",
+                      labelStyle: TextStyle(color: widget.grayColor),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: qtyController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "Quantité",
-                    labelStyle: TextStyle(color: widget.grayColor),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: qtyController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: "Quantité",
+                      labelStyle: TextStyle(color: widget.grayColor),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: priceController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "Prix (facultatif)",
-                    labelStyle: TextStyle(color: widget.grayColor),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: priceController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: "Prix (facultatif)",
+                      labelStyle: TextStyle(color: widget.grayColor),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              style: TextButton.styleFrom(
-                foregroundColor: widget.grayColor,
-                backgroundColor: widget.cardColor,
+                ],
               ),
-              child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
             ),
-            TextButton(
-              onPressed: () async {
-                final name = nameController.text.trim();
-                final qty = int.tryParse(qtyController.text) ?? 1;
-                final price = double.tryParse(priceController.text) ?? 0.0;
-                if (name.isNotEmpty) {
-                  await context
-                      .read<GroceryListProvider>()
-                      .createItem(widget.listId, name, qty, price);
-                  Navigator.pop(ctx);
-                  await loadItemsAndBudget();
-                }
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: widget.grayColor,
-                backgroundColor: widget.cardColor,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogCtx),
+                style: TextButton.styleFrom(
+                  foregroundColor: widget.grayColor,
+                  backgroundColor: widget.cardColor,
+                ),
+                child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
               ),
-              child: Text('Ajouter', style: TextStyle(color: widget.grayColor)),
-            ),
-          ],
-        );
+              TextButton(
+                onPressed: () async {
+                  final name = nameController.text.trim();
+                  final qty = int.tryParse(qtyController.text) ?? 1;
+                  final price = double.tryParse(priceController.text) ?? 0.0;
+
+                  if (name.isEmpty) {
+                    setStateDialog(() {
+                      localErrorMsg = "Le nom de l'article ne peut pas être vide.";
+                    });
+                    return;
+                  }
+
+                  try {
+                    await context
+                        .read<GroceryListProvider>()
+                        .createItem(widget.listId, name, qty, price);
+
+                    Navigator.pop(dialogCtx);
+                    await loadItemsAndBudget();
+                  } catch (e) {
+                    setState(() {
+                      _errorMessage = e.toString();
+                    });
+                    Navigator.pop(dialogCtx);
+                  }
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: widget.grayColor,
+                  backgroundColor: widget.cardColor,
+                ),
+                child: Text('Ajouter', style: TextStyle(color: widget.grayColor)),
+              ),
+            ],
+          );
+        });
       },
     );
   }
 
-  /// Toggle l'état "isChecked" d'un article
   Future<void> toggleChecked(GroceryItemModel item) async {
     await context
         .read<GroceryListProvider>()
@@ -149,61 +176,125 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   Future<void> editItemDialog(GroceryItemModel item) async {
     final qtyController = TextEditingController(text: "${item.quantity}");
     final priceController = TextEditingController(text: "${item.price}");
+    String? localErrorMsg;
 
     await showDialog(
       context: context,
       builder: (ctx) {
-        return AlertDialog(
-          backgroundColor: widget.cardColor,
-          title: Text("Modifier l'article", style: TextStyle(color: widget.grayColor)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: qtyController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "Quantité",
-                  labelStyle: TextStyle(color: widget.grayColor),
+        return StatefulBuilder(builder: (dialogCtx, setStateDialog) {
+          return AlertDialog(
+            backgroundColor: widget.cardColor,
+            title: Text("Modifier l'article", style: TextStyle(color: widget.grayColor)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (localErrorMsg?.isNotEmpty ?? false)
+                  Text(
+                    localErrorMsg ?? '',
+                    style: const TextStyle(color: AppColors.errorColor),
+                  ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: qtyController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: "Quantité",
+                    labelStyle: TextStyle(color: widget.grayColor),
+                  ),
                 ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: priceController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: "Prix",
+                    labelStyle: TextStyle(color: widget.grayColor),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogCtx),
+                style: TextButton.styleFrom(
+                  foregroundColor: widget.grayColor,
+                  backgroundColor: widget.cardColor,
+                ),
+                child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
               ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: priceController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "Prix",
-                  labelStyle: TextStyle(color: widget.grayColor),
+              TextButton(
+                onPressed: () async {
+                  final newQty = int.tryParse(qtyController.text) ?? item.quantity;
+                  final newPrice = double.tryParse(priceController.text) ?? item.price;
+
+                  try {
+                    await context.read<GroceryListProvider>().updateItem(
+                      item.id!,
+                      quantity: newQty,
+                      price: newPrice,
+                    );
+                    Navigator.pop(dialogCtx);
+                    await loadItemsAndBudget();
+                  } catch (e) {
+                    setState(() {
+                      _errorMessage = e.toString();
+                    });
+                    Navigator.pop(dialogCtx);
+                  }
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: widget.grayColor,
+                  backgroundColor: widget.cardColor,
                 ),
+                child: Text('Enregistrer', style: TextStyle(color: widget.grayColor)),
               ),
             ],
+          );
+        });
+      },
+    );
+  }
+
+  /// Supprime tous les articles de la liste
+  void confirmDeleteAllItems() {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(
+            'Supprimer tous les articles ?',
+            style: TextStyle(color: widget.grayColor),
           ),
+          backgroundColor: widget.cardColor,
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
               style: TextButton.styleFrom(
                 foregroundColor: widget.grayColor,
-                backgroundColor: widget.cardColor,
               ),
-              child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
+              child: const Text('Annuler'),
             ),
             TextButton(
               onPressed: () async {
-                final newQty = int.tryParse(qtyController.text) ?? item.quantity;
-                final newPrice = double.tryParse(priceController.text) ?? item.price;
-                await context.read<GroceryListProvider>().updateItem(
-                  item.id!,
-                  quantity: newQty,
-                  price: newPrice,
-                );
-                Navigator.pop(ctx);
-                await loadItemsAndBudget();
+                // On supprime localement tous les articles
+                final provider = context.read<GroceryListProvider>();
+                try {
+                  // Charger tous les items
+                  final items = await provider.loadItemsForList(widget.listId);
+                  // Supprimer un par un (ou on peut faire un .delete() global côté supabase)
+                  for (var item in items) {
+                    await provider.deleteItem(item.id!);
+                  }
+                  await loadItemsAndBudget();
+                  Navigator.pop(ctx);
+                } catch (e) {
+                  Navigator.pop(ctx);
+                }
               },
               style: TextButton.styleFrom(
                 foregroundColor: widget.grayColor,
-                backgroundColor: widget.cardColor,
               ),
-              child: Text('Enregistrer', style: TextStyle(color: widget.grayColor)),
+              child: const Text('Supprimer'),
             ),
           ],
         );
@@ -248,7 +339,6 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                     fontSize: 16,
                   ),
                 ),
-
                 Row(
                   children: [
                     Text(
@@ -268,18 +358,63 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                 ),
               ],
             ),
+            SizedBox(
+              height: 50,                // Hauteur fixe, adapter selon vos besoins
+              width: double.infinity,    // Largeur max
+              child: Stack(
+                children: [
+                  // Bouton "Ajouter" centré horizontalement et verticalement
+                  Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      height: 30, // Hauteur du bouton, vous pouvez ajuster
+                      child: ElevatedButton(
+                        onPressed: addItemDialog,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: widget.cardColor,
+                          foregroundColor: widget.grayColor,
+                        ),
+                        child: const Text("Ajouter"),
+                      ),
+                    ),
+                  ),
 
-            // Bouton pour ajouter un article
-            ElevatedButton(
-              onPressed: addItemDialog,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: widget.cardColor,
-                foregroundColor: widget.grayColor,
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: widget.cardColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(
+                            Icons.delete_forever_outlined,
+                            color: AppColors.errorColor,
+                          ),
+                          onPressed: () => confirmDeleteAllItems(),
+                          splashRadius: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                ],
               ),
-              child: const Text("Ajouter un article"),
             ),
-            const SizedBox(height: 10),
 
+            // Message d'erreur global (s'il y en a un)
+            if (_errorMessage.isNotEmpty)
+              Text(
+                _errorMessage,
+                style: const TextStyle(color: AppColors.errorColor),
+              ),
+
+            // Liste des articles
             Expanded(
               child: items.isEmpty
                   ? Center(
@@ -295,8 +430,9 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                         return Container(
                           margin: const EdgeInsets.only(bottom: 10),
                           decoration: BoxDecoration(
-                            color:
-                                item.isChecked ? AppColors.lightGray : widget.cardColor,
+                            color: item.isChecked
+                                ? AppColors.lightGray
+                                : widget.cardColor,
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: ListTile(
