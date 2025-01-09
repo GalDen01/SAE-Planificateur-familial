@@ -87,47 +87,45 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
     await context.read<TodoListProvider>().deleteTask(taskId);
     await loadTasks();
   }
-  // Méthode inutiliser pour le moment à voir plus tard
-  void confirmDeleteAllTasks() {
-  showDialog(
-    context: context,
-    builder: (ctx) {
-      return AlertDialog(
-        title: Text(
-          'Supprimer toutes les tâches ?',
-          style: TextStyle(color : widget.grayColor), // Couleur du titre
-        ),
-        backgroundColor: widget.cardColor, // Couleur de fond de l'AlertDialog
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            style: TextButton.styleFrom(
-              foregroundColor: widget.grayColor, // Couleur du texte "Annuler"
-            ),
-            child: const Text('Annuler'),
-          ),
-          TextButton(
-            onPressed: () {
-              // On supprime localement toutes les tasks
-              setState(() {
-                for (var task in _allTasks) {
-                  deleteTask(task.id!);
-                  }
-                }
-              );
-              Navigator.pop(ctx);
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: widget.grayColor, // Couleur du texte "Supprimer"
-            ),
-            child: const Text('Supprimer'),
-          ),
-        ],
-      );
-    },
-  );
-}
 
+  /// Confirmation de suppression de toutes les tâches
+  void confirmDeleteAllTasks() {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(
+            'Supprimer toutes les tâches ?',
+            style: TextStyle(color: widget.grayColor),
+          ),
+          backgroundColor: widget.cardColor,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              style: TextButton.styleFrom(
+                foregroundColor: widget.grayColor,
+              ),
+              child: const Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  for (var task in _allTasks) {
+                    deleteTask(task.id!);
+                  }
+                });
+                Navigator.pop(ctx);
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: widget.grayColor,
+              ),
+              child: const Text('Supprimer'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,42 +185,56 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
             ),
             const SizedBox(height: 10),
 
-            Row(
-              children: [
-                Expanded(
-                  child: Center(
-                    child: ElevatedButton(
-                      onPressed: addTask,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: widget.cardColor,
-                        foregroundColor: widget.grayColor,
+            SizedBox(
+              height: 50,                // Hauteur fixe, adapter selon vos besoins
+              width: double.infinity,    // Largeur max
+              child: Stack(
+                children: [
+                  // Bouton "Ajouter" centré horizontalement et verticalement
+                  Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      height: 30, // Hauteur du bouton, vous pouvez ajuster
+                      child: ElevatedButton(
+                        onPressed: addTask,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: widget.cardColor,
+                          foregroundColor: widget.grayColor,
+                        ),
+                        child: const Text("Ajouter"),
                       ),
-                      child: const Text("Ajouter"),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 16.0), // Ajoute un espace avec le bord
-                  child: IconButton(
-                      icon: Container(
+
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Container(
+                        width: 30,
+                        height: 30,
                         decoration: BoxDecoration(
-                          color: widget.cardColor, // Couleur de fond beige
-                          shape: BoxShape.circle, // Fond circulaire
+                          color: widget.cardColor,
+                          shape: BoxShape.circle,
                         ),
-                        padding: const EdgeInsets.all(8.0), // Espace autour de l'icône
-                        child: const Icon(
-                          Icons.delete_forever_outlined,
-                          color: AppColors.errorColor, // Couleur rouge de l'icône
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(
+                            Icons.delete_forever_outlined,
+                            color: AppColors.errorColor,
+                          ),
+                          onPressed: () => confirmDeleteAllTasks(),
+                          splashRadius: 15,
                         ),
                       ),
-                      onPressed: () => confirmDeleteAllTasks(),
                     ),
-                ),
-              ],
+                  ),
+
+                ],
+              ),
             ),
-
-
-
+            const SizedBox(height: 10),
+            // Liste des tâches
             Expanded(
               child: tasks.isEmpty
                   ? Center(
