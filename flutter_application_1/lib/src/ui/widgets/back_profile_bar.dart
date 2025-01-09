@@ -37,16 +37,12 @@ class BackProfileBar extends StatelessWidget implements PreferredSizeWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                 ),
                 onPressed: onBack,
-                child: Text(
-                  "Retour",
-                  style: TextStyle(
-                    color: AppColors.grayColor,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: AppColors.blackColor,
                 ),
               ),
 
@@ -57,8 +53,7 @@ class BackProfileBar extends StatelessWidget implements PreferredSizeWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                 ),
                 onPressed: onProfile ??
                     () {

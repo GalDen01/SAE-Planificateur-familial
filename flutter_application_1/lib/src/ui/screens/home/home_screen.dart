@@ -90,21 +90,27 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(top: 10.0),
-        child: FloatingActionButton(
-          backgroundColor: AppColors.brightCardColor,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ProfileScreen(
-                  cardColor: AppColors.cardColor,
-                  grayColor: AppColors.grayColor,
-                  brightCardColor: AppColors.brightCardColor,
-                ),
-              ),
-            );
-          },
-          child: const Icon(Icons.account_circle, color: Colors.black87),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 10),
+            FloatingActionButton(
+              backgroundColor: AppColors.brightCardColor,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(
+                      cardColor: AppColors.cardColor,
+                      grayColor: AppColors.grayColor,
+                      brightCardColor: AppColors.brightCardColor,
+                    ),
+                  ),
+                );
+              },
+              child: const Icon(Icons.account_circle, color: Colors.black87),
+            ),
+          ],
         ),
       ),
     );

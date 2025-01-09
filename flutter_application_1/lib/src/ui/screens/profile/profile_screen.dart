@@ -29,23 +29,12 @@ class ProfileScreen extends StatelessWidget {
           children: [
             // --- Bouton RETOUR ---
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.brightCardColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                  vertical: 10.0,
-                ),
-              ),
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                "Retour",
-                style: TextStyle(
-                  color: AppColors.grayColor,
-                  fontWeight: FontWeight.bold,
-                ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Icon(
+                Icons.arrow_back,
+                color: AppColors.blackColor,
               ),
             ),
 
