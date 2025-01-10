@@ -40,15 +40,17 @@ class CguDialog extends StatelessWidget {
 
   /// Le texte complet des CGU
   static const String _cguText = """
-Conditions Générales d'Utilisation de FamLink
+Conditions Générales d'Utilisation de FamLink©
 
 1. Objet
-Les présentes Conditions Générales d'Utilisation (CGU) ont pour objet de définir les modalités et conditions dans lesquelles les utilisateurs peuvent accéder et utiliser l'application Planificateur Familial (ci-après "l'Application").
+Les présentes Conditions Générales d'Utilisation (CGU) ont pour objet de définir les modalités et conditions dans lesquelles les utilisateurs peuvent accéder et utiliser l'application FamLink© (ci-après "l'Application").
 
 2. Mentions légales
-Éditeur de l'Application : Clean Code Crew™, groupe académique, au capital de 0 €, dont le siège social est situé Campus Maurois, 12 All. André Maurois, 87065 Limoges.
+Éditeur de l'Application : Clean Code Crew™, groupe académique, au capital de 0.08 €, dont le siège social est situé Campus Maurois, 12 All. André Maurois, 87065 Limoges.
 Directeur de la publication : Gaëtan Charpentier.
 Hébergeur : Supabase, https://supabase.com/.
+Actionnaire majoritaires : Trillard Stanislas 33%
+                           Clean Code Crew™ 67%
 
 3. Acceptation des CGU
 L'utilisation de l'Application implique l'acceptation pleine et entière des présentes CGU. En cas de désaccord avec ces conditions, l'utilisateur est prié de ne pas utiliser l'Application.
@@ -56,7 +58,7 @@ L'utilisation de l'Application implique l'acceptation pleine et entière des pr�
 4. Accès à l'Application
 L'Application est accessible gratuitement aux utilisateurs disposant d'un accès à internet. Tous les coûts relatifs à l'accès au service, que ce soient les frais matériels, logiciels ou d'accès à internet, sont exclusivement à la charge de l'utilisateur.
 
-5. Services proposés
+5. Services proposés  
 L'Application offre des outils de planification familiale, tels que la gestion de calendriers, la création de listes de tâches, le partage d'événements et la communication entre membres de la famille.
 
 6. Responsabilités
