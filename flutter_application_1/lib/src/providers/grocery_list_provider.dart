@@ -90,7 +90,7 @@ class GroceryListProvider extends ChangeNotifier {
     return [];
   }
 
-  Future<void> createItem(int listId, String name, int quantity, double price) async {
+  Future<void> createItem(int listId, String name, int quantity, double price, String unit) async {
     if (name.trim().isEmpty) {
       throw Exception("Le nom de l'article ne peut pas être vide.");
     }
@@ -100,6 +100,7 @@ class GroceryListProvider extends ChangeNotifier {
         'name': name.trim(),
         'quantity': quantity,
         'price': price,
+        'unit': unit,
       });
     } catch (e) {
       debugPrint("Erreur createItem: $e");

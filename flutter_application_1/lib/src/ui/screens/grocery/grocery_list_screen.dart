@@ -35,7 +35,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   String _errorMessage = '';        // Pour afficher un message d’erreur global si besoin
 
   final List<String> _units = ['ml', 'kg', 'g', 'l', 'mg', 'cl', 'pcs'];
-  late String _selectedUnit; // Déclaration sans initialisation
+  String _selectedUnit = ''; // Initialisation de l'unité sélectionnée
 
   @override
   void initState() {
@@ -110,7 +110,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                       ),
                       SizedBox(width: 10),
                       DropdownButton<String>(
-                        value: _selectedUnit,
+                        value: _selectedUnit.isEmpty ? null : _selectedUnit,
                         items: _units.map((String unit) {
                           return DropdownMenuItem<String>(
                             value: unit,
@@ -162,7 +162,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                   try {
                     await context
                         .read<GroceryListProvider>()
-                        .createItem(widget.listId, name, qty, price);
+                        .createItem(widget.listId, name, qty, price, _selectedUnit);
 
                     Navigator.pop(dialogCtx);
                     await loadItemsAndBudget();
