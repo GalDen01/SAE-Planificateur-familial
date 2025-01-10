@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
+import 'package:Planificateur_Familial/src/ui/widgets/validated_text_field.dart'; // Import du widget
 
 class FamilyAddButton extends StatelessWidget {
   final Color backgroundColor;
@@ -17,19 +18,27 @@ class FamilyAddButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
+        final TextEditingController controller = TextEditingController();
+        final GlobalKey<ValidatedTextFieldState> fieldKey = GlobalKey();
+
         showDialog(
           context: context,
           builder: (context) {
-            final TextEditingController controller = TextEditingController();
             return AlertDialog(
               backgroundColor: backgroundColor,
               title: Text('Créer une famille', style: TextStyle(color: textColor)),
-              content: TextField(
+              content: ValidatedTextField(
+                key: fieldKey,
+                hintText: 'Nom de la famille',
+                hintTextColor: textColor,
+                textColor: textColor,
                 controller: controller,
-                decoration: InputDecoration(
-                  hintText: 'Nom de la famille',
-                  hintStyle: TextStyle(color: textColor),
-                ),
+                validator: (value) {
+                  if (value.trim().isEmpty) {
+                    return 'Veuillez entrer un nom de famille'; 
+                  }
+                  return null;
+                },
               ),
               actions: [
                 TextButton(
@@ -42,14 +51,13 @@ class FamilyAddButton extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () async {
-                    final familyName = controller.text.trim();
-                    if (familyName.isNotEmpty) {
+                    fieldKey.currentState?.validate();
+                    if (controller.text.trim().isNotEmpty) {
                       final userEmail = context.read<AuthProvider>().currentUser?.email;
                       await context.read<FamilyProvider>().addFamilyToSupabase(
-                        familyName,
+                        controller.text.trim(),
                         userEmail,
                       );
-
                       Navigator.pop(context);
                     }
                   },

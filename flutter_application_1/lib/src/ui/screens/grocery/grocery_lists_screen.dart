@@ -1,5 +1,3 @@
-// lib/src/ui/screens/grocery/grocery_lists_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
@@ -7,6 +5,7 @@ import 'package:Planificateur_Familial/src/models/grocery_list.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
 import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/ui/screens/grocery/grocery_list_screen.dart';
+import 'package:Planificateur_Familial/src/ui/widgets/validated_text_field.dart'; // ✅ Import du widget
 
 class GroceryListsScreen extends StatefulWidget {
   final int familyId;
@@ -39,79 +38,67 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
 
   Future<void> _createGroceryListDialog() async {
     final controller = TextEditingController();
-    String? localErrorMsg;
+    final validatedFieldKey = GlobalKey<ValidatedTextFieldState>();
 
     final res = await showDialog<String>(
       context: context,
       builder: (ctx) {
-        return StatefulBuilder(builder: (dialogCtx, setStateDialog) {
-          return AlertDialog(
-            backgroundColor: widget.cardColor,
-            title: Text('Créer une liste', style: TextStyle(color: widget.grayColor)),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (localErrorMsg?.isNotEmpty ?? false)
-                    Text(
-                      localErrorMsg ?? '',
-                      style: const TextStyle(color: AppColors.errorColor),
-                    ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    hintText: 'Nom de la liste',
-                    hintStyle: TextStyle(color: widget.grayColor),
-                  ),
-                ),
-              ],
+        return AlertDialog(
+          backgroundColor: widget.cardColor,
+          title: Text('Créer une liste', style: TextStyle(color: widget.grayColor)),
+          content: ValidatedTextField(
+            key: validatedFieldKey,
+            controller: controller,
+            hintText: 'Nom de la liste',
+            hintTextColor: widget.grayColor,
+            textColor: widget.grayColor,
+            validator: (value) {
+              if (value.trim().isEmpty) {
+                return "Veuillez entrer un nom de liste.";
+              }
+              return null;
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              style: TextButton.styleFrom(
+                foregroundColor: widget.grayColor,
+                backgroundColor: widget.cardColor,
+              ),
+              child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogCtx),
-                style: TextButton.styleFrom(
-                  foregroundColor: widget.grayColor,
-                  backgroundColor: widget.cardColor,
-                ),
-                child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
+            TextButton(
+              onPressed: () {
+                validatedFieldKey.currentState!.validate();
+                final name = controller.text.trim();
+                if (name.isNotEmpty) {
+                  Navigator.pop(ctx, name);
+                }
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: widget.grayColor,
+                backgroundColor: widget.cardColor,
               ),
-              TextButton(
-                onPressed: () {
-                  final name = controller.text.trim();
-                  if (name.isEmpty) {
-                    setStateDialog(() {
-                      localErrorMsg = "Le nom de la liste ne peut pas être vide.";
-                    });
-                    return;
-                  }
-                  Navigator.pop(dialogCtx, name);
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: widget.grayColor,
-                  backgroundColor: widget.cardColor,
-                ),
-                child: Text('Ajouter', style: TextStyle(color: widget.grayColor)),
-              ),
-            ],
-          );
-        });
+              child: Text('Ajouter', style: TextStyle(color: widget.grayColor)),
+            ),
+          ],
+        );
       },
     );
-
-    if (res == null || res.isEmpty) {
-      // si l'utilisateur a annulé ou n'a pas mis de nom
-      return;
-    }
-
-    try {
-      await context.read<GroceryListProvider>().createList(widget.familyId, res);
-      setState(() {});
-    } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-      });
-    }
+  if (res == null || res.isEmpty) {
+    return;
   }
+
+  try {
+    await context.read<GroceryListProvider>().createList(widget.familyId, res);
+    setState(() {});
+  } catch (e) {
+    setState(() {
+      _errorMessage = e.toString();
+    });
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +139,6 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
-
                 ElevatedButton(
                   onPressed: _createGroceryListDialog,
                   style: ElevatedButton.styleFrom(
@@ -162,14 +148,12 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
                   child: const Text("Créer une liste"),
                 ),
                 const SizedBox(height: 10),
-
                 if (_errorMessage.isNotEmpty)
                   Text(
                     _errorMessage,
                     style: const TextStyle(color: AppColors.errorColor),
                   ),
                 const SizedBox(height: 20),
-
                 ...lists.map((GroceryListModel glist) {
                   return Container(
                     margin: const EdgeInsets.only(bottom: 10),
