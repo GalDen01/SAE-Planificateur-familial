@@ -34,9 +34,13 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
 
   String _errorMessage = '';        // Pour afficher un message d’erreur global si besoin
 
+  final List<String> _units = ['ml', 'kg', 'g', 'l', 'mg', 'cl', 'pcs'];
+  late String _selectedUnit; // Déclaration sans initialisation
+
   @override
   void initState() {
     super.initState();
+    _selectedUnit = _units.first; // Initialisation dans initState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadItemsAndBudget();
     });
@@ -92,13 +96,34 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  TextField(
-                    controller: qtyController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: "Quantité",
-                      labelStyle: TextStyle(color: widget.grayColor),
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: qtyController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: "Quantité",
+                            labelStyle: TextStyle(color: widget.grayColor),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      DropdownButton<String>(
+                        value: _selectedUnit,
+                        items: _units.map((String unit) {
+                          return DropdownMenuItem<String>(
+                            value: unit,
+                            child: Text(unit),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedUnit = newValue ?? _units.first;
+                          });
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   TextField(
@@ -450,11 +475,38 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                                 color: widget.grayColor,
                               ),
                             ),
-                            subtitle: Text(
-                              "Qté: ${item.quantity} | Prix: ${item.price.toStringAsFixed(2)} €",
-                              style: TextStyle(
-                                color: widget.grayColor,
-                              ),
+                            subtitle: Row(
+                              children: [
+                                Text(
+                                  "Qté: ${item.quantity}",
+                                  style: TextStyle(
+                                    color: widget.grayColor,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                DropdownButton<String>(
+                                  value: item.unit.isEmpty ? null : item.unit,
+                                  hint: Text('Unité'),
+                                  items: _units.map((String unit) {
+                                    return DropdownMenuItem<String>(
+                                      value: unit,
+                                      child: Text(unit),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      item.unit = newValue ?? '';
+                                    });
+                                  },
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  "| Prix: ${item.price.toStringAsFixed(2)} €",
+                                  style: TextStyle(
+                                    color: widget.grayColor,
+                                  ),
+                                ),
+                              ],
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
