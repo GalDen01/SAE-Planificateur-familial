@@ -40,11 +40,24 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invitation acceptée !')),
       );
-      // Recharger la liste pour que l'invitation disparaisse
-      await loadInvitations();
+      await loadInvitations(); // recharger
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur : ${e.toString()}')),
+        SnackBar(content: Text('Erreur : $e')),
+      );
+    }
+  }
+
+  Future<void> declineInvitation(int invitationId) async {
+    try {
+      await context.read<FamilyProvider>().declineFamilyInvitation(invitationId);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invitation refusée.')),
+      );
+      await loadInvitations(); // recharger
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur : $e')),
       );
     }
   }
@@ -52,7 +65,7 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // On utilise notre BackProfileBar en guise d'AppBar
+      // AppBar custom (bouton retour + bouton profil si besoin)
       appBar: BackProfileBar(
         onBack: () => Navigator.pop(context),
       ),
@@ -67,6 +80,7 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
                   ),
                 )
               : ListView.builder(
+                  padding: const EdgeInsets.all(16.0),
                   itemCount: _invitations.length,
                   itemBuilder: (ctx, index) {
                     final inv = _invitations[index];
@@ -74,29 +88,76 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
                     final familyName = inv['families']['name'] as String;
 
                     return Container(
-                      margin: const EdgeInsets.all(8.0),
+                      margin: const EdgeInsets.only(bottom: 16.0),
                       padding: const EdgeInsets.all(12.0),
                       decoration: BoxDecoration(
                         color: AppColors.cardColor,
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(12.0),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: AppColors.shadowColor,
+                            blurRadius: 4,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Famille : $familyName",
+                            "Invitation à rejoindre la famille :",
                             style: TextStyle(
                               color: AppColors.grayColor,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          ElevatedButton(
-                            onPressed: () => acceptInvitation(invitationId),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.brightCardColor,
-                              foregroundColor: AppColors.grayColor,
+                          const SizedBox(height: 4),
+                          Text(
+                            familyName,
+                            style: TextStyle(
+                              color: AppColors.grayColor,
+                              fontSize: 18,
                             ),
-                            child: const Text("Accepter"),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              // Bouton Refuser
+                              ElevatedButton(
+                                onPressed: () => declineInvitation(invitationId),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.deletColor,
+                                  foregroundColor: AppColors.whiteColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                    vertical: 12.0,
+                                  ),
+                                ),
+                                child: const Text("Refuser"),
+                              ),
+                              const SizedBox(width: 10),
+                              // Bouton Accepter
+                              ElevatedButton(
+                                onPressed: () => acceptInvitation(invitationId),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.acceptColor,
+                                  foregroundColor: AppColors.whiteColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                    vertical: 12.0,
+                                  ),
+                                ),
+                                child: const Text("Accepter"),
+                              ),
+                            ],
                           ),
                         ],
                       ),

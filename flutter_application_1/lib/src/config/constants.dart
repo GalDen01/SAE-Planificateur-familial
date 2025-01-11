@@ -11,6 +11,7 @@ class AppColors {
   static const Color shadowColor = Color(0x42000000);
   static const Color errorColor = Color(0xFFFF0000);
   static const Color deletColor = Color.fromARGB(255, 255, 72, 72);
+  static const Color acceptColor = Color.fromARGB(255, 145, 200, 128);
   static const Color lightGray = Color(0xFFD0D0D0);
   static const Color lightGray2 = Color.fromARGB(255, 138, 123, 123); // for back-arrow
 }

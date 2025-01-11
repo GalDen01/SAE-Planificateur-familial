@@ -1,3 +1,5 @@
+// lib/src/providers/grocery_list_provider.dart
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:Planificateur_Familial/src/models/grocery_list.dart';
@@ -18,19 +20,19 @@ class GroceryListProvider extends ChangeNotifier {
           .eq('family_id', familyId)
           .order('created_at', ascending: true);
 
-      
-      _lists.clear();
-      for (var item in response) {
-        _lists.add(GroceryListModel.fromJson(item));
+      if (response is List) {
+        _lists.clear();
+        for (var item in response) {
+          _lists.add(GroceryListModel.fromJson(item));
+        }
+        notifyListeners();
       }
-      notifyListeners();
-      
     } catch (e) {
       debugPrint("Erreur loadListsForFamily: $e");
     }
   }
 
-  /// Crée une liste pour une famille
+  /// Crée une liste de courses
   Future<void> createList(int familyId, String name) async {
     if (name.trim().isEmpty) {
       throw Exception("Le nom de la liste ne peut pas être vide.");
@@ -45,11 +47,11 @@ class GroceryListProvider extends ChangeNotifier {
           .select()
           .single();
 
-      
-      final newList = GroceryListModel.fromJson(data);
-      _lists.add(newList);
-      notifyListeners();
-      
+      if (data != null) {
+        final newList = GroceryListModel.fromJson(data);
+        _lists.add(newList);
+        notifyListeners();
+      }
     } catch (e) {
       debugPrint("Erreur createList: $e");
       rethrow;
@@ -71,8 +73,9 @@ class GroceryListProvider extends ChangeNotifier {
     }
   }
 
-  // ========== GESTION DES ARTICLES ========== //
+  // ================== GESTION DES ARTICLES ================== //
 
+  /// Charge les articles d'une liste
   Future<List<GroceryItemModel>> loadItemsForList(int listId) async {
     try {
       final response = await supabase
@@ -81,16 +84,25 @@ class GroceryListProvider extends ChangeNotifier {
           .eq('list_id', listId)
           .order('created_at', ascending: true);
 
-      
-      return response.map((item) => GroceryItemModel.fromJson(item)).toList();
-      
+      if (response is List) {
+        // On mappe la colonne `is_on_promotion` dans `GroceryItemModel.isPromo`
+        return response.map((item) => GroceryItemModel.fromJson(item)).toList();
+      }
     } catch (e) {
       debugPrint("Erreur loadItemsForList: $e");
     }
     return [];
   }
 
-  Future<void> createItem(int listId, String name, int quantity, double price, String unit) async {
+  /// Crée un nouvel article (avec unité, promo, etc.)
+  Future<void> createItem(
+    int listId,
+    String name,
+    int quantity,
+    double price,
+    String unit, {
+    bool isPromo = false,
+  }) async {
     if (name.trim().isEmpty) {
       throw Exception("Le nom de l'article ne peut pas être vide.");
     }
@@ -101,6 +113,7 @@ class GroceryListProvider extends ChangeNotifier {
         'quantity': quantity,
         'price': price,
         'unit': unit,
+        'is_on_promotion': isPromo, // nouveau champ
       });
     } catch (e) {
       debugPrint("Erreur createItem: $e");
@@ -108,6 +121,7 @@ class GroceryListProvider extends ChangeNotifier {
     }
   }
 
+  /// Met à jour l'état is_checked d'un article
   Future<void> updateItemChecked(int itemId, bool isChecked) async {
     try {
       await supabase
@@ -119,11 +133,19 @@ class GroceryListProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateItem(int itemId, {int? quantity, double? price}) async {
-    // Permet de faire un "update" partiel
+  /// Met à jour la quantité, le prix, l'unité, la promo, etc.
+  Future<void> updateItem(
+    int itemId, {
+    int? quantity,
+    double? price,
+    String? unit,
+    bool? isPromo,
+  }) async {
     final Map<String, dynamic> updates = {};
     if (quantity != null) updates['quantity'] = quantity;
     if (price != null) updates['price'] = price;
+    if (unit != null) updates['unit'] = unit;
+    if (isPromo != null) updates['is_on_promotion'] = isPromo;
 
     if (updates.isEmpty) return;
 
@@ -137,6 +159,7 @@ class GroceryListProvider extends ChangeNotifier {
     }
   }
 
+  /// Supprime un article
   Future<void> deleteItem(int itemId) async {
     try {
       await supabase
@@ -148,6 +171,7 @@ class GroceryListProvider extends ChangeNotifier {
     }
   }
 
+  /// Calcule le budget total d'une liste
   Future<double> getTotalBudget(int listId) async {
     double total = 0.0;
     try {
