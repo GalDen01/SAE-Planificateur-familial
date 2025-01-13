@@ -30,6 +30,8 @@ void main() {
         isChecked: true,
         quantity: 3,
         price: 2.5,
+        unit: "kg",
+        isPromo: false,
       );
       final json = item.toJson();
       expect(json['id'], 10);
