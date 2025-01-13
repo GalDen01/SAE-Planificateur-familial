@@ -1,3 +1,5 @@
+// lib/src/ui/screens/grocery/grocery_lists_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
@@ -5,7 +7,7 @@ import 'package:Planificateur_Familial/src/models/grocery_list.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
 import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/ui/screens/grocery/grocery_list_screen.dart';
-import 'package:Planificateur_Familial/src/ui/widgets/validated_text_field.dart'; // ✅ Import du widget
+import 'package:Planificateur_Familial/src/ui/widgets/validated_text_field.dart';
 
 class GroceryListsScreen extends StatefulWidget {
   final int familyId;
@@ -34,6 +36,54 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
   void initState() {
     super.initState();
     context.read<GroceryListProvider>().loadListsForFamily(widget.familyId);
+  }
+
+  /// Confirmation avant suppression
+  Future<void> _confirmDeleteList(int listId) async {
+    final provider = context.read<GroceryListProvider>();
+    final res = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: widget.cardColor,
+          title: Text("Supprimer la liste ?", style: TextStyle(color: widget.grayColor)),
+          content: Text(
+            "Cette action est irréversible. Voulez-vous vraiment supprimer cette liste de courses ?",
+            style: TextStyle(color: widget.grayColor),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false), // Annuler
+              style: TextButton.styleFrom(
+                foregroundColor: widget.grayColor,
+                backgroundColor: widget.cardColor,
+              ),
+              child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true), // Confirmer
+              style: TextButton.styleFrom(
+                foregroundColor: widget.grayColor,
+                backgroundColor: widget.cardColor,
+              ),
+              child: Text('Supprimer', style: TextStyle(color: widget.grayColor)),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Si l'utilisateur a confirmé
+    if (res == true) {
+      try {
+        await provider.deleteList(listId);
+        setState(() {});
+      } catch (e) {
+        setState(() {
+          _errorMessage = e.toString();
+        });
+      }
+    }
   }
 
   Future<void> _createGroceryListDialog() async {
@@ -86,19 +136,19 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
         );
       },
     );
-  if (res == null || res.isEmpty) {
-    return;
-  }
+    if (res == null || res.isEmpty) {
+      return;
+    }
 
-  try {
-    await context.read<GroceryListProvider>().createList(widget.familyId, res);
-    setState(() {});
-  } catch (e) {
-    setState(() {
-      _errorMessage = e.toString();
-    });
+    try {
+      await context.read<GroceryListProvider>().createList(widget.familyId, res);
+      setState(() {});
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -139,6 +189,7 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
+
                 ElevatedButton(
                   onPressed: _createGroceryListDialog,
                   style: ElevatedButton.styleFrom(
@@ -148,12 +199,14 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
                   child: const Text("Créer une liste"),
                 ),
                 const SizedBox(height: 10),
+
                 if (_errorMessage.isNotEmpty)
                   Text(
                     _errorMessage,
                     style: const TextStyle(color: AppColors.errorColor),
                   ),
                 const SizedBox(height: 20),
+
                 ...lists.map((GroceryListModel glist) {
                   return Container(
                     margin: const EdgeInsets.only(bottom: 10),
@@ -186,9 +239,7 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
                       trailing: IconButton(
                         icon: const Icon(Icons.delete),
                         color: AppColors.deletColor,
-                        onPressed: () async {
-                          await provider.deleteList(glist.id!);
-                        },
+                        onPressed: () => _confirmDeleteList(glist.id!),
                       ),
                     ),
                   );

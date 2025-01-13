@@ -82,30 +82,28 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     }
   }
 
-  /// Auparavant, on ajoutait directement => addMemberToFamily
-  /// Désormais, on envoie une invitation => inviteMemberToFamily
-  Future<void> addMember(int userId) async {
+    Future<void> addMember(int userId) async {
     try {
-      await context
-          .read<FamilyProvider>()
-          .inviteMemberToFamily(widget.familyId, userId);
+      // inviteMemberToFamily ne renvoie rien (Future<void>)
+      await context.read<FamilyProvider>().inviteMemberToFamily(widget.familyId, userId);
 
+      // Succès
       await loadFamilyMembers();
       setState(() {
         isSearching = false;
         suggestions.clear();
         searchController.clear();
       });
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invitation envoyée avec succès!')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Erreur lors de l'invitation.")),
+        SnackBar(content: Text("Erreur : $e")),
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +125,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  // Titre
                   Text(
                     widget.familyName,
                     style: const TextStyle(
@@ -147,6 +146,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                   ),
                   const SizedBox(height: 20),
 
+                  // Image
                   Image.asset(
                     'assets/images/family_tree.png',
                     height: 160,
@@ -163,7 +163,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 5),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10
+                        horizontal: 12, vertical: 10,
                       ),
                       decoration: BoxDecoration(
                         color: widget.cardColor,
@@ -173,17 +173,14 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                         children: [
                           if (photoUrl != null && photoUrl.isNotEmpty)
                             CircleAvatar(
-                              backgroundColor:
-                                  AppColors.whiteColor.withOpacity(0.7),
+                              backgroundColor: AppColors.whiteColor.withOpacity(0.7),
                               backgroundImage: NetworkImage(photoUrl),
                             )
                           else
                             CircleAvatar(
-                              backgroundColor:
-                                  AppColors.whiteColor.withOpacity(0.7),
+                              backgroundColor: AppColors.whiteColor.withOpacity(0.7),
                               child: const Icon(Icons.person),
                             ),
-
                           const SizedBox(width: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,6 +259,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                           ),
                           const SizedBox(height: 10),
 
+                          // Suggestions
                           if (suggestions.isNotEmpty)
                             Container(
                               padding: const EdgeInsets.all(8.0),
@@ -291,8 +289,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                             CircleAvatar(
                                               backgroundColor: AppColors.whiteColor
                                                   .withOpacity(0.7),
-                                              backgroundImage:
-                                                  NetworkImage(userPhoto),
+                                              backgroundImage: NetworkImage(userPhoto),
                                             )
                                           else
                                             CircleAvatar(
@@ -302,8 +299,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                                             ),
                                           const SizedBox(width: 10),
                                           Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 fName,

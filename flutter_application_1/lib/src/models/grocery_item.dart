@@ -1,3 +1,5 @@
+// lib/src/models/grocery_item.dart
+
 class GroceryItemModel {
   final int? id;
   final int listId;
@@ -5,7 +7,8 @@ class GroceryItemModel {
   final bool isChecked;
   final int quantity;
   final double price;
-  String unit; // Champ modifiable pour l'unité
+  final String unit;
+  final bool isPromo; // nouveau champ
 
   GroceryItemModel({
     this.id,
@@ -14,7 +17,8 @@ class GroceryItemModel {
     required this.isChecked,
     required this.quantity,
     required this.price,
-    this.unit = '', // Initialisation par défaut de l'unité
+    required this.unit,
+    required this.isPromo,
   });
 
   factory GroceryItemModel.fromJson(Map<String, dynamic> json) {
@@ -25,7 +29,8 @@ class GroceryItemModel {
       isChecked: json['is_checked'] as bool,
       quantity: (json['quantity'] as int?) ?? 1,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      unit: json['unit'] as String? ?? '', // Ajout de l'unité
+      unit: json['unit'] as String? ?? '',
+      isPromo: json['is_on_promotion'] as bool? ?? false, // map
     );
   }
 
@@ -37,7 +42,8 @@ class GroceryItemModel {
       'is_checked': isChecked,
       'quantity': quantity,
       'price': price,
-      'unit': unit, // Ajout de l'unité
+      'unit': unit,
+      'is_on_promotion': isPromo, // map
     };
   }
 }

@@ -1,3 +1,5 @@
+// lib/src/ui/screens/todo/todo_lists_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
@@ -5,7 +7,7 @@ import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
 import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/models/todo_list.dart';
 import 'package:Planificateur_Familial/src/ui/screens/todo/todo_list_screen.dart';
-import 'package:Planificateur_Familial/src/ui/widgets/validated_text_field.dart';  // ✅ Import du widget
+import 'package:Planificateur_Familial/src/ui/widgets/validated_text_field.dart';
 
 class TodoListsScreen extends StatefulWidget {
   final int familyId;
@@ -34,6 +36,54 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
   void initState() {
     super.initState();
     context.read<TodoListProvider>().loadListsForFamily(widget.familyId);
+  }
+
+  /// Fonction de confirmation avant suppression
+  Future<void> _confirmDeleteList(int listId) async {
+    final provider = context.read<TodoListProvider>();
+    final res = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: widget.cardColor,
+          title: Text("Supprimer la liste ?", style: TextStyle(color: widget.grayColor)),
+          content: Text(
+            "Cette action est irréversible. Voulez-vous vraiment supprimer cette to-do liste ?",
+            style: TextStyle(color: widget.grayColor),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false), // Annuler
+              style: TextButton.styleFrom(
+                foregroundColor: widget.grayColor,
+                backgroundColor: widget.cardColor,
+              ),
+              child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true), // Confirmer
+              style: TextButton.styleFrom(
+                foregroundColor: widget.grayColor,
+                backgroundColor: widget.cardColor,
+              ),
+              child: Text('Supprimer', style: TextStyle(color: widget.grayColor)),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Si l'utilisateur confirme
+    if (res == true) {
+      try {
+        await provider.deleteList(listId);
+        setState(() {});
+      } catch (e) {
+        setState(() {
+          _errorMessage = e.toString();
+        });
+      }
+    }
   }
 
   Future<void> _createListDialog() async {
@@ -70,6 +120,7 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
             ),
             TextButton(
               onPressed: () {
+                // On déclenche la validation
                 validatedFieldKey.currentState!.validate();
                 final name = controller.text.trim();
                 if (name.isNotEmpty) {
@@ -127,6 +178,8 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
+
+                // Icon
                 CircleAvatar(
                   radius: 40.0,
                   backgroundColor: widget.cardColor,
@@ -141,6 +194,7 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
+
                 ElevatedButton(
                   onPressed: _createListDialog,
                   style: ElevatedButton.styleFrom(
@@ -150,12 +204,16 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
                   child: const Text("Créer une liste"),
                 ),
                 const SizedBox(height: 10),
+
                 if (_errorMessage.isNotEmpty)
                   Text(
                     _errorMessage,
                     style: const TextStyle(color: AppColors.errorColor),
                   ),
+
                 const SizedBox(height: 30),
+
+                // Affichage des listes
                 ...lists.map((TodoListModel list) {
                   return Container(
                     margin: const EdgeInsets.only(bottom: 10),
@@ -188,9 +246,7 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
                       trailing: IconButton(
                         icon: const Icon(Icons.delete),
                         color: AppColors.deletColor,
-                        onPressed: () async {
-                          await provider.deleteList(list.id!);
-                        },
+                        onPressed: () => _confirmDeleteList(list.id!),
                       ),
                     ),
                   );
