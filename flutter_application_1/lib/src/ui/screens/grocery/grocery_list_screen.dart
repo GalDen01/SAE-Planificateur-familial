@@ -34,8 +34,8 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   double _totalBudget = 0.0;
   String _errorMessage = '';       
 
-  final List<String> _units = ['ml', 'kg', 'g', 'l', 'mg', 'cl', 'pcs'];
-  String _selectedUnit = ''; // Par défaut lors d'un nouvel article
+  final List<String> _units = ['pcs', 'kg', 'g', 'l', 'mg', 'cl', 'ml'];
+  String _selectedUnit = 'pcs'; // Par défaut lors d'un nouvel article
   bool _isPromo = false;     // Par défaut lors d'un nouvel article
 
   @override
