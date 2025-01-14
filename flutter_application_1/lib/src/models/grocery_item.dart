@@ -7,8 +7,7 @@ class GroceryItemModel {
   final bool isChecked;
   final int quantity;
   final double price;
-  final String unit;
-  final bool isPromo; // nouveau champ
+  final bool isPromo; // champ pour la promotion
 
   GroceryItemModel({
     this.id,
@@ -17,7 +16,6 @@ class GroceryItemModel {
     required this.isChecked,
     required this.quantity,
     required this.price,
-    required this.unit,
     required this.isPromo,
   });
 
@@ -29,8 +27,7 @@ class GroceryItemModel {
       isChecked: json['is_checked'] as bool,
       quantity: (json['quantity'] as int?) ?? 1,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      unit: json['unit'] as String? ?? '',
-      isPromo: json['is_on_promotion'] as bool? ?? false, // map
+      isPromo: json['is_on_promotion'] as bool? ?? false,
     );
   }
 
@@ -42,8 +39,7 @@ class GroceryItemModel {
       'is_checked': isChecked,
       'quantity': quantity,
       'price': price,
-      'unit': unit,
-      'is_on_promotion': isPromo, // map
+      'is_on_promotion': isPromo,
     };
   }
 }

@@ -1,5 +1,3 @@
-// lib/src/ui/screens/home/home_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,36 +24,36 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  /// Appelé une seule fois au montage initial.
+  int? _userId;
+
   @override
   void initState() {
     super.initState();
+    // 1) Charger familles pour l'utilisateur
     final userEmail = context.read<AuthProvider>().currentUser?.email;
     if (userEmail != null) {
       context.read<FamilyProvider>().loadFamiliesForUser(userEmail);
     }
 
+    // 2) Charger la météo
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<WeatherProvider>().fetchWeather();
     });
   }
 
-  /// Appelé chaque fois que ce widget réapparaît (après un retour par ex.)
-  /// pour rafraîchir la liste des familles.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    // On rafraîchit la liste des familles à chaque fois
     final userEmail = context.read<AuthProvider>().currentUser?.email;
     if (userEmail != null) {
       context.read<FamilyProvider>().loadFamiliesForUser(userEmail);
+      _fetchUserIdAndPendingInvs(userEmail);
     }
   }
 
-  /// Ouvre l'écran des invitations, si userId dispo
-  Future<void> _goToInvitations() async {
-    final userEmail = context.read<AuthProvider>().currentUser?.email;
-    if (userEmail == null) return;
-
+  /// Récupère userId + pendingInvCount
+  Future<void> _fetchUserIdAndPendingInvs(String userEmail) async {
     final supabase = Supabase.instance.client;
     final userRes = await supabase
         .from('users')
@@ -65,16 +63,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (userRes != null && userRes['id'] != null) {
       final userId = userRes['id'] as int;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => InvitationsScreen(userId: userId),
-        ),
-      );
+      setState(() {
+        _userId = userId;
+      });
+      await context.read<FamilyProvider>().loadPendingInvitationsCount(userId);
     }
   }
 
-  /// Ouvre l'écran de profil
+  /// Ouvre l'écran des invitations, si userId dispo
+  Future<void> _goToInvitations() async {
+    if (_userId == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => InvitationsScreen(userId: _userId!),
+      ),
+    );
+  }
+
   void _goToProfile() {
     Navigator.push(
       context,
@@ -90,7 +96,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final families = context.watch<FamilyProvider>().families;
+    final familyProvider = context.watch<FamilyProvider>();
+    final families = familyProvider.families;
+    final pendingInvCount = familyProvider.pendingInvCount;
+
+    // S’il y a une invitation => on met un icône “unread”, sinon “read”
+    final invitationsIcon = (pendingInvCount > 0)
+        ? Icons.mark_email_unread
+        : Icons.mark_email_read;
 
     return Scaffold(
       backgroundColor: AppColors.grayColor,
@@ -100,8 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Première rangée : "Menu principal" + icônes 
-              // (invitations + profil) alignées à l'horizontal
+              // Première rangée : "Menu principal" + icônes
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -112,15 +124,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Row(
                     children: [
-                      // Bouton pour accéder aux invitations
+                      // Bouton INVITATIONS
                       FloatingActionButton(
-                        heroTag: "invitBtn", // pour éviter le clash si on a plusieurs FABs
+                        heroTag: "invitBtn",
                         backgroundColor: AppColors.brightCardColor,
                         onPressed: _goToInvitations,
-                        child: const Icon(Icons.mark_email_unread),
+                        child: Icon(invitationsIcon),
                       ),
                       const SizedBox(width: 10),
-                      // Bouton pour accéder au profil
+                      // Bouton PROFIL
                       FloatingActionButton(
                         heroTag: "profileBtn",
                         backgroundColor: AppColors.brightCardColor,
@@ -134,6 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 30),
 
+              // Météo
               const WeatherCard(
                 backgroundColor: AppColors.cardColor,
                 textColor: AppColors.blackColor,

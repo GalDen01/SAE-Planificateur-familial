@@ -1,5 +1,3 @@
-// lib/src/ui/screens/family/invitations_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/config/constants.dart';
@@ -65,7 +63,6 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar custom (bouton retour + bouton profil si besoin)
       appBar: BackProfileBar(
         onBack: () => Navigator.pop(context),
       ),

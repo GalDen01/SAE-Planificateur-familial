@@ -1,5 +1,3 @@
-// lib/src/ui/screens/family/family_details_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:Planificateur_Familial/src/ui/screens/grocery/grocery_lists_screen.dart';
 import 'package:Planificateur_Familial/src/ui/screens/todo/todo_lists_screen.dart';
@@ -28,7 +26,7 @@ class FamilyDetailsScreen extends StatelessWidget {
     required this.brightCardColor,
   });
 
-  /// Affiche une boîte de dialogue pour confirmer le départ de la famille
+
   void _confirmLeaveFamily(BuildContext context) {
     showDialog(
       context: context,
@@ -54,9 +52,9 @@ class FamilyDetailsScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                Navigator.pop(ctx); // Fermer la boîte de dialogue
+                Navigator.pop(ctx);
 
-                // On récupère l'email de l'utilisateur connecté
+
                 final userEmail = context.read<AuthProvider>().currentUser?.email;
                 if (userEmail == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -66,7 +64,6 @@ class FamilyDetailsScreen extends StatelessWidget {
                 }
 
                 try {
-                  // Appel au Provider pour quitter la famille
                   await context.read<FamilyProvider>().leaveFamily(familyId, userEmail);
 
                   ScaffoldMessenger.of(context).showSnackBar(

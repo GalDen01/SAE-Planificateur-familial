@@ -16,7 +16,7 @@ void main() {
     });
 
     testWidgets('Affiche un loader quand isLoading = true', (tester) async {
-      // Arrange : Configurer le mock pour retourner isLoading = true
+      // Arrange
       when(() => mockWeatherProvider.isLoading).thenReturn(true);
 
       // Act : Pump le widget avec le mock provider
@@ -41,13 +41,13 @@ void main() {
     });
 
     testWidgets('Affiche les informations météo quand isLoading = false', (tester) async {
-      // Arrange : Configurer le mock pour retourner des données météo spécifiques
+      // Arrange
       when(() => mockWeatherProvider.isLoading).thenReturn(false);
       when(() => mockWeatherProvider.cityName).thenReturn('Paris');
       when(() => mockWeatherProvider.temperature).thenReturn(21.5);
       when(() => mockWeatherProvider.weatherDescription).thenReturn('Ciel dégagé');
 
-      // Act : Pump le widget avec le mock provider
+      // Act
       await tester.pumpWidget(
         ChangeNotifierProvider<WeatherProvider>.value(
           value: mockWeatherProvider,
@@ -62,7 +62,7 @@ void main() {
         ),
       );
 
-      // Assert : Vérifier la présence des textes spécifiques
+      // Assert
       expect(find.text('Paris'), findsOneWidget);
       expect(find.text('21.5°C'), findsOneWidget);
       expect(find.text('Ciel dégagé'), findsOneWidget);

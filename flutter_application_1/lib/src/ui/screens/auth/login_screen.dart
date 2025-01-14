@@ -1,5 +1,3 @@
-// lib/src/ui/screens/auth/login_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
@@ -121,7 +119,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (authProvider.isLoggedIn) {
                         Navigator.pushReplacementNamed(context, '/home');
                       } else {
-                        // Gérer l'erreur
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text("Échec de la connexion."),
@@ -132,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _hasAcceptedCGU
                           ? AppColors.cardColor
-                          : AppColors.lightGray, // change la couleur si pas accepté
+                          : AppColors.lightGray,
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -144,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontWeight: FontWeight.bold,
                         color: _hasAcceptedCGU
                             ? AppColors.blackColor
-                            : AppColors.whiteColor, // un petit repère visuel
+                            : AppColors.whiteColor,
                       ),
                     ),
                   ),

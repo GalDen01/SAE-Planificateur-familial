@@ -1,5 +1,3 @@
-// lib/src/ui/screens/grocery/grocery_lists_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
@@ -38,7 +36,6 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
     context.read<GroceryListProvider>().loadListsForFamily(widget.familyId);
   }
 
-  /// Confirmation avant suppression
   Future<void> _confirmDeleteList(int listId) async {
     final provider = context.read<GroceryListProvider>();
     final res = await showDialog<bool>(

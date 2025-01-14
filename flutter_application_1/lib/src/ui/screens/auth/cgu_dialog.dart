@@ -14,10 +14,10 @@ class CguDialog extends StatelessWidget {
       backgroundColor: AppColors.cardColor,
       content: SizedBox(
         width: double.maxFinite,
-        height: 400, // Hauteur fixe pour permettre le scroll
+        height: 400,
         child: SingleChildScrollView(
           child: Text(
-            _cguText, // Voir la variable ci-dessous
+            _cguText,
             style: const TextStyle(
               color: AppColors.grayColor,
               fontSize: 14,
@@ -38,7 +38,7 @@ class CguDialog extends StatelessWidget {
     );
   }
 
-  /// Le texte complet des CGU
+
   static const String _cguText = """
 Conditions Générales d'Utilisation de FamLink©
 

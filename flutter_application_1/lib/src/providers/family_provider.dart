@@ -1,5 +1,3 @@
-// lib/src/providers/family_provider.dart
-
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:Planificateur_Familial/src/models/family.dart';
@@ -10,7 +8,9 @@ class FamilyProvider extends ChangeNotifier {
 
   final supabase = Supabase.instance.client;
 
-  // Charge les familles où l'utilisateur est déjà membre
+  int _pendingInvCount = 0; // compteur d’invitations en attente
+  int get pendingInvCount => _pendingInvCount;
+
   Future<void> loadFamiliesForUser(String userEmail) async {
     try {
       final data = await supabase
@@ -27,19 +27,37 @@ class FamilyProvider extends ChangeNotifier {
 
       _families.clear();
 
-      if (data is List) {
-        for (final item in data) {
-          _families.add(
-            Family(
-              id: item['id'] as int,
-              name: item['name'] as String,
-            ),
-          );
-        }
+
+      for (final item in data) {
+        _families.add(
+          Family(
+            id: item['id'] as int,
+            name: item['name'] as String,
+          ),
+        );
       }
       notifyListeners();
     } catch (e) {
       debugPrint("Erreur loadFamiliesForUser: $e");
+    }
+  }
+
+  Future<void> loadPendingInvitationsCount(int userId) async {
+    try {
+      final res = await supabase
+          .from('family_invitations')
+          .select('id, status')
+          .eq('invited_user_id', userId)
+          .eq('status', 'pending');
+
+
+      _pendingInvCount = res.length;
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Erreur loadPendingInvitationsCount: $e");
+      _pendingInvCount = 0;
+      notifyListeners();
     }
   }
 
@@ -77,34 +95,10 @@ class FamilyProvider extends ChangeNotifier {
     }
   }
 
-  // Ajoute directement un user dans la famille (sans invitation)
-  Future<void> addMemberToFamilyByUserId(int familyId, int userId) async {
-    try {
-      // Vérifier si déjà présent
-      final existing = await supabase
-          .from('family_members')
-          .select('id')
-          .eq('family_id', familyId)
-          .eq('user_id', userId)
-          .maybeSingle();
-
-      if (existing != null) {
-        throw Exception("Cet utilisateur fait déjà partie de cette famille.");
-      }
-
-      await supabase.from('family_members').insert({
-        'family_id': familyId,
-        'user_id': userId,
-      });
-    } catch (e) {
-      debugPrint("Erreur addMemberToFamilyByUserId: $e");
-      rethrow;
-    }
-  }
 
   // ================== INVITATIONS ==================
 
-  // Invite un utilisateur (crée un enregistrement 'pending' dans family_invitations)
+  // Récupère les invitations “pending” pour l’utilisateur
   Future<List<Map<String, dynamic>>> getInvitationsForUser(int userId) async {
     try {
       final res = await supabase
@@ -113,10 +107,8 @@ class FamilyProvider extends ChangeNotifier {
           .eq('invited_user_id', userId)
           .eq('status', 'pending');
 
-      if (res is List) {
-        return res.cast<Map<String, dynamic>>();
-      }
-      return [];
+      return res.cast<Map<String, dynamic>>();
+
     } catch (e) {
       debugPrint("Erreur getInvitationsForUser: $e");
       return [];
@@ -138,13 +130,11 @@ class FamilyProvider extends ChangeNotifier {
       final familyId = inv['family_id'] as int;
       final invitedUserId = inv['invited_user_id'] as int;
 
-      // Insérer dans family_members
       await supabase.from('family_members').insert({
         'family_id': familyId,
         'user_id': invitedUserId,
       });
 
-      // Supprimer ou mettre 'accepted' => on supprime le record
       await supabase
           .from('family_invitations')
           .delete()
@@ -157,7 +147,7 @@ class FamilyProvider extends ChangeNotifier {
     }
   }
 
-  // NOUVEAU : refuser l'invitation => on met status = 'declined' (ou on .delete() si vous préférez)
+  // Refuse en mettant status='declined'
   Future<void> declineFamilyInvitation(int invitationId) async {
     try {
       final inv = await supabase
@@ -170,7 +160,6 @@ class FamilyProvider extends ChangeNotifier {
         throw Exception("Invitation introuvable.");
       }
 
-      // On met le status à 'declined'
       await supabase
           .from('family_invitations')
           .update({'status': 'declined'})
@@ -183,7 +172,6 @@ class FamilyProvider extends ChangeNotifier {
     }
   }
 
-  // Méthode pour inviter => existante
   Future<void> inviteMemberToFamily(int familyId, int userId) async {
     try {
       final existingMember = await supabase
@@ -209,7 +197,6 @@ class FamilyProvider extends ChangeNotifier {
         throw Exception("Une invitation en attente existe déjà pour cet utilisateur.");
       }
 
-      // Insertion
       await supabase.from('family_invitations').insert({
         'family_id': familyId,
         'invited_user_id': userId,
@@ -221,9 +208,6 @@ class FamilyProvider extends ChangeNotifier {
     }
   }
 
-  // =================================================
-
-  // Supprimer un membre de la famille
   Future<void> deleteMemberToFamilyByUserId(int familyId, String userId) async {
     try {
       final existing = await supabase
@@ -254,8 +238,6 @@ class FamilyProvider extends ChangeNotifier {
       rethrow;
     }
   }
-
-  // Quitter la famille
   Future<void> leaveFamily(int familyId, String userEmail) async {
     try {
       final userRes = await supabase

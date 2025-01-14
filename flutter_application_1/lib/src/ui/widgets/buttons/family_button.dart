@@ -5,7 +5,7 @@ class FamilyButton extends StatelessWidget {
   final Color backgroundColor;
   final Color textColor;
   final VoidCallback? onPressed;
-  final Widget? targetPage; // Nouvelle page à naviguer
+  final Widget? targetPage;
 
   const FamilyButton({
     super.key,

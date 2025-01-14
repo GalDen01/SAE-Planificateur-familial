@@ -1,5 +1,3 @@
-// lib/src/ui/screens/family/manage_members_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
@@ -39,7 +37,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     loadFamilyMembers();
   }
 
-  /// Charge la liste des membres de la famille
   Future<void> loadFamilyMembers() async {
     final supabase = Supabase.instance.client;
     try {
@@ -48,17 +45,16 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
           .select('user_id, users!inner(first_name, email, photo_url)')
           .eq('family_id', widget.familyId);
 
-      if (result is List) {
-        setState(() {
-          familyMembers = result.cast<Map<String, dynamic>>();
-        });
-      }
+
+      setState(() {
+        familyMembers = result.cast<Map<String, dynamic>>();
+      });
+
     } catch (e) {
       debugPrint("Erreur loadFamilyMembers: $e");
     }
   }
 
-  /// Recherche d'utilisateurs
   Future<void> searchUsers(String query) async {
     if (query.isEmpty) {
       setState(() => suggestions = []);
@@ -72,11 +68,11 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
           .or('first_name.ilike.%$query%,email.ilike.%$query%')
           .limit(10);
 
-      if (response is List) {
-        setState(() {
-          suggestions = response.cast<Map<String, dynamic>>();
-        });
-      }
+
+      setState(() {
+        suggestions = response.cast<Map<String, dynamic>>();
+      });
+
     } catch (e) {
       debugPrint("Erreur searchUsers: $e");
     }
@@ -84,10 +80,10 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
 
     Future<void> addMember(int userId) async {
     try {
-      // inviteMemberToFamily ne renvoie rien (Future<void>)
+
       await context.read<FamilyProvider>().inviteMemberToFamily(widget.familyId, userId);
 
-      // Succès
+
       await loadFamilyMembers();
       setState(() {
         isSearching = false;

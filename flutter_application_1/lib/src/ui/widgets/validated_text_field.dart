@@ -36,7 +36,7 @@ class ValidatedTextFieldState extends State<ValidatedTextField> {
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle: TextStyle(color: widget.hintTextColor),
-        errorText: errorMessage, // Garde uniquement ceci
+        errorText: errorMessage,
       ),
       style: TextStyle(color: widget.textColor),
       onChanged: (_) {

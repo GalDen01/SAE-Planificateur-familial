@@ -86,7 +86,6 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
     await loadTasks();
   }
 
-  /// Confirmation de suppression de toutes les tâches
   void confirmDeleteAllTasks() {
     showDialog(
       context: context,
@@ -184,15 +183,14 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
             const SizedBox(height: 10),
 
             SizedBox(
-              height: 50,                // Hauteur fixe, adapter selon vos besoins
-              width: double.infinity,    // Largeur max
+              height: 50,                
+              width: double.infinity,
               child: Stack(
                 children: [
-                  // Bouton "Ajouter" centré horizontalement et verticalement
                   Align(
                     alignment: Alignment.center,
                     child: SizedBox(
-                      height: 30, // Hauteur du bouton, vous pouvez ajuster
+                      height: 30,
                       child: ElevatedButton(
                         onPressed: addTask,
                         style: ElevatedButton.styleFrom(

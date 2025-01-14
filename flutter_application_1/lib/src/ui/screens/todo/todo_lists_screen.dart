@@ -1,5 +1,3 @@
-// lib/src/ui/screens/todo/todo_lists_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
@@ -38,7 +36,6 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
     context.read<TodoListProvider>().loadListsForFamily(widget.familyId);
   }
 
-  /// Fonction de confirmation avant suppression
   Future<void> _confirmDeleteList(int listId) async {
     final provider = context.read<TodoListProvider>();
     final res = await showDialog<bool>(

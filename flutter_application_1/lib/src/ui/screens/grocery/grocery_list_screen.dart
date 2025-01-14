@@ -30,24 +30,21 @@ class GroceryListScreen extends StatefulWidget {
 
 class _GroceryListScreenState extends State<GroceryListScreen> {
   List<GroceryItemModel> _items = [];
-  bool _showOnlyUnchecked = false; // Filtre “non achetés”
+  bool _showOnlyUnchecked = false;
   double _totalBudget = 0.0;
-  String _errorMessage = '';       
+  String _errorMessage = '';
 
-  final List<String> _units = ['pcs', 'kg', 'g', 'l', 'mg', 'cl', 'ml'];
-  String _selectedUnit = 'pcs'; // Par défaut lors d'un nouvel article
-  bool _isPromo = false;     // Par défaut lors d'un nouvel article
+
+  bool _isPromo = false;
 
   @override
   void initState() {
     super.initState();
-    _selectedUnit = _units.first;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadItemsAndBudget();
     });
   }
 
-  /// Chargement principal
   Future<void> _loadItemsAndBudget() async {
     final provider = context.read<GroceryListProvider>();
     final items = await provider.loadItemsForList(widget.listId);
@@ -58,7 +55,6 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     });
   }
 
-  /// Filtrage “non achetés”
   List<GroceryItemModel> get filteredItems {
     if (_showOnlyUnchecked) {
       return _items.where((i) => !i.isChecked).toList();
@@ -66,13 +62,12 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     return _items;
   }
 
-  // -----------------------------------------------------------------------
-  // DIALOG: Création d'un nouvel article
+  // ======================== CREATION D’UN ARTICLE ========================
   Future<void> _addItemDialog() async {
     final nameController = TextEditingController();
     final qtyController = TextEditingController(text: "1");
     final priceController = TextEditingController(text: "0.0");
-    _isPromo = false; // reset
+    _isPromo = false;
     String? localErrorMsg;
 
     await showDialog(
@@ -81,7 +76,10 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
         return StatefulBuilder(builder: (dialogCtx, setStateDialog) {
           return AlertDialog(
             backgroundColor: widget.cardColor,
-            title: Text("Nouvel article", style: TextStyle(color: widget.grayColor)),
+            title: Text(
+              "Nouvel article",
+              style: TextStyle(color: widget.grayColor),
+            ),
             content: SingleChildScrollView(
               child: Column(
                 children: [
@@ -102,35 +100,14 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                   ),
                   const SizedBox(height: 10),
 
-                  // Quantité + Unité
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: qtyController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: "Quantité",
-                            labelStyle: TextStyle(color: widget.grayColor),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      DropdownButton<String>(
-                        value: _selectedUnit.isEmpty ? null : _selectedUnit,
-                        items: _units.map((String unit) {
-                          return DropdownMenuItem<String>(
-                            value: unit,
-                            child: Text(unit),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setStateDialog(() {
-                            _selectedUnit = newValue ?? _units.first;
-                          });
-                        },
-                      ),
-                    ],
+                  // Quantité
+                  TextField(
+                    controller: qtyController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: "Quantité",
+                      labelStyle: TextStyle(color: widget.grayColor),
+                    ),
                   ),
                   const SizedBox(height: 10),
 
@@ -145,7 +122,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                   ),
                   const SizedBox(height: 10),
 
-                  // Promotion ?
+                  // Promotion
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -189,15 +166,13 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                     return;
                   }
                   try {
-                    // On passe isPromo
                     await context.read<GroceryListProvider>().createItem(
-                      widget.listId,
-                      name,
-                      qty,
-                      price,
-                      _selectedUnit,
-                      isPromo: _isPromo,
-                    );
+                          widget.listId,
+                          name,
+                          qty,
+                          price,
+                          isPromo: _isPromo,
+                        );
                     Navigator.pop(dialogCtx);
                     await _loadItemsAndBudget();
                   } catch (e) {
@@ -220,8 +195,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     );
   }
 
-  // -----------------------------------------------------------------------
-  // ACTIONS sur un article
+  // ======================== ACTIONS SUR UN ARTICLE ========================
   Future<void> _toggleChecked(GroceryItemModel item) async {
     await context.read<GroceryListProvider>().updateItemChecked(item.id!, !item.isChecked);
     await _loadItemsAndBudget();
@@ -232,13 +206,11 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     await _loadItemsAndBudget();
   }
 
-  // DIALOG: Edition d’un article
+  // ======================== EDITION D’UN ARTICLE ========================
   Future<void> _editItemDialog(GroceryItemModel item) async {
     final qtyController = TextEditingController(text: "${item.quantity}");
     final priceController = TextEditingController(text: "${item.price}");
-    String selectedUnitEdit = item.unit;
     bool isPromoEdit = item.isPromo;
-    String? localErrorMsg;
 
     await showDialog(
       context: context,
@@ -246,16 +218,15 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
         return StatefulBuilder(builder: (dialogCtx, setStateDialog) {
           return AlertDialog(
             backgroundColor: widget.cardColor,
-            title: Text("Modifier l'article", style: TextStyle(color: widget.grayColor)),
+            title: Text(
+              "Modifier l'article",
+              style: TextStyle(color: widget.grayColor),
+            ),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (localErrorMsg?.isNotEmpty ?? false)
-                    Text(
-                      localErrorMsg!,
-                      style: const TextStyle(color: AppColors.errorColor),
-                    ),
+                  
                   const SizedBox(height: 8),
 
                   // Quantité
@@ -280,24 +251,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                   ),
                   const SizedBox(height: 10),
 
-                  // Unité
-                  DropdownButton<String>(
-                    value: selectedUnitEdit.isEmpty ? _units.first : selectedUnitEdit,
-                    items: _units.map((String unit) {
-                      return DropdownMenuItem<String>(
-                        value: unit,
-                        child: Text(unit),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setStateDialog(() {
-                        selectedUnitEdit = newValue ?? _units.first;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Promo ?
+                  // Promotion ?
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -335,12 +289,11 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
 
                   try {
                     await context.read<GroceryListProvider>().updateItem(
-                      item.id!,
-                      quantity: newQty,
-                      price: newPrice,
-                      unit: selectedUnitEdit,
-                      isPromo: isPromoEdit,
-                    );
+                          item.id!,
+                          quantity: newQty,
+                          price: newPrice,
+                          isPromo: isPromoEdit,
+                        );
                     Navigator.pop(dialogCtx);
                     await _loadItemsAndBudget();
                   } catch (e) {
@@ -363,7 +316,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     );
   }
 
-  /// Confirme suppression de tous les articles
+  // ======================== SUPPRIMER TOUS LES ARTICLES ========================
   Future<void> _confirmDeleteAllItems() async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -402,12 +355,12 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
         }
         await _loadItemsAndBudget();
       } catch (e) {
-        // On ignore ou on log
+        // On log ou on ignore
       }
     }
   }
 
-  // -----------------------------------------------------------------------
+  // ======================== BUILD ========================
   @override
   Widget build(BuildContext context) {
     final items = filteredItems;
@@ -430,11 +383,10 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
             ),
             const SizedBox(height: 10),
 
-            // Filtre “non achetés”
+            // Filtre
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Budget total
                 Text(
                   "Budget total : ${_totalBudget.toStringAsFixed(2)} €",
                   style: TextStyle(
@@ -463,7 +415,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
               ],
             ),
 
-            // Bouton Ajouter + Bouton “Supprimer tous”
+            // Boutons “Ajouter” et “Supprimer tous”
             SizedBox(
               height: 50,
               width: double.infinity,
@@ -512,14 +464,12 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
               ),
             ),
 
-            // Erreur globale
             if (_errorMessage.isNotEmpty)
               Text(
                 _errorMessage,
                 style: const TextStyle(color: AppColors.errorColor),
               ),
 
-            // Liste des articles
             Expanded(
               child: items.isEmpty
                   ? Center(
@@ -545,6 +495,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                               value: item.isChecked,
                               onChanged: (_) => _toggleChecked(item),
                             ),
+                            // Titre = nom + label PROMO si needed
                             title: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -559,7 +510,6 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 6),
-                                // Affiche un petit label si en promo
                                 if (item.isPromo)
                                   Container(
                                     padding: const EdgeInsets.symmetric(
@@ -585,37 +535,23 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                               children: [
                                 Text(
                                   "Quantité: ${item.quantity}",
-                                  style: TextStyle(
-                                    color: widget.grayColor,
-                                  ),
+                                  style: TextStyle(color: widget.grayColor),
                                 ),
-                                const SizedBox(width: 10),
-                                if (item.unit.isNotEmpty)
-                                  Text(
-                                    "(${item.unit})",
-                                    style: TextStyle(
-                                      color: widget.grayColor,
-                                    ),
-                                  ),
                                 const SizedBox(width: 10),
                                 Text(
                                   "| Prix: ${item.price.toStringAsFixed(2)} €",
-                                  style: TextStyle(
-                                    color: widget.grayColor,
-                                  ),
+                                  style: TextStyle(color: widget.grayColor),
                                 ),
                               ],
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Edit
                                 IconButton(
                                   icon: const Icon(Icons.edit),
                                   color: AppColors.blackColor,
                                   onPressed: () => _editItemDialog(item),
                                 ),
-                                // Delete
                                 IconButton(
                                   icon: const Icon(Icons.delete),
                                   color: AppColors.deletColor,
