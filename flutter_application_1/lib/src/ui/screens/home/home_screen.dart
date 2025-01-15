@@ -29,30 +29,22 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // 1) Charger familles pour l'utilisateur
+    _initialLoad();
+  }
+
+  /// Chargement initial : familles + météo + userId/pendingInv.
+  Future<void> _initialLoad() async {
     final userEmail = context.read<AuthProvider>().currentUser?.email;
     if (userEmail != null) {
-      context.read<FamilyProvider>().loadFamiliesForUser(userEmail);
+      await context.read<FamilyProvider>().loadFamiliesForUser(userEmail);
+      await _fetchUserIdAndPendingInvs(userEmail);
     }
-
-    // 2) Charger la météo
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<WeatherProvider>().fetchWeather();
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // On rafraîchit la liste des familles à chaque fois
-    final userEmail = context.read<AuthProvider>().currentUser?.email;
-    if (userEmail != null) {
-      context.read<FamilyProvider>().loadFamiliesForUser(userEmail);
-      _fetchUserIdAndPendingInvs(userEmail);
-    }
-  }
-
-  /// Récupère userId + pendingInvCount
+  /// Récupère userId + compte d'invitations en attente
   Future<void> _fetchUserIdAndPendingInvs(String userEmail) async {
     final supabase = Supabase.instance.client;
     final userRes = await supabase
@@ -70,19 +62,34 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  /// Ouvre l'écran des invitations, si userId dispo
+  /// Méthode de refresh quand on revient sur Home
+  Future<void> _refreshAfterReturn() async {
+    final userEmail = context.read<AuthProvider>().currentUser?.email;
+    if (userEmail != null) {
+      await context.read<FamilyProvider>().loadFamiliesForUser(userEmail);
+      await _fetchUserIdAndPendingInvs(userEmail);
+    }
+  }
+
+  /// Navigation vers InvitationsScreen
   Future<void> _goToInvitations() async {
     if (_userId == null) return;
-    Navigator.push(
+
+    // On attend le retour (pop), puis on rafraîchit
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => InvitationsScreen(userId: _userId!),
       ),
     );
+
+    // Au retour de InvitationsScreen => on refresh
+    await _refreshAfterReturn();
   }
 
-  void _goToProfile() {
-    Navigator.push(
+  /// Navigation vers ProfileScreen
+  Future<void> _goToProfile() async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => const ProfileScreen(
@@ -92,6 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+
+    await _refreshAfterReturn();
   }
 
   @override
@@ -100,10 +109,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final families = familyProvider.families;
     final pendingInvCount = familyProvider.pendingInvCount;
 
-    // S’il y a une invitation => on met un icône “unread”, sinon “read”
-    final invitationsIcon = (pendingInvCount > 0)
-        ? Icons.mark_email_unread
-        : Icons.mark_email_read;
+    final invitationsIcon =
+        (pendingInvCount > 0) ? Icons.mark_email_unread : Icons.mark_email_read;
 
     return Scaffold(
       backgroundColor: AppColors.grayColor,
