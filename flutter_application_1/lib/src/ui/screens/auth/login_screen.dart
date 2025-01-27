@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Titre principal
-                Text(
+                const Text(
                   "La coordination familiale,\nréinventée",
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                Text(
+                const Text(
                   "FamLink vous aide à collaborer facilement :\n"
                   "des calendriers synchronisés, des listes interactives\n"
                   "et une localisation sécurisée pour rester en contact.",
@@ -85,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Bouton "Voir CGU"
                     GestureDetector(
                       onTap: _showCguDialog,
-                      child: Text(
+                      child: const Text(
                         "J'accepte les Conditions Générales d'Utilisation",
                         style: TextStyle(
                           color: AppColors.whiteColor,

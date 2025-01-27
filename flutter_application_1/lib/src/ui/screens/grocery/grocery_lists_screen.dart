@@ -240,7 +240,7 @@ class _GroceryListsScreenState extends State<GroceryListsScreen> {
                       ),
                     ),
                   );
-                }).toList(),
+                }),
               ],
             ),
           ),

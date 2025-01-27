@@ -173,4 +173,5 @@ class GroceryListProvider extends ChangeNotifier {
     }
     return total;
   }
+  
 }

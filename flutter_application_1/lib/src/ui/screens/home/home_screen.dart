@@ -179,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 20),
                   ],
                 );
-              }).toList(),
+              }),
 
               // Bouton pour ajouter une famille
               const FamilyAddButton(

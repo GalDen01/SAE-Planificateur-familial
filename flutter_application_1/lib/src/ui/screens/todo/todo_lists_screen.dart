@@ -247,7 +247,7 @@ class _TodoListsScreenState extends State<TodoListsScreen> {
                       ),
                     ),
                   );
-                }).toList(),
+                }),
               ],
             ),
           ),

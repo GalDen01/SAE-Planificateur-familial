@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:google_ml_kit/google_ml_kit.dart'; // Importation de Google ML Kit pour le scanner
+import 'package:camera/camera.dart'; 
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
 import 'package:Planificateur_Familial/src/models/grocery_item.dart';
 import 'package:Planificateur_Familial/src/config/constants.dart';
@@ -33,6 +34,10 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   bool _showOnlyUnchecked = false;
   double _totalBudget = 0.0;
   String _errorMessage = '';
+  CameraController? _cameraController;
+  bool _isScanning = false;
+  String _scannedPrice = '';
+  TextEditingController priceController = TextEditingController();
 
 
   bool _isPromo = false;
@@ -40,9 +45,60 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeCamera();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadItemsAndBudget();
     });
+  }
+   // Méthode d'initialisation de la caméra
+  Future<void> _initializeCamera() async {
+    final cameras = await availableCameras();
+    _cameraController = CameraController(
+      cameras[0], // Utiliser la première caméra disponible
+      ResolutionPreset.high,
+    );
+    await _cameraController?.initialize();
+    setState(() {});
+  }
+
+  // Méthode pour commencer à scanner
+  Future<void> _startScan() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+
+    setState(() {
+      _isScanning = true;
+    });
+
+    final barcodeScanner = GoogleMlKit.vision.barcodeScanner();
+    final image = await _cameraController!.takePicture();
+    final inputImage = InputImage.fromFilePath(image.path);
+
+    final barcodes = await barcodeScanner.processImage(inputImage);
+
+    if (barcodes.isNotEmpty) {
+      final price = _extractPriceFromBarcode(barcodes);
+      setState(() {
+        _scannedPrice = price;
+        priceController.text = price; // Met à jour le champ de texte avec le prix scanné
+      });
+    }
+
+    setState(() {
+      _isScanning = false;
+    });
+  }
+
+  // Méthode pour extraire le prix du code-barres
+  String _extractPriceFromBarcode(List<Barcode> barcodes) {
+    for (var barcode in barcodes) {
+      final value = barcode.displayValue;
+      if (value != null && double.tryParse(value) != null) {
+        return value; // Retourne le prix extrait
+      }
+    }
+    return ''; // Retourne une chaîne vide si aucun prix trouvé
   }
 
   Future<void> _loadItemsAndBudget() async {
@@ -242,14 +298,19 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
 
                   // Prix
                   TextField(
-                    controller: priceController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: "Prix",
-                      labelStyle: TextStyle(color: widget.grayColor),
+                  controller: priceController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: "Prix",
+                    labelStyle: TextStyle(color: widget.grayColor),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.camera_alt),
+                      onPressed: _startScan,  // Appel à la méthode de scan de prix
                     ),
                   ),
-                  const SizedBox(height: 10),
+                ),
+                const SizedBox(height: 10),
+
 
                   // Promotion ?
                   Row(

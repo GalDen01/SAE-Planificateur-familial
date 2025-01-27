@@ -201,7 +201,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                         ],
                       ),
                     );
-                  }).toList(),
+                  }),
 
                   const SizedBox(height: 30),
 

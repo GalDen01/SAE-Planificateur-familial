@@ -101,7 +101,7 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Invitation à rejoindre la famille :",
                             style: TextStyle(
                               color: AppColors.grayColor,
@@ -112,7 +112,7 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
                           const SizedBox(height: 4),
                           Text(
                             familyName,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.grayColor,
                               fontSize: 18,
                             ),

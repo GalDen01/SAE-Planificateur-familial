@@ -87,7 +87,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
               // Titre principal
-              Text(
+              const Text(
                 "Profil utilisateur",
                 style: TextStyle(
                   fontSize: 24,
@@ -98,7 +98,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 30),
 
               // Avatar (Photo de profil Google)
-              Container(
+              SizedBox(
                 width: 100,
                 height: 100,
                 child: ClipOval(
@@ -147,7 +147,7 @@ class ProfileScreen extends StatelessWidget {
                 child: Center(
                   child: Text(
                     "Votre Prénom : ${user?.displayName ?? 'Inconnu'}",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.grayColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -168,7 +168,7 @@ class ProfileScreen extends StatelessWidget {
                 child: Center(
                   child: Text(
                     "Votre email : ${user?.email ?? 'Inconnu'}",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.grayColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

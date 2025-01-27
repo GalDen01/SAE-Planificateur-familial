@@ -7,18 +7,18 @@ class CguDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
+      title: const Text(
         "Conditions Générales d'Utilisation",
-        style: const TextStyle(color: AppColors.grayColor),
+        style: TextStyle(color: AppColors.grayColor),
       ),
       backgroundColor: AppColors.cardColor,
-      content: SizedBox(
+      content: const SizedBox(
         width: double.maxFinite,
         height: 400,
         child: SingleChildScrollView(
           child: Text(
             _cguText,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.grayColor,
               fontSize: 14,
             ),
