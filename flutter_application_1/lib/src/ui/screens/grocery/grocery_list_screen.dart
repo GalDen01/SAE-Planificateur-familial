@@ -357,12 +357,14 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
         }
         await _loadItemsAndBudget();
       } catch (e) {
-        // On log ou on ignore
+        //on ignore
       }
     }
   }
 
   // ======================== PRENDRE UNE PHOTO ET SCANNER LE PRIX ========================
+
+  
   Future<void> _scanPriceFromCamera() async {
     try {
       //on ouvre la caméra
