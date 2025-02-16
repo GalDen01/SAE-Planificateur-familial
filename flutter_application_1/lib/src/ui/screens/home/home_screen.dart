@@ -62,20 +62,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  /// Méthode de refresh quand on revient sur Home
-  Future<void> _refreshAfterReturn() async {
-    final userEmail = context.read<AuthProvider>().currentUser?.email;
-    if (userEmail != null) {
-      await context.read<FamilyProvider>().loadFamiliesForUser(userEmail);
-      await _fetchUserIdAndPendingInvs(userEmail);
-    }
-  }
+ 
 
   /// Navigation vers InvitationsScreen
   Future<void> _goToInvitations() async {
     if (_userId == null) return;
 
-    // On attend le retour (pop), puis on rafraîchit
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -85,6 +77,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Au retour de InvitationsScreen => on refresh
     await _refreshAfterReturn();
+  }
+
+ /// Méthode de refresh quand on revient sur Home
+  Future<void> _refreshAfterReturn() async {
+    final userEmail = context.read<AuthProvider>().currentUser?.email;
+    if (userEmail != null) {
+      await context.read<FamilyProvider>().loadFamiliesForUser(userEmail);
+      await _fetchUserIdAndPendingInvs(userEmail);
+    }
   }
 
   /// Navigation vers ProfileScreen

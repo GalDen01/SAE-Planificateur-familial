@@ -1,5 +1,3 @@
-// lib/src/ui/screens/grocery/grocery_list_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,6 +5,9 @@ import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart'
 import 'package:Planificateur_Familial/src/models/grocery_item.dart';
 import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:Planificateur_Familial/src/providers/ocr_provider.dart';
 
 class GroceryListScreen extends StatefulWidget {
   final int listId;
@@ -34,8 +35,9 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   double _totalBudget = 0.0;
   String _errorMessage = '';
 
-
   bool _isPromo = false;
+
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -360,6 +362,85 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     }
   }
 
+  // ======================== PRENDRE UNE PHOTO ET SCANNER LE PRIX ========================
+  Future<void> _scanPriceFromCamera() async {
+    try {
+      //on ouvre la caméra
+      final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
+      if (pickedFile == null) {
+        //l’utilisateur a annulé la prise de photo
+        return;
+      }
+
+      final file = File(pickedFile.path);
+
+      final ocrProvider = context.read<OcrProvider>();
+      final recognizedText = await ocrProvider.recognizeTextFromImage(file);
+
+      //on cherche le prix dans le text par exemple, on cherche un motif comme "xx.xx" ou "xx,xx".
+      final regExpPrice = RegExp(r'(\d+[\.,]\d{1,2})');
+      final matches = regExpPrice.allMatches(recognizedText);
+
+      String resultMessage;
+      if (matches.isNotEmpty) {
+        // on prend le premire qu'on trouve
+        final firstMatch = matches.first.group(0);
+        resultMessage = "Prix détecté : $firstMatch\n\nTexte brut :\n$recognizedText";
+      } else {
+        resultMessage = "Aucun prix détecté.\n\nTexte brut :\n$recognizedText";
+      }
+
+      if (!mounted) return;
+      await showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            backgroundColor: widget.cardColor,
+            content: SingleChildScrollView(
+              child: Text(
+                resultMessage,
+                style: TextStyle(
+                  color: widget.grayColor,
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      //on affiche un message d’erreur
+      if (!mounted) return;
+      await showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            backgroundColor: widget.cardColor,
+            title: Text(
+              'Erreur OCR',
+              style: TextStyle(color: widget.grayColor),
+            ),
+            content: Text(
+              e.toString(),
+              style: TextStyle(color: widget.grayColor),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   // ======================== BUILD ========================
   @override
   Widget build(BuildContext context) {
@@ -423,7 +504,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                 children: [
                   // Bouton “Ajouter”
                   Align(
-                    alignment: Alignment.center,
+                    alignment: Alignment.centerLeft,
                     child: SizedBox(
                       height: 30,
                       child: ElevatedButton(
@@ -436,6 +517,24 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                       ),
                     ),
                   ),
+
+                  // Bouton "Prendre une photo et scanner le prix"
+                  Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      height: 30,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.photo_camera),
+                        onPressed: _scanPriceFromCamera,
+                        label: const Text("Scanner un prix"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: widget.cardColor,
+                          foregroundColor: widget.grayColor,
+                        ),
+                      ),
+                    ),
+                  ),
+
                   // Bouton “Supprimer tous”
                   Align(
                     alignment: Alignment.centerRight,
@@ -495,7 +594,6 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                               value: item.isChecked,
                               onChanged: (_) => _toggleChecked(item),
                             ),
-                            // Titre = nom + label PROMO si needed
                             title: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
