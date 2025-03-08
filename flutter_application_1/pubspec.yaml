@@ -1,4 +1,4 @@
-name: flutter_application_1
+name: Planificateur_Familial
 description: "A new Flutter project."
 
 # Prevent accidental publishing to pub.dev.
@@ -8,19 +8,26 @@ version: 1.0.0+1
 
 environment:
   sdk: ^3.5.4
-
+  
 dependencies:
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-
+  http: ^0.13.5
+  image_picker: ^0.8.7
+  geolocator: ^9.0.2
+  google_sign_in: ^5.4.2
+  google_sign_in_web: ^0.10.2
+  provider: ^6.0.5
+  supabase_flutter: ^2.8.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  flutter_lints: ^4.0.0
-
+  mocktail: ^1.0.0
+  postgrest: ^2.4.0
+  flutter_lints: ^5.0.0
+  geolocator_platform_interface: ^4.0.0
 flutter:
   uses-material-design: true
 
@@ -28,5 +35,4 @@ flutter:
   generate: true
 
   assets:
-    # Add assets from the images directory to the application.
     - assets/images/
