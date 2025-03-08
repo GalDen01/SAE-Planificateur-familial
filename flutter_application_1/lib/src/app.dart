@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
 import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart';
 import 'package:Planificateur_Familial/src/providers/todo_list_provider.dart';
@@ -28,6 +30,14 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Planificateur Familial',
+        localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+
         theme: ThemeData(fontFamily: 'Roboto'),
         initialRoute: '/',
         routes: {
