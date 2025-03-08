@@ -161,12 +161,12 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                         children: [
                           if (photoUrl != null && photoUrl.isNotEmpty)
                             CircleAvatar(
-                              backgroundColor: AppColors.whiteColor.withOpacity(0.7),
+                              backgroundColor: AppColors.whiteColor,
                               backgroundImage: NetworkImage(photoUrl),
                             )
                           else
                             CircleAvatar(
-                              backgroundColor: AppColors.whiteColor.withOpacity(0.7),
+                              backgroundColor: AppColors.whiteColor,
                               child: const Icon(Icons.person),
                             ),
                           const SizedBox(width: 10),
@@ -193,7 +193,7 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                         ],
                       ),
                     );
-                  }).toList(),
+                  }),
 
                   const SizedBox(height: 30),
 

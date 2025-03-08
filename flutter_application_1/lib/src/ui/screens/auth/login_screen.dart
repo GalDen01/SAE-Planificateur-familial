@@ -82,7 +82,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       activeColor: AppColors.cardColor,
                       checkColor: AppColors.blackColor,
                     ),
-                    // Bouton "Voir CGU"
                     GestureDetector(
                       onTap: _showCguDialog,
                       child: Text(
@@ -102,9 +101,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {
+                      // Si pas accepté => on arrête tout de suite
                       if (!_hasAcceptedCGU) {
-                        // Si pas coché, on affiche un message
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        // Récupérer le scaffoldMessenger AVANT de l'await (bonne pratique)
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                        scaffoldMessenger.showSnackBar(
                           const SnackBar(
                             content: Text(
                               "Vous devez accepter les CGU pour continuer.",
@@ -114,12 +115,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         return;
                       }
 
-                      // Sinon on tente la connexion
+                      // On capture toutes les références à l'avance
+                      final scaffoldMessenger = ScaffoldMessenger.of(context);
+                      final navigator = Navigator.of(context);
+
+                      // On lance la connexion
                       await authProvider.signInWithGoogle();
+
+                      // Vérifie si le widget est toujours monté
+                      if (!mounted) return;
+
+                      // En fonction de la réussite, on agit
                       if (authProvider.isLoggedIn) {
-                        Navigator.pushReplacementNamed(context, '/home');
+                        navigator.pushReplacementNamed('/home');
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        scaffoldMessenger.showSnackBar(
                           const SnackBar(
                             content: Text("Échec de la connexion."),
                           ),

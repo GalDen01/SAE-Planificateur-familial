@@ -58,6 +58,7 @@ class FamilyAddButton extends StatelessWidget {
                         controller.text.trim(),
                         userEmail,
                       );
+                      
                       Navigator.pop(context);
                     }
                   },

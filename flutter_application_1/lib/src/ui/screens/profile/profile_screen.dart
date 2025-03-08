@@ -233,7 +233,7 @@ class ProfileScreen extends StatelessWidget {
                                 errorBuilder: (ctx, error, stack) {
                                   return Container(
                                     color:
-                                        AppColors.whiteColor.withOpacity(0.7),
+                                        AppColors.whiteColor,
                                     child: const Center(
                                       child: Icon(
                                         Icons.person,
@@ -246,7 +246,7 @@ class ProfileScreen extends StatelessWidget {
                               )
                             : Container(
                                 color:
-                                    AppColors.whiteColor.withOpacity(0.7),
+                                    AppColors.whiteColor,
                                 child: const Center(
                                   child: Icon(
                                     Icons.person,
@@ -289,7 +289,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       child: Center(
                         child: Text(
-                          "Votre email : ${user.email ?? 'Inconnu'}",
+                          "Votre email : ${user.email}",
                           style: TextStyle(
                             color: grayColor,
                             fontWeight: FontWeight.bold,

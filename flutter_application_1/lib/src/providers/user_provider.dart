@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -10,31 +8,30 @@ class UserProvider extends ChangeNotifier {
     final result = <String, dynamic>{};
 
     try {
-      //Récupère la ligne dans `users`
       final userRes = await supabase
           .from('users')
           .select('*')
           .eq('id', userId)
           .maybeSingle();
 
-      result['user'] = userRes ?? {};
+      // S’il peut réellement être null, on l’affecte directement (ce qui stocke null).
+      // Sinon, on l’assigne tel quel :
+      result['user'] = userRes;
 
-      //Récupère les lignes de family_members
       final membersRes = await supabase
           .from('family_members')
           .select('id, family_id')
           .eq('user_id', userId);
 
-      result['family_members'] = membersRes ?? [];
+      // Idem ici
+      result['family_members'] = membersRes;
 
-      //Récupère les invitations
       final invitationsRes = await supabase
           .from('family_invitations')
           .select('id, family_id, status')
           .eq('invited_user_id', userId);
 
-      result['family_invitations'] = invitationsRes ?? [];
-
+      result['family_invitations'] = invitationsRes;
 
       return result;
     } catch (e) {
@@ -43,22 +40,18 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-
   Future<void> deleteAllUserData(int userId) async {
     try {
-      //Supprime dans family_invitations
       await supabase
           .from('family_invitations')
           .delete()
           .eq('invited_user_id', userId);
 
-      //Supprime dans family_members
       await supabase
           .from('family_members')
           .delete()
           .eq('user_id', userId);
 
-      //Supprime l’utilisateur
       await supabase
           .from('users')
           .delete()

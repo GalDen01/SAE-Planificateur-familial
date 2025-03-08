@@ -34,12 +34,14 @@ class _InvitationsScreenState extends State<InvitationsScreen> {
 
   Future<void> acceptInvitation(int invitationId) async {
     try {
+      if (!mounted) return;
       await context.read<FamilyProvider>().acceptFamilyInvitation(invitationId);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invitation acceptée !')),
       );
       await loadInvitations(); // recharger
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erreur : $e')),
       );

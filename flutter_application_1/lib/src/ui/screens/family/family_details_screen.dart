@@ -10,7 +10,7 @@ import 'package:Planificateur_Familial/src/providers/family_provider.dart';
 import 'package:Planificateur_Familial/src/providers/auth_provider.dart';
 import 'package:Planificateur_Familial/src/ui/screens/home/home_screen.dart';
 
-class FamilyDetailsScreen extends StatelessWidget {
+class FamilyDetailsScreen extends StatefulWidget {
   final int familyId;
   final String familyName;
   final Color cardColor;
@@ -26,7 +26,11 @@ class FamilyDetailsScreen extends StatelessWidget {
     required this.brightCardColor,
   });
 
+  @override
+  State<FamilyDetailsScreen> createState() => _FamilyDetailsScreenState();
+}
 
+class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
   void _confirmLeaveFamily(BuildContext context) {
     showDialog(
       context: context,
@@ -34,56 +38,60 @@ class FamilyDetailsScreen extends StatelessWidget {
         return AlertDialog(
           title: Text(
             "Quitter la famille ?",
-            style: TextStyle(color: grayColor),
+            style: TextStyle(color: widget.grayColor),
           ),
-          backgroundColor: cardColor,
+          backgroundColor: widget.cardColor,
           content: Text(
-            "Voulez-vous vraiment quitter la famille '$familyName' ?",
-            style: TextStyle(color: grayColor),
+            "Voulez-vous vraiment quitter la famille '${widget.familyName}' ?",
+            style: TextStyle(color: widget.grayColor),
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(ctx), // Annuler
+              onPressed: () => Navigator.pop(ctx),
               style: TextButton.styleFrom(
-                foregroundColor: grayColor,
-                backgroundColor: cardColor,
+                foregroundColor: widget.grayColor,
+                backgroundColor: widget.cardColor,
               ),
               child: const Text("Annuler"),
             ),
             TextButton(
               onPressed: () async {
+                // Capture des références nécessaires AVANT l'opération asynchrone.
+                final auth = context.read<AuthProvider>();
+                final familyProvider = context.read<FamilyProvider>();
+                final currentNavigator = Navigator.of(context);
+                final currentScaffoldMessenger = ScaffoldMessenger.of(context);
+
                 Navigator.pop(ctx);
 
-
-                final userEmail = context.read<AuthProvider>().currentUser?.email;
+                final userEmail = auth.currentUser?.email;
                 if (userEmail == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  currentScaffoldMessenger.showSnackBar(
                     const SnackBar(content: Text('Utilisateur non identifié !')),
                   );
                   return;
                 }
 
                 try {
-                  await context.read<FamilyProvider>().leaveFamily(familyId, userEmail);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Vous avez quitté la famille avec succès !')),
+                  await familyProvider.leaveFamily(widget.familyId, userEmail);
+                  currentScaffoldMessenger.showSnackBar(
+                    const SnackBar(
+                        content: Text(
+                            'Vous avez quitté la famille avec succès !')),
                   );
-
-                  // Revenir à l'écran principal
-                  Navigator.of(context).pushAndRemoveUntil(
+                  currentNavigator.pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
                     (route) => false,
                   );
                 } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  currentScaffoldMessenger.showSnackBar(
                     SnackBar(content: Text('Erreur : ${e.toString()}')),
                   );
                 }
               },
               style: TextButton.styleFrom(
-                foregroundColor: grayColor,
-                backgroundColor: cardColor,
+                foregroundColor: widget.grayColor,
+                backgroundColor: widget.cardColor,
               ),
               child: const Text("Quitter"),
             ),
@@ -99,7 +107,7 @@ class FamilyDetailsScreen extends StatelessWidget {
       appBar: BackProfileBar(
         onBack: () => Navigator.pop(context),
       ),
-      backgroundColor: grayColor,
+      backgroundColor: widget.grayColor,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
         child: Column(
@@ -107,7 +115,7 @@ class FamilyDetailsScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 30),
             Text(
-              familyName,
+              widget.familyName,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 24,
@@ -127,7 +135,7 @@ class FamilyDetailsScreen extends StatelessWidget {
                     height: 80,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: cardColor,
+                      color: widget.cardColor,
                     ),
                   ),
                   Positioned(
@@ -142,57 +150,49 @@ class FamilyDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 40),
-
-            // Bouton "Listes de courses"
             FamilyButton(
               label: "Listes de courses",
-              backgroundColor: cardColor,
-              textColor: grayColor,
+              backgroundColor: widget.cardColor,
+              textColor: widget.grayColor,
               targetPage: GroceryListsScreen(
-                familyId: familyId,
-                familyName: familyName,
-                cardColor: cardColor,
-                grayColor: grayColor,
-                brightCardColor: brightCardColor,
+                familyId: widget.familyId,
+                familyName: widget.familyName,
+                cardColor: widget.cardColor,
+                grayColor: widget.grayColor,
+                brightCardColor: widget.brightCardColor,
               ),
             ),
             const SizedBox(height: 10),
-
-            // Bouton "Tâches à faire"
             FamilyButton(
               label: "Tâches à faire",
-              backgroundColor: cardColor,
-              textColor: grayColor,
+              backgroundColor: widget.cardColor,
+              textColor: widget.grayColor,
               targetPage: TodoListsScreen(
-                familyId: familyId,
-                familyName: familyName,
-                cardColor: cardColor,
-                grayColor: grayColor,
-                brightCardColor: brightCardColor,
+                familyId: widget.familyId,
+                familyName: widget.familyName,
+                cardColor: widget.cardColor,
+                grayColor: widget.grayColor,
+                brightCardColor: widget.brightCardColor,
               ),
             ),
             const SizedBox(height: 10),
-
-            // Bouton "Gérer les membres"
             FamilyButton(
               label: "Mon Groupe Familial",
-              backgroundColor: cardColor,
-              textColor: grayColor,
+              backgroundColor: widget.cardColor,
+              textColor: widget.grayColor,
               targetPage: ManageMembersScreen(
-                familyId: familyId,
-                familyName: familyName,
-                cardColor: cardColor,
-                grayColor: grayColor,
-                brightCardColor: brightCardColor,
+                familyId: widget.familyId,
+                familyName: widget.familyName,
+                cardColor: widget.cardColor,
+                grayColor: widget.grayColor,
+                brightCardColor: widget.brightCardColor,
               ),
             ),
             const SizedBox(height: 10),
-
-            // Bouton "Quitter la famille" => Affiche la boîte de dialogue
             FamilyButton(
               label: "Quitter la famille",
-              backgroundColor: cardColor,
-              textColor: grayColor,
+              backgroundColor: widget.cardColor,
+              textColor: widget.grayColor,
               onPressed: () => _confirmLeaveFamily(context),
             ),
           ],
