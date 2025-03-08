@@ -26,8 +26,6 @@ class FamilyProvider extends ChangeNotifier {
           .eq('family_members.users.email', userEmail);
 
       _families.clear();
-
-
       for (final item in data) {
         _families.add(
           Family(
@@ -50,14 +48,28 @@ class FamilyProvider extends ChangeNotifier {
           .eq('invited_user_id', userId)
           .eq('status', 'pending');
 
-
       _pendingInvCount = res.length;
-
       notifyListeners();
     } catch (e) {
       debugPrint("Erreur loadPendingInvitationsCount: $e");
       _pendingInvCount = 0;
       notifyListeners();
+    }
+  }
+
+  // ================== MÉTHODE AJOUTÉE ==================
+  /// Récupère la liste des membres d’une famille (avec prénom, email, photo).
+  Future<List<Map<String, dynamic>>> fetchMembersOfFamily(int familyId) async {
+    try {
+      final result = await supabase
+          .from('family_members')
+          .select('user_id, users!inner(first_name, email, photo_url)')
+          .eq('family_id', familyId);
+
+      return result.cast<Map<String, dynamic>>();
+    } catch (e) {
+      debugPrint("Erreur fetchMembersOfFamily: $e");
+      return [];
     }
   }
 
@@ -95,10 +107,8 @@ class FamilyProvider extends ChangeNotifier {
     }
   }
 
-
   // ================== INVITATIONS ==================
 
-  // Récupère les invitations “pending” pour l’utilisateur
   Future<List<Map<String, dynamic>>> getInvitationsForUser(int userId) async {
     try {
       final res = await supabase
@@ -106,9 +116,7 @@ class FamilyProvider extends ChangeNotifier {
           .select('id, family_id, status, families(name)')
           .eq('invited_user_id', userId)
           .eq('status', 'pending');
-
       return res.cast<Map<String, dynamic>>();
-
     } catch (e) {
       debugPrint("Erreur getInvitationsForUser: $e");
       return [];
@@ -147,7 +155,6 @@ class FamilyProvider extends ChangeNotifier {
     }
   }
 
-  // Refuse en mettant status='declined'
   Future<void> declineFamilyInvitation(int invitationId) async {
     try {
       final inv = await supabase
@@ -180,7 +187,6 @@ class FamilyProvider extends ChangeNotifier {
           .eq('family_id', familyId)
           .eq('user_id', userId)
           .maybeSingle();
-
       if (existingMember != null) {
         throw Exception("Cet utilisateur fait déjà partie de cette famille.");
       }
@@ -192,7 +198,6 @@ class FamilyProvider extends ChangeNotifier {
           .eq('invited_user_id', userId)
           .eq('status', 'pending')
           .maybeSingle();
-
       if (existingInv != null) {
         throw Exception("Une invitation en attente existe déjà pour cet utilisateur.");
       }
@@ -238,6 +243,7 @@ class FamilyProvider extends ChangeNotifier {
       rethrow;
     }
   }
+
   Future<void> leaveFamily(int familyId, String userEmail) async {
     try {
       final userRes = await supabase
@@ -249,8 +255,8 @@ class FamilyProvider extends ChangeNotifier {
       if (userRes == null || userRes['id'] == null) {
         throw Exception("Impossible de trouver votre compte dans la BDD.");
       }
-
       final userId = userRes['id'] as int;
+
       await supabase
           .from('family_members')
           .delete()

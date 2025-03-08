@@ -26,7 +26,7 @@ dev_dependencies:
     sdk: flutter
   mocktail: ^1.0.0
   postgrest: ^2.4.0
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
   geolocator_platform_interface: ^4.0.0
 flutter:
   uses-material-design: true

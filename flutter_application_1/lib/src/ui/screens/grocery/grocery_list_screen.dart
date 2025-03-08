@@ -34,7 +34,6 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   bool _showOnlyUnchecked = false;
   double _totalBudget = 0.0;
   String _errorMessage = '';
-
   bool _isPromo = false;
 
   final ImagePicker _picker = ImagePicker();
@@ -72,134 +71,143 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     _isPromo = false;
     String? localErrorMsg;
 
-    await showDialog(
-      context: context,
-      builder: (ctx) {
-        return StatefulBuilder(builder: (dialogCtx, setStateDialog) {
-          return AlertDialog(
-            backgroundColor: widget.cardColor,
-            title: Text(
-              "Nouvel article",
-              style: TextStyle(color: widget.grayColor),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  if (localErrorMsg?.isNotEmpty ?? false)
-                    Text(
-                      localErrorMsg!,
-                      style: const TextStyle(color: AppColors.errorColor),
-                    ),
-                  const SizedBox(height: 8),
-
-                  // Nom
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      labelText: "Nom de l'article",
-                      labelStyle: TextStyle(color: widget.grayColor),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Quantité
-                  TextField(
-                    controller: qtyController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: "Quantité",
-                      labelStyle: TextStyle(color: widget.grayColor),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Prix
-                  TextField(
-                    controller: priceController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: "Prix (facultatif)",
-                      labelStyle: TextStyle(color: widget.grayColor),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Promotion
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+    try {
+      await showDialog(
+        context: context,
+        builder: (ctx) {
+          return StatefulBuilder(builder: (dialogCtx, setStateDialog) {
+            return AlertDialog(
+              backgroundColor: widget.cardColor,
+              title: Text(
+                "Nouvel article",
+                style: TextStyle(color: widget.grayColor),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    if (localErrorMsg?.isNotEmpty ?? false)
                       Text(
-                        "En promo ?",
-                        style: TextStyle(color: widget.grayColor),
+                        localErrorMsg!,
+                        style: const TextStyle(color: AppColors.errorColor),
                       ),
-                      Switch(
-                        value: _isPromo,
-                        onChanged: (val) {
-                          setStateDialog(() {
-                            _isPromo = val;
-                          });
-                        },
-                        activeColor: AppColors.errorColor,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogCtx),
-                style: TextButton.styleFrom(
-                  foregroundColor: widget.grayColor,
-                  backgroundColor: widget.cardColor,
-                ),
-                child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
-              ),
-              TextButton(
-                onPressed: () async {
-                  final name = nameController.text.trim();
-                  final qty = int.tryParse(qtyController.text) ?? 1;
-                  final price = double.tryParse(priceController.text) ?? 0.0;
+                    const SizedBox(height: 8),
 
-                  if (name.isEmpty) {
-                    setStateDialog(() {
-                      localErrorMsg = "Le nom de l'article ne peut pas être vide.";
-                    });
-                    return;
-                  }
-                  try {
-                    await context.read<GroceryListProvider>().createItem(
-                          widget.listId,
-                          name,
-                          qty,
-                          price,
-                          isPromo: _isPromo,
-                        );
-                    Navigator.pop(dialogCtx);
-                    await _loadItemsAndBudget();
-                  } catch (e) {
-                    setState(() {
-                      _errorMessage = e.toString();
-                    });
-                    Navigator.pop(dialogCtx);
-                  }
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: widget.grayColor,
-                  backgroundColor: widget.cardColor,
+                    // Nom
+                    TextField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: "Nom de l'article",
+                        labelStyle: TextStyle(color: widget.grayColor),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // Quantité
+                    TextField(
+                      controller: qtyController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: "Quantité",
+                        labelStyle: TextStyle(color: widget.grayColor),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // Prix
+                    TextField(
+                      controller: priceController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: "Prix (facultatif)",
+                        labelStyle: TextStyle(color: widget.grayColor),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // Promotion
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "En promo ?",
+                          style: TextStyle(color: widget.grayColor),
+                        ),
+                        Switch(
+                          value: _isPromo,
+                          onChanged: (val) {
+                            setStateDialog(() {
+                              _isPromo = val;
+                            });
+                          },
+                          activeColor: AppColors.errorColor,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                child: Text('Ajouter', style: TextStyle(color: widget.grayColor)),
               ),
-            ],
-          );
-        });
-      },
-    );
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogCtx),
+                  style: TextButton.styleFrom(
+                    foregroundColor: widget.grayColor,
+                    backgroundColor: widget.cardColor,
+                  ),
+                  child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final name = nameController.text.trim();
+                    final qty = int.tryParse(qtyController.text) ?? 1;
+                    final price = double.tryParse(priceController.text) ?? 0.0;
+
+                    if (name.isEmpty) {
+                      setStateDialog(() {
+                        localErrorMsg = "Le nom de l'article ne peut pas être vide.";
+                      });
+                      return;
+                    }
+                    try {
+                      await context.read<GroceryListProvider>().createItem(
+                            widget.listId,
+                            name,
+                            qty,
+                            price,
+                            isPromo: _isPromo,
+                          );
+                      Navigator.pop(dialogCtx);
+                      await _loadItemsAndBudget();
+                    } catch (e) {
+                      setState(() {
+                        _errorMessage = e.toString();
+                      });
+                      Navigator.pop(dialogCtx);
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: widget.grayColor,
+                    backgroundColor: widget.cardColor,
+                  ),
+                  child: Text('Ajouter', style: TextStyle(color: widget.grayColor)),
+                ),
+              ],
+            );
+          });
+        },
+      );
+    } finally {
+      //pr les fuites mémoire
+      nameController.dispose();
+      qtyController.dispose();
+      priceController.dispose();
+    }
   }
 
   // ======================== ACTIONS SUR UN ARTICLE ========================
   Future<void> _toggleChecked(GroceryItemModel item) async {
-    await context.read<GroceryListProvider>().updateItemChecked(item.id!, !item.isChecked);
+    await context
+        .read<GroceryListProvider>()
+        .updateItemChecked(item.id!, !item.isChecked);
     await _loadItemsAndBudget();
   }
 
@@ -214,108 +222,113 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     final priceController = TextEditingController(text: "${item.price}");
     bool isPromoEdit = item.isPromo;
 
-    await showDialog(
-      context: context,
-      builder: (ctx) {
-        return StatefulBuilder(builder: (dialogCtx, setStateDialog) {
-          return AlertDialog(
-            backgroundColor: widget.cardColor,
-            title: Text(
-              "Modifier l'article",
-              style: TextStyle(color: widget.grayColor),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  
-                  const SizedBox(height: 8),
+    try {
+      await showDialog(
+        context: context,
+        builder: (ctx) {
+          return StatefulBuilder(builder: (dialogCtx, setStateDialog) {
+            return AlertDialog(
+              backgroundColor: widget.cardColor,
+              title: Text(
+                "Modifier l'article",
+                style: TextStyle(color: widget.grayColor),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 8),
 
-                  // Quantité
-                  TextField(
-                    controller: qtyController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: "Quantité",
-                      labelStyle: TextStyle(color: widget.grayColor),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Prix
-                  TextField(
-                    controller: priceController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: "Prix",
-                      labelStyle: TextStyle(color: widget.grayColor),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Promotion ?
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "En promo ?",
-                        style: TextStyle(color: widget.grayColor),
+                    // Quantité
+                    TextField(
+                      controller: qtyController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: "Quantité",
+                        labelStyle: TextStyle(color: widget.grayColor),
                       ),
-                      Switch(
-                        value: isPromoEdit,
-                        onChanged: (val) {
-                          setStateDialog(() {
-                            isPromoEdit = val;
-                          });
-                        },
-                        activeColor: AppColors.errorColor,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogCtx),
-                style: TextButton.styleFrom(
-                  foregroundColor: widget.grayColor,
-                  backgroundColor: widget.cardColor,
-                ),
-                child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
-              ),
-              TextButton(
-                onPressed: () async {
-                  final newQty = int.tryParse(qtyController.text) ?? item.quantity;
-                  final newPrice = double.tryParse(priceController.text) ?? item.price;
+                    ),
+                    const SizedBox(height: 10),
 
-                  try {
-                    await context.read<GroceryListProvider>().updateItem(
-                          item.id!,
-                          quantity: newQty,
-                          price: newPrice,
-                          isPromo: isPromoEdit,
-                        );
-                    Navigator.pop(dialogCtx);
-                    await _loadItemsAndBudget();
-                  } catch (e) {
-                    setState(() {
-                      _errorMessage = e.toString();
-                    });
-                    Navigator.pop(dialogCtx);
-                  }
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: widget.grayColor,
-                  backgroundColor: widget.cardColor,
+                    // Prix
+                    TextField(
+                      controller: priceController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: "Prix",
+                        labelStyle: TextStyle(color: widget.grayColor),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // Promotion ?
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "En promo ?",
+                          style: TextStyle(color: widget.grayColor),
+                        ),
+                        Switch(
+                          value: isPromoEdit,
+                          onChanged: (val) {
+                            setStateDialog(() {
+                              isPromoEdit = val;
+                            });
+                          },
+                          activeColor: AppColors.errorColor,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                child: Text('Enregistrer', style: TextStyle(color: widget.grayColor)),
               ),
-            ],
-          );
-        });
-      },
-    );
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogCtx),
+                  style: TextButton.styleFrom(
+                    foregroundColor: widget.grayColor,
+                    backgroundColor: widget.cardColor,
+                  ),
+                  child: Text('Annuler', style: TextStyle(color: widget.grayColor)),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final newQty = int.tryParse(qtyController.text) ?? item.quantity;
+                    final newPrice =
+                        double.tryParse(priceController.text) ?? item.price;
+
+                    try {
+                      await context.read<GroceryListProvider>().updateItem(
+                            item.id!,
+                            quantity: newQty,
+                            price: newPrice,
+                            isPromo: isPromoEdit,
+                          );
+                      Navigator.pop(dialogCtx);
+                      await _loadItemsAndBudget();
+                    } catch (e) {
+                      setState(() {
+                        _errorMessage = e.toString();
+                      });
+                      Navigator.pop(dialogCtx);
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: widget.grayColor,
+                    backgroundColor: widget.cardColor,
+                  ),
+                  child: Text('Enregistrer', style: TextStyle(color: widget.grayColor)),
+                ),
+              ],
+            );
+          });
+        },
+      );
+    } finally {
+      qtyController.dispose();
+      priceController.dispose();
+    }
   }
 
   // ======================== SUPPRIMER TOUS LES ARTICLES ========================
@@ -363,8 +376,6 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   }
 
   // ======================== PRENDRE UNE PHOTO ET SCANNER LE PRIX ========================
-
-  
   Future<void> _scanPriceFromCamera() async {
     try {
       //on ouvre la caméra
@@ -373,23 +384,22 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
         //l’utilisateur a annulé la prise de photo
         return;
       }
-
       final file = File(pickedFile.path);
 
       final ocrProvider = context.read<OcrProvider>();
       final recognizedText = await ocrProvider.recognizeTextFromImage(file);
 
-      //on cherche le prix dans le text par exemple, on cherche un motif comme "xx.xx" ou "xx,xx".
       final regExpPrice = RegExp(r'(\d+[\.,]\d{1,2})');
       final matches = regExpPrice.allMatches(recognizedText);
 
       String resultMessage;
       if (matches.isNotEmpty) {
-        // on prend le premire qu'on trouve
         final firstMatch = matches.first.group(0);
-        resultMessage = "Prix détecté : $firstMatch\n\nTexte brut :\n$recognizedText";
+        resultMessage =
+            "Prix détecté : $firstMatch\n\nTexte brut :\n$recognizedText";
       } else {
-        resultMessage = "Aucun prix détecté.\n\nTexte brut :\n$recognizedText";
+        resultMessage =
+            "Aucun prix détecté.\n\nTexte brut :\n$recognizedText";
       }
 
       if (!mounted) return;
@@ -401,9 +411,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
             content: SingleChildScrollView(
               child: Text(
                 resultMessage,
-                style: TextStyle(
-                  color: widget.grayColor,
-                ),
+                style: TextStyle(color: widget.grayColor),
               ),
             ),
             actions: [
@@ -416,7 +424,6 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
         },
       );
     } catch (e) {
-      //on affiche un message d’erreur
       if (!mounted) return;
       await showDialog(
         context: context,
@@ -498,7 +505,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
               ],
             ),
 
-            // Boutons “Ajouter” et “Supprimer tous”
+            // Boutons “Ajouter” / “Scanner prix” / “Supprimer tous”
             SizedBox(
               height: 50,
               width: double.infinity,

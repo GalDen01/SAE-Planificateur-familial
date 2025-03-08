@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Planificateur_Familial/src/providers/family_provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
 
@@ -34,22 +33,18 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
   @override
   void initState() {
     super.initState();
-    loadFamilyMembers();
+    _loadFamilyMembers();
   }
 
-  Future<void> loadFamilyMembers() async {
-    final supabase = Supabase.instance.client;
+  /// Appelle le provider pour récupérer les membres de la famille
+  Future<void> _loadFamilyMembers() async {
     try {
-      final result = await supabase
-          .from('family_members')
-          .select('user_id, users!inner(first_name, email, photo_url)')
-          .eq('family_id', widget.familyId);
-
-
+      final data = await context
+          .read<FamilyProvider>()
+          .fetchMembersOfFamily(widget.familyId);
       setState(() {
-        familyMembers = result.cast<Map<String, dynamic>>();
+        familyMembers = data;
       });
-
     } catch (e) {
       debugPrint("Erreur loadFamilyMembers: $e");
     }
@@ -60,31 +55,30 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
       setState(() => suggestions = []);
       return;
     }
-    final supabase = Supabase.instance.client;
+    final supabase = context.read<FamilyProvider>().supabase;
     try {
       final response = await supabase
           .from('users')
           .select('*')
           .or('first_name.ilike.%$query%,email.ilike.%$query%')
           .limit(10);
-
-
       setState(() {
         suggestions = response.cast<Map<String, dynamic>>();
       });
-
     } catch (e) {
       debugPrint("Erreur searchUsers: $e");
     }
   }
 
-    Future<void> addMember(int userId) async {
+  Future<void> addMember(int userId) async {
     try {
+      await context
+          .read<FamilyProvider>()
+          .inviteMemberToFamily(widget.familyId, userId);
 
-      await context.read<FamilyProvider>().inviteMemberToFamily(widget.familyId, userId);
+      // On recharge la liste
+      await _loadFamilyMembers();
 
-
-      await loadFamilyMembers();
       setState(() {
         isSearching = false;
         suggestions.clear();
@@ -99,7 +93,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +124,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                     ),
                   ),
                   const SizedBox(height: 5),
-
                   Text(
                     "$memberCount Membres",
                     style: const TextStyle(
@@ -254,7 +246,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
                             ),
                           ),
                           const SizedBox(height: 10),
-
                           // Suggestions
                           if (suggestions.isNotEmpty)
                             Container(
