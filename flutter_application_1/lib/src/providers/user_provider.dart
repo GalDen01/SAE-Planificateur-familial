@@ -14,8 +14,6 @@ class UserProvider extends ChangeNotifier {
           .eq('id', userId)
           .maybeSingle();
 
-      // S’il peut réellement être null, on l’affecte directement (ce qui stocke null).
-      // Sinon, on l’assigne tel quel :
       result['user'] = userRes;
 
       final membersRes = await supabase
@@ -23,7 +21,6 @@ class UserProvider extends ChangeNotifier {
           .select('id, family_id')
           .eq('user_id', userId);
 
-      // Idem ici
       result['family_members'] = membersRes;
 
       final invitationsRes = await supabase

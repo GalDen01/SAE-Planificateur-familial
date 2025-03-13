@@ -3,10 +3,10 @@ import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/ui/screens/profile/profile_screen.dart';
 
 class BackProfileBar extends StatelessWidget implements PreferredSizeWidget {
-  /// Action quand on appuie sur "Retour".
+  ///quand on appuie sur "Retour".
   final VoidCallback onBack;
 
-  /// Action quand on appuie sur "Profil". Par défaut, ouvre [ProfileScreen].
+  ///quand on appuie sur "Profil". Par défaut, ouvre [ProfileScreen].
   final VoidCallback? onProfile;
 
   const BackProfileBar({

@@ -32,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _initialLoad();
   }
 
-  /// Chargement initial : familles + météo + userId/pendingInv.
   Future<void> _initialLoad() async {
     final userEmail = context.read<AuthProvider>().currentUser?.email;
     if (userEmail != null) {
@@ -44,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  /// Récupère userId + compte d'invitations en attente
   Future<void> _fetchUserIdAndPendingInvs(String userEmail) async {
     final supabase = Supabase.instance.client;
     final userRes = await supabase
@@ -64,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
  
 
-  /// Navigation vers InvitationsScreen
   Future<void> _goToInvitations() async {
     if (_userId == null) return;
 
@@ -75,11 +72,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
 
-    // Au retour de InvitationsScreen => on refresh
     await _refreshAfterReturn();
   }
 
- /// Méthode de refresh quand on revient sur Home
   Future<void> _refreshAfterReturn() async {
     final userEmail = context.read<AuthProvider>().currentUser?.email;
     if (userEmail != null) {
@@ -88,7 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  /// Navigation vers ProfileScreen
   Future<void> _goToProfile() async {
     await Navigator.push(
       context,

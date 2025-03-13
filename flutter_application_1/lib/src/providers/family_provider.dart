@@ -8,7 +8,7 @@ class FamilyProvider extends ChangeNotifier {
 
   final supabase = Supabase.instance.client;
 
-  int _pendingInvCount = 0; // compteur d’invitations en attente
+  int _pendingInvCount = 0;
   int get pendingInvCount => _pendingInvCount;
 
   Future<void> loadFamiliesForUser(String userEmail) async {
@@ -58,7 +58,6 @@ class FamilyProvider extends ChangeNotifier {
   }
 
   // ================== MÉTHODE AJOUTÉE ==================
-  /// Récupère la liste des membres d’une famille (avec prénom, email, photo).
   Future<List<Map<String, dynamic>>> fetchMembersOfFamily(int familyId) async {
     try {
       final result = await supabase
@@ -73,7 +72,6 @@ class FamilyProvider extends ChangeNotifier {
     }
   }
 
-  // Crée une famille + associe l'utilisateur créateur
   Future<void> addFamilyToSupabase(String familyName, String? userEmail) async {
     try {
       final data = await supabase

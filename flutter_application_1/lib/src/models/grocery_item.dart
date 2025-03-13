@@ -1,4 +1,3 @@
-// lib/src/models/grocery_item.dart
 
 class GroceryItemModel {
   final int? id;
@@ -7,8 +6,7 @@ class GroceryItemModel {
   final bool isChecked;
   final int quantity;
   final double price;
-  final bool isPromo; // champ pour la promotion
-
+  final bool isPromo;
   GroceryItemModel({
     this.id,
     required this.listId,

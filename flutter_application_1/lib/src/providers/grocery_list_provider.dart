@@ -89,7 +89,6 @@ class GroceryListProvider extends ChangeNotifier {
     return [];
   }
 
-  // Crée un nouvel article
   Future<void> createItem(
     int listId,
     String name,

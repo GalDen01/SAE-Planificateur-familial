@@ -36,7 +36,6 @@ class _ManageMembersScreenState extends State<ManageMembersScreen> {
     _loadFamilyMembers();
   }
 
-  /// Appelle le provider pour récupérer les membres de la famille
   Future<void> _loadFamilyMembers() async {
     try {
       final data = await context

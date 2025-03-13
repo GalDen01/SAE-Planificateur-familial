@@ -5,7 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class AuthProvider extends ChangeNotifier {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'], 
-    // 'profile' => donne accès à displayName, photoUrl
   );
 
   GoogleSignInAccount? _currentUser;
@@ -53,7 +52,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Enregistre/MAJ l'utilisateur dans Supabase (table `users`) avec le champ `photo_url`.
   Future<void> createOrUpdateUserInSupabase() async {
     if (_currentUser == null) return;
     final supabase = Supabase.instance.client;
@@ -63,7 +61,6 @@ class AuthProvider extends ChangeNotifier {
     final photoUrl = _currentUser!.photoUrl ?? ''; 
 
     try {
-      // 'upsert' => insère ou met à jour la ligne users(email)
       await supabase
           .from('users')
           .upsert({

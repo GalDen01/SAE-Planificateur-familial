@@ -101,9 +101,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {
-                      // Si pas accepté => on arrête tout de suite
+                      //si pas accepté alorson arrête tout de suite
                       if (!_hasAcceptedCGU) {
-                        // Récupérer le scaffoldMessenger AVANT de l'await (bonne pratique)
                         final scaffoldMessenger = ScaffoldMessenger.of(context);
                         scaffoldMessenger.showSnackBar(
                           const SnackBar(
@@ -115,17 +114,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         return;
                       }
 
-                      // On capture toutes les références à l'avance
                       final scaffoldMessenger = ScaffoldMessenger.of(context);
                       final navigator = Navigator.of(context);
 
-                      // On lance la connexion
                       await authProvider.signInWithGoogle();
 
-                      // Vérifie si le widget est toujours monté
                       if (!mounted) return;
 
-                      // En fonction de la réussite, on agit
                       if (authProvider.isLoggedIn) {
                         navigator.pushReplacementNamed('/home');
                       } else {

@@ -70,7 +70,6 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
       labelTextColor = AppColors.blackColor;
       await loadTasks();
     } catch (e) {
-      // Gérer l'erreur, ex. affichage d'un snackbar
     }
   }
 

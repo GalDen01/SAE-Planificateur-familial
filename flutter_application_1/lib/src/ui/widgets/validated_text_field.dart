@@ -42,7 +42,7 @@ class ValidatedTextFieldState extends State<ValidatedTextField> {
       onChanged: (_) {
         if (errorMessage != null) {
           setState(() {
-            errorMessage = null;  // Efface l'erreur en tapant
+            errorMessage = null;  //efface l'erreur en tapant
           });
         }
       },

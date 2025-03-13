@@ -56,7 +56,6 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
             ),
             TextButton(
               onPressed: () async {
-                // Capture des références nécessaires AVANT l'opération asynchrone.
                 final auth = context.read<AuthProvider>();
                 final familyProvider = context.read<FamilyProvider>();
                 final currentNavigator = Navigator.of(context);

@@ -64,7 +64,6 @@ class ProfileScreen extends StatelessWidget {
   String _formatDataAsString(Map<String, dynamic> data) {
     final buffer = StringBuffer();
 
-    // données de la table `users`
     final user = data['user'] ?? {};
     buffer.writeln("Table `users` :");
     buffer.writeln("id: ${user['id']}");
@@ -72,7 +71,6 @@ class ProfileScreen extends StatelessWidget {
     buffer.writeln("first_name: ${user['first_name']}");
     buffer.writeln("photo_url: ${user['photo_url']}\n");
 
-    //données de la table `family_members`
     final familyMembers = data['family_members'] as List<dynamic>? ?? [];
     buffer.writeln("Table `family_members` (user_id) :");
     for (var fm in familyMembers) {
@@ -80,7 +78,6 @@ class ProfileScreen extends StatelessWidget {
     }
     buffer.writeln("");
 
-    //données de la table `family_invitations`
     final invitations = data['family_invitations'] as List<dynamic>? ?? [];
     buffer.writeln("Table `family_invitations` (invited_user_id) :");
     for (var inv in invitations) {
@@ -298,7 +295,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // Bouton "Voir mes données" en Container
+                    // Bouton "Voir mes données"
                     GestureDetector(
                       onTap: () async {
                         final supabase = Supabase.instance.client;

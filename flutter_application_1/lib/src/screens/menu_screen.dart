@@ -7,7 +7,7 @@ class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF616161), // Gris foncé
+      backgroundColor: const Color(0xFF616161),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -24,7 +24,7 @@ class MenuScreen extends StatelessWidget {
           const SizedBox(height: 20),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFB0BEC5), // Gris clair
+              backgroundColor: const Color(0xFFB0BEC5),
               padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
             ),
             onPressed: () {},
