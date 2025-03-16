@@ -49,7 +49,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
 
   List<TodoTaskModel> get filteredTasks {
     if (_showOnlyUnchecked) {
-      return _allTasks.where((t) => t.isChecked == false).toList();
+      return _allTasks.where((t) => !t.isChecked).toList();
     }
     return _allTasks;
   }
@@ -70,6 +70,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
       labelTextColor = AppColors.blackColor;
       await loadTasks();
     } catch (e) {
+      // Gérer l'erreur si nécessaire
     }
   }
 
@@ -182,7 +183,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
             const SizedBox(height: 10),
 
             SizedBox(
-              height: 50,                
+              height: 50,
               width: double.infinity,
               child: Stack(
                 children: [
@@ -200,7 +201,6 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
                       ),
                     ),
                   ),
-
                   Align(
                     alignment: Alignment.centerRight,
                     child: Padding(
@@ -218,17 +218,17 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
                             Icons.delete_forever_outlined,
                             color: AppColors.errorColor,
                           ),
-                          onPressed: () => confirmDeleteAllTasks(),
+                          onPressed: confirmDeleteAllTasks,
                           splashRadius: 15,
                         ),
                       ),
                     ),
                   ),
-
                 ],
               ),
             ),
             const SizedBox(height: 10),
+
             // Liste des tâches
             Expanded(
               child: tasks.isEmpty
@@ -242,33 +242,40 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
                       itemCount: tasks.length,
                       itemBuilder: (ctx, index) {
                         final task = tasks[index];
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          decoration: BoxDecoration(
-                            color: task.isChecked
-                                ? AppColors.lightGray
-                                : widget.cardColor,
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: ListTile(
-                            leading: Checkbox(
-                              value: task.isChecked,
-                              onChanged: (_) => toggleChecked(task),
+
+                        return Dismissible(
+                          key: ValueKey(task.id),
+                          direction: DismissDirection.endToStart,
+                          // On ne met aucun background afin d'avoir un "slide" discret
+                          background: Container(),
+                          onDismissed: (_) {
+                            deleteTask(task.id!);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                              color: task.isChecked
+                                  ? AppColors.lightGray
+                                  : widget.cardColor,
+                              borderRadius: BorderRadius.circular(8.0),
                             ),
-                            title: Text(
-                              task.content,
-                              style: TextStyle(
-                                fontSize: 16,
-                                decoration: task.isChecked
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                                color: widget.grayColor,
+                            child: ListTile(
+                              leading: Checkbox(
+                                value: task.isChecked,
+                                onChanged: (_) => toggleChecked(task),
                               ),
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete),
-                              color: AppColors.errorColor,
-                              onPressed: () => deleteTask(task.id!),
+                              title: Text(
+                                task.content,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  decoration: task.isChecked
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                  color: widget.grayColor,
+                                ),
+                              ),
+                              // On retire l'icône de poubelle pour ne garder que le "slide to remove"
+                              trailing: null,
                             ),
                           ),
                         );

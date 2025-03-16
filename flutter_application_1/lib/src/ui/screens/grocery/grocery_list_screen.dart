@@ -5,6 +5,7 @@ import 'package:Planificateur_Familial/src/providers/grocery_list_provider.dart'
 import 'package:Planificateur_Familial/src/models/grocery_item.dart';
 import 'package:Planificateur_Familial/src/config/constants.dart';
 import 'package:Planificateur_Familial/src/ui/widgets/back_profile_bar.dart';
+
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:Planificateur_Familial/src/providers/ocr_provider.dart';
@@ -196,7 +197,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
         },
       );
     } finally {
-      //pr les fuites mémoire
+      // Pour éviter les fuites mémoire
       nameController.dispose();
       qtyController.dispose();
       priceController.dispose();
@@ -394,12 +395,25 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
 
       String resultMessage;
       if (matches.isNotEmpty) {
+        // On convertit la première correspondance en double
         final firstMatch = matches.first.group(0);
-        resultMessage =
-            "Prix détecté : $firstMatch\n\nTexte brut :\n$recognizedText";
+        final priceDetected = double.tryParse(
+          (firstMatch ?? '').replaceAll(',', '.'),
+        );
+
+        if (priceDetected != null) {
+          // On l’ajoute au total
+          setState(() {
+            _totalBudget += priceDetected;
+          });
+          resultMessage =
+              "Prix détecté : $firstMatch\nAjouté au budget !\n\nTexte brut :\n$recognizedText";
+        } else {
+          resultMessage =
+              "Impossible de convertir le prix détecté.\n\nTexte brut :\n$recognizedText";
+        }
       } else {
-        resultMessage =
-            "Aucun prix détecté.\n\nTexte brut :\n$recognizedText";
+        resultMessage = "Aucun prix détecté.\n\nTexte brut :\n$recognizedText";
       }
 
       if (!mounted) return;
@@ -590,81 +604,88 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                       itemCount: items.length,
                       itemBuilder: (ctx, index) {
                         final item = items[index];
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          decoration: BoxDecoration(
-                            color: item.isChecked
-                                ? AppColors.lightGray
-                                : widget.cardColor,
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: ListTile(
-                            leading: Checkbox(
-                              value: item.isChecked,
-                              onChanged: (_) => _toggleChecked(item),
+                        
+                        // On ajoute le widget Dismissible :
+                        return Dismissible(
+                          key: ValueKey(item.id),
+                          direction: DismissDirection.endToStart,
+                          // 1) Supprimer le background pour qu'il n'y ait "rien"
+                          background: Container(), 
+                          onDismissed: (_) {
+                            _deleteItem(item.id!);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                              color: item.isChecked
+                                  ? AppColors.lightGray
+                                  : widget.cardColor,
+                              borderRadius: BorderRadius.circular(8.0),
                             ),
-                            title: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  item.name,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    decoration: item.isChecked
-                                        ? TextDecoration.lineThrough
-                                        : null,
-                                    color: widget.grayColor,
+                            child: ListTile(
+                              leading: Checkbox(
+                                value: item.isChecked,
+                                onChanged: (_) => _toggleChecked(item),
+                              ),
+                              title: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    item.name,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      decoration: item.isChecked
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                      color: widget.grayColor,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 6),
-                                if (item.isPromo)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 6.0,
-                                      vertical: 2.0,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.deletColor,
-                                      borderRadius: BorderRadius.circular(4.0),
-                                    ),
-                                    child: const Text(
-                                      "PROMO",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
+                                  const SizedBox(width: 6),
+                                  if (item.isPromo)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6.0,
+                                        vertical: 2.0,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.deletColor,
+                                        borderRadius: BorderRadius.circular(4.0),
+                                      ),
+                                      child: const Text(
+                                        "PROMO",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
+                                ],
+                              ),
+                              subtitle: Row(
+                                children: [
+                                  Text(
+                                    "Quantité: ${item.quantity}",
+                                    style: TextStyle(color: widget.grayColor),
                                   ),
-                              ],
-                            ),
-                            subtitle: Row(
-                              children: [
-                                Text(
-                                  "Quantité: ${item.quantity}",
-                                  style: TextStyle(color: widget.grayColor),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  "| Prix: ${item.price.toStringAsFixed(2)} €",
-                                  style: TextStyle(color: widget.grayColor),
-                                ),
-                              ],
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  color: AppColors.blackColor,
-                                  onPressed: () => _editItemDialog(item),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  color: AppColors.deletColor,
-                                  onPressed: () => _deleteItem(item.id!),
-                                ),
-                              ],
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    "| Prix: ${item.price.toStringAsFixed(2)} €",
+                                    style: TextStyle(color: widget.grayColor),
+                                  ),
+                                ],
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // 2) On enlève l'icône de poubelle
+                                  IconButton(
+                                    icon: const Icon(Icons.edit),
+                                    color: AppColors.blackColor,
+                                    onPressed: () => _editItemDialog(item),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );
